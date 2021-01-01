@@ -1,1 +1,0 @@
-<h1 class='text-lg text-gray-700 tracking-wide'>test component</h1>
