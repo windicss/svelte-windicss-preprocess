@@ -1,10 +1,28 @@
 {
   "name": "svelte-windicss-preprocess",
   "version": "1.0.0",
+  "description": "A Svelte Preprocessor to compile tailwindcss at build time.",
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
     "start": "sirv public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/voorjaar/svelte-windicss-preprocess.git"
+  },
+  "keywords": [
+    "svelte",
+    "tailwindcss",
+    "css",
+    "compiler"
+  ],
+  "author": "Veritas Raven",
+  "license": "MIT",
+  "homepage": "https://github.com/voorjaar/svelte-windicss-preprocess",
+  "dependencies": {
+    "magic-string": "^0.25.7",
+    "windicss": "^1.1.1"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^16.0.0",
@@ -16,9 +34,5 @@
     "rollup-plugin-terser": "^7.0.0",
     "svelte": "^3.0.0",
     "sirv-cli": "^1.0.0"
-  },
-  "dependencies": {
-    "magic-string": "^0.25.7",
-    "windicss": "^1.1.1"
   }
 }
