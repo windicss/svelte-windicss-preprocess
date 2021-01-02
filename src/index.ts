@@ -1,33 +1,39 @@
 import MagicString from 'magic-string';
-import { compile, interpret, preflight } from 'windicss/src';
-import { StyleSheet } from 'windicss/src/utils/style';
-
 import { walk, parse } from 'svelte/compiler';
+import { StyleSheet } from 'windicss/src/utils/style';
+import { compile, interpret, preflight } from 'windicss/src';
 
-function initStyleList() {
-  // make sure list not empty incase reduce error
-  return [new StyleSheet()];
-}
+import type { TemplateNode } from 'svelte/types/compiler/interfaces'
+import type { Preprocessor } from 'svelte/types/compiler/preprocess';
 
-let IGNORED_CLASSES = [];
-let STYLESHEETS = initStyleList();
-let DIRECTIVES = initStyleList();
-let FILES = [];
+const mode = process.env.NODE_ENV;
+const dev = mode === 'development';
 
-let TAGNAMES = {};
+let IGNORED_CLASSES:string[] = [];
+let STYLESHEETS:StyleSheet[] = [];
+let DIRECTIVES:StyleSheet[] = [];
+let FILES:(string|undefined)[] = [];
+
+let TAGNAMES:{[key:string]:string|undefined} = {};
 let OPTIONS = {
   prefix: 'windi-',
   compile: false,
 };
 
-function compilation(classNames) {
+function combineStyleList(stylesheets:StyleSheet[]) {
+  // Fix reduce of empty array with no initial value
+  if (stylesheets.length === 0) return;
+  return stylesheets.reduce((previousValue, currentValue) => previousValue.extend(currentValue)).combine();//.sort();
+}
+
+function compilation(classNames:string) {
   const utility = compile(classNames, OPTIONS.prefix, false);
   IGNORED_CLASSES = [...IGNORED_CLASSES, ...utility.ignored];
   STYLESHEETS.push(utility.styleSheet);
   return [utility.className, ...utility.ignored].join(' ');
 }
 
-function interpretation(classNames) {
+function interpretation(classNames:string) {
   const utility = interpret(classNames);
   IGNORED_CLASSES = [...IGNORED_CLASSES, ...utility.ignored];
   const styleSheet = utility.styleSheet;
@@ -37,24 +43,22 @@ function interpretation(classNames) {
   STYLESHEETS.push(styleSheet);
 }
 
-function getReduceValue(node, key="consequent") {
+function getReduceValue(node:TemplateNode, key="consequent"):TemplateNode|string|undefined {
+  if (!node) return;
   const value = node[key];
+  if (!value) return;
   if (value.raw) return value.value;
   return getReduceValue(value, key);
 }
 
-export default function svelteWindicssPreprocess(options={}) {
-  OPTIONS = {...OPTIONS, ...options}; // change global settings here;
-  return preprocess;
-}
 
-function preprocess({content, filename}) {
+const _preprocess:Preprocessor = ({content, filename}) => {
   let updatedTags = [];
   const parsed = parse(content);
   const code = new MagicString(content);
-
+  
   walk(parsed.html, {
-    enter(node) {
+    enter(node:TemplateNode) {
       if (node.type === 'Element' && (!TAGNAMES[node.name])) {
         TAGNAMES[node.name] = filename;
         updatedTags.push(node.name); // only work on production
@@ -74,7 +78,7 @@ function preprocess({content, filename}) {
       }
       // console.log(node.type);
       if (node.type === 'Attribute' && node.name === 'class') {
-        node.value.forEach(({start, end, data}) => {
+        node.value.forEach(({start, end, data}:{start:number, end:number, data:string}) => {
           if (OPTIONS.compile) {
             // compilation mode
             code.overwrite(start, end, compilation(data));
@@ -94,16 +98,17 @@ function preprocess({content, filename}) {
     }
   };
 
-  const preflights = preflight(updatedTags, FILES.length === 0 || FILES.indexOf(filename) === 0); // only enable global styles for first file
+  // preflights might lost when refresh
+  const preflights = preflight(dev?Object.keys(TAGNAMES):updatedTags, FILES.length === 0 || FILES.indexOf(filename) === 0); // only enable global styles for first file
   
   preflights.children.forEach(style=>{
     style.selector = `:global(${style.selector})`;
   });
-  
-  const utilities = STYLESHEETS.reduce((previousValue, currentValue) => previousValue.extend(currentValue)).combine().sort();
-  const directives = DIRECTIVES.reduce((previousValue, currentValue) => previousValue.extend(currentValue)).combine().sort();
 
-  let tailwindcss = preflights.extend(utilities).extend(directives).build();
+  let stylesheet = preflights;
+  stylesheet = stylesheet.extend(combineStyleList(STYLESHEETS));
+  stylesheet = stylesheet.extend(combineStyleList(DIRECTIVES));
+  let tailwindcss = stylesheet.build();
   
   if (!OPTIONS.compile) tailwindcss = tailwindcss.replace(/windicssGlobal\(\\\./g, ':global(.');
   
@@ -112,7 +117,7 @@ function preprocess({content, filename}) {
   };
 
   walk(parsed.css, {
-    enter(node) {
+    enter(node:TemplateNode) {
       if (node.type === 'Style') {
         code.prependLeft(node.content.start, '\n'+tailwindcss);
       }
@@ -120,9 +125,14 @@ function preprocess({content, filename}) {
   })
 
   if (!FILES.includes(filename)) FILES.push(filename); // later for judge should update or not
-  STYLESHEETS = initStyleList();
-  DIRECTIVES = initStyleList();
+  STYLESHEETS = [];
+  DIRECTIVES = [];
   IGNORED_CLASSES = [];
 
-  return {code: code.toString()}
+  return {code: code.toString()};
+}
+
+export function preprocess(options={}) {
+  OPTIONS = {...OPTIONS, ...options}; // change global settings here;
+  return _preprocess;
 }
