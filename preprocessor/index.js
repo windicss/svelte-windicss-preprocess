@@ -1,22 +1,30 @@
 import MagicString from 'magic-string';
 import { compile, interpret, preflight } from 'windicss/src';
+import { StyleSheet } from 'windicss/src/utils/style';
+
 import { walk, parse } from 'svelte/compiler';
 
+function initStyleList() {
+  // make sure list not empty incase reduce error
+  return [new StyleSheet()];
+}
+
 let IGNORED_CLASSES = [];
-let STYLESHEETS = [];
+let STYLESHEETS = initStyleList();
+let DIRECTIVES = initStyleList();
 let FILES = [];
 
 let TAGNAMES = {};
 let OPTIONS = {
   prefix: 'windi-',
-  compile: false,
+  compile: true,
 };
 
 function compilation(classNames) {
   const utility = compile(classNames, OPTIONS.prefix, false);
   IGNORED_CLASSES = [...IGNORED_CLASSES, ...utility.ignored];
   STYLESHEETS.push(utility.styleSheet);
-  return utility.className;
+  return [utility.className, ...utility.ignored].join(' ');
 }
 
 function interpretation(classNames) {
@@ -45,6 +53,14 @@ function preprocess({content, filename}) {
         TAGNAMES[node.name] = filename;
         updatedTags.push(node.name); // only work on production
       };
+      if (node.type === 'Class') {
+        // handle class directive
+        const utility = interpret(node.name);
+        IGNORED_CLASSES = [...IGNORED_CLASSES, ...utility.ignored];
+        DIRECTIVES.push(utility.styleSheet);
+        // make sure directives add after all classes.
+      }
+      // console.log(node.type);
       if (node.type === 'Attribute' && node.name === 'class') {
         node.value.forEach(({start, end, data}) => {
           if (OPTIONS.compile) {
@@ -73,8 +89,9 @@ function preprocess({content, filename}) {
   });
   
   const utilities = STYLESHEETS.reduce((previousValue, currentValue) => previousValue.extend(currentValue)).combine().sort();
-  
-  let tailwindcss = preflights.extend(utilities).build();
+  const directives = DIRECTIVES.reduce((previousValue, currentValue) => previousValue.extend(currentValue)).combine().sort();
+
+  let tailwindcss = preflights.extend(utilities).extend(directives).build();
   
   if (!OPTIONS.compile) tailwindcss = tailwindcss.replace(/windicssGlobal\(\\\./g, ':global(.');
   
@@ -91,7 +108,8 @@ function preprocess({content, filename}) {
   })
 
   if (!FILES.includes(filename)) FILES.push(filename); // later for judge should update or not
-  STYLESHEETS = [];
+  STYLESHEETS = initStyleList();
+  DIRECTIVES = initStyleList();
   IGNORED_CLASSES = [];
 
   return {code: code.toString()}
