@@ -17,7 +17,7 @@ let FILES = [];
 let TAGNAMES = {};
 let OPTIONS = {
   prefix: 'windi-',
-  compile: true,
+  compile: false,
 };
 
 function compilation(classNames) {
@@ -35,6 +35,12 @@ function interpretation(classNames) {
     style.selector = `windicssGlobal(${style.selector})`; // should be :global, but : will be escape, so we will replace it with :global later
   });
   STYLESHEETS.push(styleSheet);
+}
+
+function getReduceValue(node, key="consequent") {
+  const value = node[key];
+  if (value.raw) return value.value;
+  return getReduceValue(value, key);
 }
 
 export default function svelteWindicssPreprocess(options={}) {
@@ -59,6 +65,12 @@ function preprocess({content, filename}) {
         IGNORED_CLASSES = [...IGNORED_CLASSES, ...utility.ignored];
         DIRECTIVES.push(utility.styleSheet);
         // make sure directives add after all classes.
+      }
+      if (node.type==="ConditionalExpression") {
+        // handle inline conditional expression
+        const utility = interpret(`${getReduceValue(node, 'consequent')} ${getReduceValue(node, 'alternate')}`);
+        IGNORED_CLASSES = [...IGNORED_CLASSES, ...utility.ignored];
+        DIRECTIVES.push(utility.styleSheet);
       }
       // console.log(node.type);
       if (node.type === 'Attribute' && node.name === 'class') {

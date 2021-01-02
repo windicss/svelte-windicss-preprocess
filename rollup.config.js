@@ -40,7 +40,9 @@ export default {
 	plugins: [
 		svelte({
 			preprocess: {
-				markup: svelteWindicssPreprocess({TEST:true}),
+				markup: svelteWindicssPreprocess({
+					compile:false
+				}),
 			},
 			compilerOptions: {
 				// enable run-time checks when not in production
