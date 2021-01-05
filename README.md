@@ -18,18 +18,18 @@ Add `svelte-windicss-preprocess` to your `rollup.config.js`.
 // rollup.config.js
 // ...
 export default {
-	// ...
-	plugins: [
-		svelte({
-			preprocess: {
+    // ...
+    plugins: [
+        svelte({
+            preprocess: {
                 // svelte-windicss-preprocess
-				markup: require('svelte-windicss-preprocess').preprocess({
+                markup: require('svelte-windicss-preprocess').preprocess({
                     compile: true,          // false: interpretation mode; true: compilation mode
                     globalPreflight: true,  // set preflight style is global or scoped
                     globalUtility: true,    // set utility style is global or scoped
                     prefix: 'windi-'        // set compilation mode style prefix
                 })
-			},
+            },
             // ...
         }),
     ]
@@ -45,49 +45,49 @@ Add `svelte-windicss-preprocess` to your `rollup.config.js`.
 // rollup.config.js
 // ...
 export default {
-	// ...
-	client: {
-		input: config.client.input(),
-		output: config.client.output(),
-		plugins: [
-			// ...
-			svelte({
-				preprocess: {
+    // ...
+    client: {
+        input: config.client.input(),
+        output: config.client.output(),
+        plugins: [
+            // ...
+            svelte({
+                preprocess: {
                     // svelte-windicss-preprocess
-					markup: require('../../src/index').preprocess({
+                    markup: require('../../src/index').preprocess({
                         compile: true,          // false: interpretation mode; true: compilation mode
                         globalPreflight: true,  // set preflight style is global or scoped
                         globalUtility: true,    // set utility style is global or scoped
                         prefix: 'windi-'        // set compilation mode style prefix
                     }),
                 },
-				compilerOptions: {
-					// ...
-				}
+                compilerOptions: {
+                    // ...
+                }
             }),
             // ...
         ]
     // ...
     }
     server: {
-		input: config.server.input(),
-		output: config.server.output(),
-		plugins: [
-			// ...
-			svelte({
-				preprocess: {
+        input: config.server.input(),
+        output: config.server.output(),
+        plugins: [
+            // ...
+            svelte({
+                preprocess: {
                     // svelte-windicss-preprocess
-					markup: require('../../src/index').preprocess({
+                    markup: require('../../src/index').preprocess({
                         compile: true,          // false: interpretation mode; true: compilation mode
                         globalPreflight: true,  // set preflight style is global or scoped
                         globalUtility: true,    // set utility style is global or scoped
                         prefix: 'windi-'        // set compilation mode style prefix
                     }),
-				},
-				compilerOptions: {
-					// ...
-				},
-			}),
+                },
+                compilerOptions: {
+                    // ...
+                },
+            }),
             // ...
         ]
     }
@@ -102,58 +102,58 @@ Add `svelte-windicss-preprocess` to your `webpack.config.js`.
 ```js
 // webpack.config.js
 module.exports = {
-	client: {
-		// ...
-		module: {
-			rules: [
-				{
-					test: /\.(svelte|html)$/,
-					use: {
-						loader: 'svelte-loader',
-						options: {
+    client: {
+        // ...
+        module: {
+            rules: [
+                {
+                    test: /\.(svelte|html)$/,
+                    use: {
+                        loader: 'svelte-loader',
+                        options: {
                             // ... other options
-							preprocess: {
+                            preprocess: {
                                 // svelte-windicss-preprocess
-								markup: require('../../src/index').preprocess({
+                                markup: require('../../src/index').preprocess({
                                     compile: true,          // false: interpretation mode; true: compilation mode
                                     globalPreflight: true,  // set preflight style is global or scoped
                                     globalUtility: true,    // set utility style is global or scoped
                                     prefix: 'windi-'        // set compilation mode style prefix
                                 })
-							}
-						}
-					}
+                            }
+                        }
+                    }
                 },
                 // ...
-			]
+            ]
         },
     },
 
     server: {
-		// ...
-		module: {
-			rules: [
-				{
-					test: /\.(svelte|html)$/,
-					use: {
-						loader: 'svelte-loader',
-						options: {
+        // ...
+        module: {
+            rules: [
+                {
+                    test: /\.(svelte|html)$/,
+                    use: {
+                        loader: 'svelte-loader',
+                        options: {
                             // ... other options
-							preprocess: {
+                            preprocess: {
                                 // svelte-windicss-preprocess
-								markup: require('../../src/index').preprocess({
+                                markup: require('../../src/index').preprocess({
                                     compile: true,          // false: interpretation mode; true: compilation mode
                                     globalPreflight: true,  // set preflight style is global or scoped
                                     globalUtility: true,    // set utility style is global or scoped
                                     prefix: 'windi-'        // set compilation mode style prefix
                                 })
-							}
-						}
-					}
-				},
-				// ...
-			]
-		},
+                            }
+                        }
+                    }
+                },
+                // ...
+            ]
+        },
     }
 }
 ```
