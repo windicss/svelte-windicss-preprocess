@@ -1,105 +1,257 @@
-*Looking for a shareable component template? Go here --> [sveltejs/component-template](https://github.com/sveltejs/component-template)*
+# svelte-windicss-preprocess
 
----
+> A svelte preprocessor to compile [tailwindcss](https://github.com/tailwindlabs/tailwindcss) at build time based on [windicss](https://github.com/voorjaar/windicss) compiler.
 
-# svelte app
+## Installation
 
-This is a project template for [Svelte](https://svelte.dev) apps. It lives at https://github.com/sveltejs/template.
-
-To create a new project based on this template using [degit](https://github.com/Rich-Harris/degit):
-
-```bash
-npx degit sveltejs/template svelte-app
-cd svelte-app
+```sh
+npm install svelte-windicss-preprocess --save-dev
 ```
 
-*Note that you will need to have [Node.js](https://nodejs.org) installed.*
+## Configuration
 
+### Svelte
 
-## Get started
-
-Install the dependencies...
-
-```bash
-cd svelte-app
-npm install
-```
-
-...then start [Rollup](https://rollupjs.org):
-
-```bash
-npm run dev
-```
-
-Navigate to [localhost:5000](http://localhost:5000). You should see your app running. Edit a component file in `src`, save it, and reload the page to see your changes.
-
-By default, the server will only respond to requests from localhost. To allow connections from other computers, edit the `sirv` commands in package.json to include the option `--host 0.0.0.0`.
-
-If you're using [Visual Studio Code](https://code.visualstudio.com/) we recommend installing the official extension [Svelte for VS Code](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode). If you are using other editors you may need to install a plugin in order to get syntax highlighting and intellisense.
-
-## Building and running in production mode
-
-To create an optimised version of the app:
-
-```bash
-npm run build
-```
-
-You can run the newly built app with `npm run start`. This uses [sirv](https://github.com/lukeed/sirv), which is included in your package.json's `dependencies` so that the app will work when you deploy to platforms like [Heroku](https://heroku.com).
-
-
-## Single-page app mode
-
-By default, sirv will only respond to requests that match files in `public`. This is to maximise compatibility with static fileservers, allowing you to deploy your app anywhere.
-
-If you're building a single-page app (SPA) with multiple routes, sirv needs to be able to respond to requests for *any* path. You can make it so by editing the `"start"` command in package.json:
+Add `svelte-windicss-preprocess` to your `rollup.config.js`.
 
 ```js
-"start": "sirv public --single"
+// rollup.config.js
+// ...
+export default {
+	// ...
+	plugins: [
+		svelte({
+			preprocess: {
+                // svelte-windicss-preprocess
+				markup: require('svelte-windicss-preprocess').preprocess({
+                    compile: true,          // false: interpretation mode; true: compilation mode
+                    globalPreflight: true,  // set preflight style is global or scoped
+                    globalUtility: true,    // set utility style is global or scoped
+                    prefix: 'windi-'        // set compilation mode style prefix
+                })
+			},
+            // ...
+        }),
+    ]
+    // ...
+}
 ```
 
-## Using TypeScript
+### Sapper(rollup)
 
-This template comes with a script to set up a TypeScript development environment, you can run it immediately after cloning the template with:
+Add `svelte-windicss-preprocess` to your `rollup.config.js`.
 
-```bash
-node scripts/setupTypeScript.js
+```js
+// rollup.config.js
+// ...
+export default {
+	// ...
+	client: {
+		input: config.client.input(),
+		output: config.client.output(),
+		plugins: [
+			// ...
+			svelte({
+				preprocess: {
+                    // svelte-windicss-preprocess
+					markup: require('../../src/index').preprocess({
+                        compile: true,          // false: interpretation mode; true: compilation mode
+                        globalPreflight: true,  // set preflight style is global or scoped
+                        globalUtility: true,    // set utility style is global or scoped
+                        prefix: 'windi-'        // set compilation mode style prefix
+                    }),
+                },
+				compilerOptions: {
+					// ...
+				}
+            }),
+            // ...
+        ]
+    // ...
+    }
+    server: {
+		input: config.server.input(),
+		output: config.server.output(),
+		plugins: [
+			// ...
+			svelte({
+				preprocess: {
+                    // svelte-windicss-preprocess
+					markup: require('../../src/index').preprocess({
+                        compile: true,          // false: interpretation mode; true: compilation mode
+                        globalPreflight: true,  // set preflight style is global or scoped
+                        globalUtility: true,    // set utility style is global or scoped
+                        prefix: 'windi-'        // set compilation mode style prefix
+                    }),
+				},
+				compilerOptions: {
+					// ...
+				},
+			}),
+            // ...
+        ]
+    }
+    // ...
+}
 ```
 
-Or remove the script via:
+### Sapper(webpack)
 
-```bash
-rm scripts/setupTypeScript.js
+Add `svelte-windicss-preprocess` to your `webpack.config.js`.
+
+```js
+// webpack.config.js
+module.exports = {
+	client: {
+		// ...
+		module: {
+			rules: [
+				{
+					test: /\.(svelte|html)$/,
+					use: {
+						loader: 'svelte-loader',
+						options: {
+                            // ... other options
+							preprocess: {
+                                // svelte-windicss-preprocess
+								markup: require('../../src/index').preprocess({
+                                    compile: true,          // false: interpretation mode; true: compilation mode
+                                    globalPreflight: true,  // set preflight style is global or scoped
+                                    globalUtility: true,    // set utility style is global or scoped
+                                    prefix: 'windi-'        // set compilation mode style prefix
+                                })
+							}
+						}
+					}
+                },
+                // ...
+			]
+        },
+    },
+
+    server: {
+		// ...
+		module: {
+			rules: [
+				{
+					test: /\.(svelte|html)$/,
+					use: {
+						loader: 'svelte-loader',
+						options: {
+                            // ... other options
+							preprocess: {
+                                // svelte-windicss-preprocess
+								markup: require('../../src/index').preprocess({
+                                    compile: true,          // false: interpretation mode; true: compilation mode
+                                    globalPreflight: true,  // set preflight style is global or scoped
+                                    globalUtility: true,    // set utility style is global or scoped
+                                    prefix: 'windi-'        // set compilation mode style prefix
+                                })
+							}
+						}
+					}
+				},
+				// ...
+			]
+		},
+    }
+}
 ```
 
-## Deploying to the web
+## Usage
 
-### With [Vercel](https://vercel.com)
+You can write any [tailwindcss](https://github.com/tailwindlabs/tailwindcss) classes in your `.svelte` files.
 
-Install `vercel` if you haven't already:
+```html
+<script>
+// ...
+</script>
 
-```bash
-npm install -g vercel
+<div class="py-8 px-8 max-w-sm mx-auto bg-white rounded-xl shadow-md space-y-2 sm:py-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-6">
+    <img class="block mx-auto h-24 rounded-full sm:mx-0 sm:flex-shrink-0" src="/img/erin-lindford.jpg" alt="Woman's Face">
+    <div class="text-center space-y-2 sm:text-left">
+        <div class="space-y-0.5">
+        <p class="text-lg text-black font-semibold">
+            Erin Lindford
+        </p>
+        <p class="text-gray-500 font-medium">
+            Product Engineer
+        </p>
+        </div>
+        <button class="px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">Message</button>
+    </div>
+</div>
+
+<style>
+/* ... */
+</style>
 ```
 
-Then, from within your project folder:
+### Compilation mode
 
-```bash
-cd public
-vercel deploy --name my-project
+This is not css-in-js, [windicss](https://github.com/voorjaar/windicss) only merges and compiles the tailwind classes of each line into a new class. You can try to compile (`npm run build`) and check the generated css file.
+
+```html
+<div class="windi-15wa4me">
+  <img class="windi-1q7lotv" src="/img/erin-lindford.jpg" alt="Woman's Face">
+  <div class="windi-7831z4">
+    <div class="windi-x3f008">
+      <p class="windi-2lluw6"> Erin Lindford </p>
+      <p class="windi-1caa1b7"> Product Engineer </p>
+    </div>
+    <button class="windi-d2pog2">Message</button>
+  </div>
+</div>
 ```
 
-### With [surge](https://surge.sh/)
-
-Install `surge` if you haven't already:
-
-```bash
-npm install -g surge
+```css
+/* ... */
+.windi-1q7lotv {
+  border-radius: 9999px;
+  display: block;
+  height: 6rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+/* ... */
+@media (min-width: 640px) {
+  /* ... */
+  .windi-1q7lotv {
+    flex-shrink: 0;
+    margin-left: 0;
+    margin-right: 0;
+  }
+/* ... */
 ```
 
-Then, from within your project folder:
+### Interpretation mode
 
-```bash
-npm run build
-surge public my-project.surge.sh
+Interpretation mode will not modify your classes, it will only compile the original tailwind classes just like [tailwindcss](https://github.com/tailwindlabs/tailwindcss), but it is minimized and has native cross-browser support.
+
+```css
+/* ... */
+.py-8 {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+/* ... */
+@media (min-width: 640px) {
+  /* ... */
+  .sm\:items-center {
+    align-items: center;
+  }
+  .sm\:mx-0 {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .sm\:py-4 {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+  /* ... */
+}
 ```
+
+## License
+
+[MIT](https://github.com/voorjaar/svelte-windicss-preprocess/blob/main/LICENSE)

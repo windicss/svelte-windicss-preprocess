@@ -69,7 +69,10 @@ module.exports = {
 							css: false,
 							generate: 'ssr',
 							hydratable: true,
-							dev
+							dev,
+							preprocess: {
+								markup: require('../../src/index').preprocess({compile:false})
+							}
 						}
 					}
 				},

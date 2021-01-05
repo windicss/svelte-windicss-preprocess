@@ -81,6 +81,9 @@ export default {
 				'process.env.NODE_ENV': JSON.stringify(mode)
 			}),
 			svelte({
+				preprocess: {
+					markup: require('../../src/index').preprocess({compile:false}),
+				},
 				compilerOptions: {
 					dev,
 					generate: 'ssr',
