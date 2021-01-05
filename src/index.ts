@@ -16,8 +16,10 @@ let FILES:(string|undefined)[] = [];
 
 let TAGNAMES:{[key:string]:string|undefined} = {};
 let OPTIONS = {
+  compile: true,
+  globalPreflight: true,
+  globalUtility: true, 
   prefix: 'windi-',
-  compile: false,
 };
 
 function combineStyleList(stylesheets:StyleSheet[]) {
@@ -26,21 +28,26 @@ function combineStyleList(stylesheets:StyleSheet[]) {
   return stylesheets.reduce((previousValue, currentValue) => previousValue.extend(currentValue)).combine();//.sort();
 }
 
+function globalStyleSheet(styleSheet:StyleSheet) {
+  // turn all styles in stylesheet to global style
+  styleSheet.children.forEach(style=>{
+    style.selector = `windicssGlobal(${style.selector})`; // should be :global, but : will be escape, so we will replace it with :global later
+  });
+  return styleSheet;
+}
+
 function compilation(classNames:string) {
   const utility = compile(classNames, OPTIONS.prefix, false);
   IGNORED_CLASSES = [...IGNORED_CLASSES, ...utility.ignored];
-  STYLESHEETS.push(utility.styleSheet);
-  return [utility.className, ...utility.ignored].join(' ');
+  STYLESHEETS.push(OPTIONS.globalUtility?globalStyleSheet(utility.styleSheet):utility.styleSheet);
+  return [utility.className, ...utility.ignored].join(' '); // return new className
 }
 
 function interpretation(classNames:string) {
   const utility = interpret(classNames);
   IGNORED_CLASSES = [...IGNORED_CLASSES, ...utility.ignored];
-  const styleSheet = utility.styleSheet;
-  styleSheet.children.forEach(style=>{
-    style.selector = `windicssGlobal(${style.selector})`; // should be :global, but : will be escape, so we will replace it with :global later
-  });
-  STYLESHEETS.push(styleSheet);
+  let styleSheet = utility.styleSheet;
+  STYLESHEETS.push(OPTIONS.globalUtility?globalStyleSheet(styleSheet):styleSheet);
 }
 
 function getReduceValue(node:TemplateNode, key="consequent"):TemplateNode|string|undefined {
@@ -76,7 +83,6 @@ const _preprocess:Preprocessor = ({content, filename}) => {
         IGNORED_CLASSES = [...IGNORED_CLASSES, ...utility.ignored];
         DIRECTIVES.push(utility.styleSheet);
       }
-      // console.log(node.type);
       if (node.type === 'Attribute' && node.name === 'class') {
         node.value.forEach(({start, end, data}:{start:number, end:number, data:string}) => {
           if (OPTIONS.compile) {
@@ -101,33 +107,29 @@ const _preprocess:Preprocessor = ({content, filename}) => {
   // preflights might lost when refresh
   const preflights = preflight(dev?Object.keys(TAGNAMES):updatedTags, FILES.length === 0 || FILES.indexOf(filename) === 0); // only enable global styles for first file
   
-  preflights.children.forEach(style=>{
-    style.selector = `:global(${style.selector})`;
-  });
-
-  let stylesheet = preflights;
-  stylesheet = stylesheet.extend(combineStyleList(STYLESHEETS));
-  stylesheet = stylesheet.extend(combineStyleList(DIRECTIVES));
-  let tailwindcss = stylesheet.build();
-  
-  if (!OPTIONS.compile) tailwindcss = tailwindcss.replace(/windicssGlobal\(\\\./g, ':global(.');
-  
+  const outputCSS = (OPTIONS.globalPreflight? globalStyleSheet(preflights) : preflights)
+                    .extend(combineStyleList(STYLESHEETS))
+                    .extend(combineStyleList(DIRECTIVES))
+                    .build()
+                    .replace(/windicssGlobal\([\\]?/g, ':global(');
+   
   if (parsed.css === undefined) {
-    code.trimEnd().append(`\n\n<style>\n${tailwindcss}</style>`);
+    code.trimEnd().append(`\n\n<style>\n${outputCSS}</style>`);
   };
 
   walk(parsed.css, {
     enter(node:TemplateNode) {
       if (node.type === 'Style') {
-        code.prependLeft(node.content.start, '\n'+tailwindcss);
+        code.prependLeft(node.content.start, '\n'+outputCSS);
       }
     }
   })
 
-  if (!FILES.includes(filename)) FILES.push(filename); // later for judge should update or not
+  if (!FILES.includes(filename)) FILES.push(filename);
+  
+  // clear lists until next call
   STYLESHEETS = [];
   DIRECTIVES = [];
-  IGNORED_CLASSES = [];
 
   return {code: code.toString()};
 }

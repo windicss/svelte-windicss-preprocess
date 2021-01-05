@@ -39,7 +39,12 @@ export default {
 	plugins: [
 		svelte({
 			preprocess: {
-				markup: require('../../src/index').preprocess({compile:false})
+				markup: require('../../src/index').preprocess({
+					compile: true,
+					globalPreflight: true,
+					globalUtility: true, 
+					prefix: 'windi-',
+				})
 			},
 			compilerOptions: {
 				// enable run-time checks when not in production
