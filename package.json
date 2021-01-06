@@ -1,6 +1,6 @@
 {
   "name": "svelte-windicss-preprocess",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Svelte Preprocessor to compile tailwindcss at build time based on windicss compiler.",
   "main": "src/index.js",
   "types": "src/index.d.ts",
@@ -23,7 +23,8 @@
   "homepage": "https://github.com/voorjaar/svelte-windicss-preprocess",
   "dependencies": {
     "magic-string": "^0.25.7",
-    "windicss": "^1.1.6"
+    "svelte": "^3.31.2",
+    "windicss": "^1.1.8"
   },
   "devDependencies": {
     "@types/node": "^14.14.14",
