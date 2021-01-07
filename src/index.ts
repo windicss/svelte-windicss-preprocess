@@ -66,10 +66,40 @@ const _preprocess:Preprocessor = ({content, filename}) => {
   
   walk(parsed.html, {
     enter(node:TemplateNode) {
-      if (node.type === 'Element' && (!TAGNAMES[node.name])) {
-        TAGNAMES[node.name] = filename;
-        updatedTags.push(node.name); // only work on production
+      if (node.type === 'Element') {
+        if (!TAGNAMES[node.name]) {
+          TAGNAMES[node.name] = filename;
+          updatedTags.push(node.name); // only work on production
+        };
+        let classEnd;
+        let twClasses;
+        node.attributes.forEach((i:any)=>{
+          // handle class property
+          if (i.name === 'class' ) {
+            i.value.forEach(({start, end, data}:{start:number, end:number, data:string}) => {
+              if (OPTIONS.compile) {
+                // compilation mode
+                code.overwrite(start, end, compilation(data));
+              } else {
+                // interpretation mode
+                interpretation(data);
+              }
+              classEnd = end;
+            });
+          } else if (i.name === 'tw') {
+            // handle tw property
+            twClasses = i.value.map(({start, end, data}:{start:number, end:number, data:string})=>{
+              if (OPTIONS.compile) return compilation(data);
+              interpretation(data);
+              return data;
+            }).join(' ');
+            code.overwrite(i.start, i.end, '');
+          }
+        });
+        // tw + class -> class
+        if (classEnd && twClasses) code.prependLeft(classEnd, ' ' + twClasses);
       };
+
       if (node.type === 'Class') {
         // handle class directive
         const utility = interpret(node.name);
@@ -77,23 +107,14 @@ const _preprocess:Preprocessor = ({content, filename}) => {
         DIRECTIVES.push(utility.styleSheet);
         // make sure directives add after all classes.
       }
+
       if (node.type==="ConditionalExpression") {
         // handle inline conditional expression
         const utility = interpret(`${getReduceValue(node, 'consequent')} ${getReduceValue(node, 'alternate')}`);
         IGNORED_CLASSES = [...IGNORED_CLASSES, ...utility.ignored];
         DIRECTIVES.push(utility.styleSheet);
       }
-      if (node.type === 'Attribute' && node.name === 'class') {
-        node.value.forEach(({start, end, data}:{start:number, end:number, data:string}) => {
-          if (OPTIONS.compile) {
-            // compilation mode
-            code.overwrite(start, end, compilation(data));
-          } else {
-            // interpretation mode
-            interpretation(data);
-          }
-        })
-      };
+
     }
   });
 
