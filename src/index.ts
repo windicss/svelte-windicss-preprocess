@@ -31,7 +31,7 @@ function combineStyleList(stylesheets:StyleSheet[]) {
 function globalStyleSheet(styleSheet:StyleSheet) {
   // turn all styles in stylesheet to global style
   styleSheet.children.forEach(style=>{
-    style.selector = `windicssGlobal(${style.selector})`; // should be :global, but : will be escape, so we will replace it with :global later
+    style.selector = `:global(${style.selector})`;
   });
   return styleSheet;
 }
@@ -110,8 +110,7 @@ const _preprocess:Preprocessor = ({content, filename}) => {
   const outputCSS = (OPTIONS.globalPreflight? globalStyleSheet(preflights) : preflights)
                     .extend(combineStyleList(STYLESHEETS))
                     .extend(combineStyleList(DIRECTIVES))
-                    .build()
-                    .replace(/windicssGlobal\([\\]?/g, ':global(');
+                    .build();
    
   if (parsed.css === undefined) {
     code.trimEnd().append(`\n\n<style>\n${outputCSS}</style>`);
