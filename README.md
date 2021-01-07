@@ -248,6 +248,12 @@ Interpretation mode will not modify your classes, it will only compile the origi
 }
 ```
 
-## License
+## Resources
 
-[MIT](https://github.com/voorjaar/svelte-windicss-preprocess/blob/main/LICENSE)
+* [Roadmap](https://github.com/voorjaar/svelte-windicss-preprocess/projects/1)
+
+* [Documents](https://github.com/voorjaar/windicss)
+
+* [Discussions](https://github.com/voorjaar/windicss/discussions)
+
+* [MIT License](https://github.com/voorjaar/svelte-windicss-preprocess/blob/main/LICENSE)
