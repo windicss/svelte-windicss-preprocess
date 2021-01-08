@@ -248,6 +248,22 @@ Interpretation mode will not modify your classes, it will only compile the origi
 }
 ```
 
+## Features
+
+* `tw` is an optional replacement attribute of `class`, The className in `tw` will be merged into the `class` attribute after compilation.
+
+* States attribute: such as `sm md lg xl xxl focus hover dark sm:hover dark:hover ...` after applid media rules then also will be merged into the `class` attribute. (In development)
+
+* Group: You can also write groups in all the attributes mentioned above, which are natively supported by [windicss](https://github.com/voorjaar/windicss). (In development)
+
+* Unrestricted build: such as `bg-hex-1c1c1e p-3.2 p-3rem p-4px w-10/11 bg-$custom-variable ...`
+
+* Customize: Customize font or color, etc. (In development)
+
+* [Using tailwind directives](https://github.com/voorjaar/svelte-windicss-preprocess/blob/main/docs/using-tailwind-directives.md). (In development)
+
+* For more details, please refer to [windicss](https://github.com/voorjaar/windicss).
+
 ## Resources
 
 * [Roadmap](https://github.com/voorjaar/svelte-windicss-preprocess/projects/1)
