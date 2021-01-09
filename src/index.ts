@@ -6,6 +6,13 @@ import { compile, interpret, preflight } from 'windicss/src';
 import type { TemplateNode } from 'svelte/types/compiler/interfaces'
 import type { Preprocessor } from 'svelte/types/compiler/preprocess';
 
+interface ChildNode {
+  start:number;
+  end:number;
+  data:string;
+  name?:string;
+}
+
 const mode = process.env.NODE_ENV;
 const dev = mode === 'development';
 
@@ -40,7 +47,7 @@ function compilation(classNames:string) {
   const utility = compile(classNames, OPTIONS.prefix, false);
   IGNORED_CLASSES = [...IGNORED_CLASSES, ...utility.ignored];
   STYLESHEETS.push(OPTIONS.globalUtility?globalStyleSheet(utility.styleSheet):utility.styleSheet);
-  return [utility.className, ...utility.ignored].join(' '); // return new className
+  return utility.className ? [utility.className, ...utility.ignored].join(' ') : utility.ignored.join(' '); // return new className
 }
 
 function interpretation(classNames:string) {
@@ -76,7 +83,7 @@ const _preprocess:Preprocessor = ({content, filename}) => {
         node.attributes.forEach((i:any)=>{
           // handle class property
           if (i.name === 'class' ) {
-            i.value.forEach(({start, end, data}:{start:number, end:number, data:string}) => {
+            i.value.forEach(({start, end, data}:ChildNode) => {
               if (OPTIONS.compile) {
                 // compilation mode
                 code.overwrite(start, end, compilation(data));
@@ -88,7 +95,7 @@ const _preprocess:Preprocessor = ({content, filename}) => {
             });
           } else if (i.name === 'tw') {
             // handle tw property
-            twClasses = i.value.map(({start, end, data}:{start:number, end:number, data:string})=>{
+            twClasses = i.value.map(({start, end, data}:ChildNode)=>{
               if (OPTIONS.compile) return compilation(data);
               interpretation(data);
               return data;
@@ -96,8 +103,8 @@ const _preprocess:Preprocessor = ({content, filename}) => {
             code.overwrite(i.start, i.end, '');
           }
         });
-        // tw + class -> class
-        if (classEnd && twClasses) code.prependLeft(classEnd, ' ' + twClasses);
+        // append tw classes to class attribute or make a new class attribute
+        if (twClasses) classEnd ? code.prependLeft(classEnd, ' ' + twClasses) : code.prependLeft(node.attributes.find(({name}:ChildNode) => name==='tw').start, `class="${twClasses}"`);
       };
 
       if (node.type === 'Class') {
@@ -150,6 +157,7 @@ const _preprocess:Preprocessor = ({content, filename}) => {
   // clear lists until next call
   STYLESHEETS = [];
   DIRECTIVES = [];
+  console.log(code.toString())
 
   return {code: code.toString()};
 }
