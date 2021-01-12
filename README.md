@@ -45,22 +45,22 @@ Add `svelte-windicss-preprocess` to your `svelte.config.js`.
 // svelte.config.js
 module.exports = {
     preprocess: {
-		markup: require('svelte-windicss-preprocess').preprocess({
-			compile: false,
-			globalPreflight: true,
-			globalUtility: true, 
-			prefix: 'windi-',
-		}),
-		// The following code is to ensure that the svelte vscode plugin will not consider tailwind directives to be a syntax error, and will not run during development or compilation.
-		// And you should also add "svelte.plugin.css.diagnostics.enable": false to your vscode configuration.
-		// For more details, see https://github.com/voorjaar/svelte-windicss-preprocess/blob/main/docs/using-tailwind-directives.md
-		style: ({content, }) => {
-			return new Promise((resolve, _) => {
-			  resolve({ code: content.replace(/@apply[\s\S]+?;/g, '') });
-			})
-		}
-	},
-	adapter:  '@sveltejs/adapter-node'
+        markup: require('svelte-windicss-preprocess').preprocess({
+            compile: false,
+            globalPreflight: true,
+            globalUtility: true, 
+            prefix: 'windi-',
+        }),
+        // The following code is to ensure that the svelte vscode plugin will not consider tailwind directives to be a syntax error, and will not run during development or compilation.
+        // And you should also add "svelte.plugin.css.diagnostics.enable": false to your vscode configuration.
+        // For more details, see https://github.com/voorjaar/svelte-windicss-preprocess/blob/main/docs/using-tailwind-directives.md
+        style: ({content, }) => {
+            return new Promise((resolve, _) => {
+              resolve({ code: content.replace(/@apply[\s\S]+?;/g, '') });
+            })
+        }
+    },
+    adapter:  '@sveltejs/adapter-node'
 };
 ```
 
