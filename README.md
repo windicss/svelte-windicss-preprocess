@@ -252,15 +252,15 @@ Interpretation mode will not modify your classes, it will only compile the origi
 
 * `tw` is an optional replacement attribute of `class`, The className in `tw` will be merged into the `class` attribute after compilation.
 
-* States attribute: such as `base sm md lg xl xxl focus hover dark sm:hover dark:hover ...` after applid media rules then also will be merged into the `class` attribute. (In development)
-
-* Group: You can also write groups in all the attributes mentioned above, such as `class="font-meidum sm:hover:(font-bold bg-gray-200)"`. This is a native feature supported by [windicss](https://github.com/voorjaar/windicss). (In development)
+* Group: You can also write groups in all the attributes mentioned above, such as `class="font-meidum sm:hover:(font-bold bg-gray-200)"`. This is a native feature supported by [windicss](https://github.com/voorjaar/windicss).
 
 * Unrestricted build: such as `bg-hex-1c1c1e p-3.2 p-3rem p-4px w-10/11 bg-$custom-variable ...`
 
-* Customize: Customize font or color, etc. (In development)
+* [Using tailwind directives](https://github.com/voorjaar/svelte-windicss-preprocess/blob/main/docs/using-tailwind-directives.md), such as @apply, @screen.
 
-* [Using tailwind directives](https://github.com/voorjaar/svelte-windicss-preprocess/blob/main/docs/using-tailwind-directives.md). (In development)
+* States attribute: such as `base sm md lg xl xxl focus hover dark sm:hover dark:hover ...` after applid media rules then also will be merged into the `class` attribute. (In development)
+
+* Customize: Customize font or color, etc. (In development)
 
 * For more details, please refer to [windicss](https://github.com/voorjaar/windicss).
 

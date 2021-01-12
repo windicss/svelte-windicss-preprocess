@@ -29,7 +29,7 @@
               </ul>
               <p>Perfect for learning how the framework works, prototyping a new idea, or creating a demo to share online.</p>
             </div>
-            <div class="pt-6 text-base leading-6 font-bold sm:text-lg sm:leading-7">
+            <div class="testApply">
               <p>Want to dig deeper into Tailwind?</p>
               <p>
                 <a href="https://tailwindcss.com/docs" class="text-cyan-600 hover:text-cyan-700"> Read the docs &rarr; </a>
@@ -41,3 +41,15 @@
     </div>
   </div>
 </main>
+
+<style>
+  .testApply {
+    @apply pt-6 text-base leading-6 font-bold sm:text-lg sm:leading-7;
+  }
+
+  @screen +sm {
+    ul {
+      @apply bg-gray-100 p-2 rounded-lg;
+    }
+  }
+</style>

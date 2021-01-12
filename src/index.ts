@@ -2,6 +2,8 @@ import MagicString from 'magic-string';
 import { walk, parse } from 'svelte/compiler';
 import { StyleSheet } from 'windicss/src/utils/style';
 import { compile, interpret, preflight } from 'windicss/src';
+import { CSSParser } from 'windicss/src/utils/css';
+import { optimizeBuild } from 'windicss/src/utils/algorithm';
 
 import type { TemplateNode } from 'svelte/types/compiler/interfaces'
 import type { Preprocessor } from 'svelte/types/compiler/preprocess';
@@ -67,7 +69,15 @@ function getReduceValue(node:TemplateNode, key="consequent"):TemplateNode|string
 
 
 const _preprocess:Preprocessor = ({content, filename}) => {
+  const styleRegex = /<style[^>]*?(\/|(>([\s\S]*?)<\/style))>/;
   let updatedTags = [];
+  let style = content.match(styleRegex)?.[0];
+  if (style) {
+    // handle tailwind directives ...
+    style = style.replace(/<\/?style[^>]*>/g, '');
+    STYLESHEETS.push(new CSSParser(style).parse(undefined, true));
+    content = content.replace(styleRegex, '');
+  }
   const parsed = parse(content);
   const code = new MagicString(content);
   
@@ -140,24 +150,16 @@ const _preprocess:Preprocessor = ({content, filename}) => {
                     .extend(combineStyleList(DIRECTIVES))
                     .build();
    
-  if (parsed.css === undefined) {
-    code.trimEnd().append(`\n\n<style>\n${outputCSS}</style>`);
-  };
+  // if (parsed.css === undefined) {
+  code.trimEnd().append(`\n\n<style>\n${outputCSS}</style>`);
+  // };
 
-  walk(parsed.css, {
-    enter(node:TemplateNode) {
-      if (node.type === 'Style') {
-        code.prependLeft(node.content.start, '\n'+outputCSS);
-      }
-    }
-  })
 
   if (!FILES.includes(filename)) FILES.push(filename);
   
   // clear lists until next call
   STYLESHEETS = [];
   DIRECTIVES = [];
-  console.log(code.toString())
 
   return {code: code.toString()};
 }
