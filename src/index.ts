@@ -19,7 +19,7 @@ interface ChildNode {
 
 const mode = process.env.NODE_ENV;
 const dev = mode === 'development';
-const variantKeys = Object.keys(variants);
+const variantKeys = [...Object.keys(variants), 'xxl'];
 
 let IGNORED_CLASSES:string[] = [];
 let STYLESHEETS:StyleSheet[] = [];
@@ -110,7 +110,7 @@ const _preprocess:Preprocessor = ({content, filename}) => {
           } else if (variantKeys.includes(i.name)) {
             // handle variant properties
             classStart = i.start;
-            classes = [...classes, ...i.value.map(({data}:ChildNode)=>addVariant(data, i.name))];
+            classes = [...classes, ...i.value.map(({data}:ChildNode)=>addVariant(data, i.name === 'xxl' ? '2xl' : i.name))];
             code.overwrite(i.start, i.end, '');
           }
         });
