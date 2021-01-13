@@ -1,7 +1,7 @@
 // svelte.config.js
 module.exports = {
     preprocess: {
-		markup: require('svelte-windicss-preprocess').preprocess({
+		markup: require('../../src/index').preprocess({
 			compile: false,
 			globalPreflight: true,
 			globalUtility: true, 

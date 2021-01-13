@@ -40,7 +40,7 @@ export default {
 		svelte({
 			preprocess: {
 				markup: require('../../src/index').preprocess({
-					compile: true,
+					compile: false,
 					globalPreflight: true,
 					globalUtility: true, 
 					prefix: 'windi-',

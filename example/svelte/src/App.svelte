@@ -3,16 +3,16 @@
 </script>
 
 <main>
-  <div class="min-h-screen bg-gray-100 py-6 justify-center sm:py-12" tw="flex flex-col">
-    <div class="relative py-3 sm:max-w-xl sm:mx-auto">
+  <div class="min-h-screen bg-gray-100 py-6 justify-center" tw="flex flex-col" sm="py-12">
+    <div class="relative py-3" sm="max-w-xl mx-auto">
       <div class="absolute inset-0 bg-gradient-to-r from-cyan-400 to-light-blue-500 shadow-lg transform -skew-y-6 sm:skew-y-0" tw="sm:-rotate-6 sm:rounded-3xl"></div>
-      <div class="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
+      <div class="relative px-4 py-10 bg-white shadow-lg" sm="rounded-3xl p-20" dark="bg-white">
         <div class="max-w-md mx-auto">
           <div>
             <img src="img/logo.svg" alt="logo" class="h-7 sm:h-8"/>
           </div>
           <div class="divide-y divide-gray-300">
-            <div class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
+            <div class="py-8 text-base leading-6 space-y-4 text-gray-700" sm="text-lg leading-7">
               <p>An advanced online playground for Tailwind CSS, including support for things like:</p>
               <ul class="list-disc space-y-2">
                 <Feature>

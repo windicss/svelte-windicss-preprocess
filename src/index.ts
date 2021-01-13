@@ -1,4 +1,6 @@
 import MagicString from 'magic-string';
+import { variants } from 'windicss/src/processor/variants';
+
 import { walk, parse } from 'svelte/compiler';
 import { StyleSheet } from 'windicss/src/utils/style';
 import { compile, interpret, preflight } from 'windicss/src';
@@ -17,6 +19,7 @@ interface ChildNode {
 
 const mode = process.env.NODE_ENV;
 const dev = mode === 'development';
+const variantKeys = Object.keys(variants);
 
 let IGNORED_CLASSES:string[] = [];
 let STYLESHEETS:StyleSheet[] = [];
@@ -40,7 +43,7 @@ function combineStyleList(stylesheets:StyleSheet[]) {
 function globalStyleSheet(styleSheet:StyleSheet) {
   // turn all styles in stylesheet to global style
   styleSheet.children.forEach(style=>{
-    style.selector = `:global(${style.selector})`;
+    style.wrap = (rule:string)=>`:global(${rule})`;
   });
   return styleSheet;
 }
@@ -67,6 +70,13 @@ function getReduceValue(node:TemplateNode, key="consequent"):TemplateNode|string
   return getReduceValue(value, key);
 }
 
+function addVariant(classNames:string, variant:string) {
+  // prepend variant before each className
+  const groupRegex = /[\S]+:\([\s\S]*?\)/g;
+  const groups = [...classNames.match(groupRegex)??[]];
+  const utilities = classNames.replace(groupRegex, '').split(/\s+/).filter(i=>i);
+  return [...utilities, ...groups].map(i=>`${variant}:${i}`).join(' ');
+}
 
 const _preprocess:Preprocessor = ({content, filename}) => {
   const styleRegex = /<style[^>]*?(\/|(>([\s\S]*?)<\/style))>/;
@@ -88,34 +98,32 @@ const _preprocess:Preprocessor = ({content, filename}) => {
           TAGNAMES[node.name] = filename;
           updatedTags.push(node.name); // only work on production
         };
-        let classEnd;
-        let twClasses;
+      
+        let classes:string[] = [];
+        let classStart:number|undefined;
+        
         node.attributes.forEach((i:any)=>{
-          // handle class property
-          if (i.name === 'class' ) {
-            i.value.forEach(({start, end, data}:ChildNode) => {
-              if (OPTIONS.compile) {
-                // compilation mode
-                code.overwrite(start, end, compilation(data));
-              } else {
-                // interpretation mode
-                interpretation(data);
-              }
-              classEnd = end;
-            });
-          } else if (i.name === 'tw') {
-            // handle tw property
-            twClasses = i.value.map(({start, end, data}:ChildNode)=>{
-              if (OPTIONS.compile) return compilation(data);
-              interpretation(data);
-              return data;
-            }).join(' ');
+          if (i.name === 'class' || i.name === 'tw') {
+            classStart = i.start;
+            classes = [...classes, ...i.value.map(({data}:ChildNode)=>data)];
+            code.overwrite(i.start, i.end, '');
+          } else if (variantKeys.includes(i.name)) {
+            // handle variant properties
+            classStart = i.start;
+            classes = [...classes, ...i.value.map(({data}:ChildNode)=>addVariant(data, i.name))];
             code.overwrite(i.start, i.end, '');
           }
         });
-        // append tw classes to class attribute or make a new class attribute
-        if (twClasses) classEnd ? code.prependLeft(classEnd, ' ' + twClasses) : code.prependLeft(node.attributes.find(({name}:ChildNode) => name==='tw').start, `class="${twClasses}"`);
-      };
+    
+        if (classStart) {
+          if (OPTIONS.compile) {
+            code.prependLeft(classStart, `class="${compilation(classes.join(' '))}"`);
+          } else {
+            interpretation(classes.join(' '));
+            code.prependLeft(classStart, `class="${classes.join(' ')}"`);
+          }
+        }
+      }
 
       if (node.type === 'Class') {
         // handle class directive
@@ -160,7 +168,6 @@ const _preprocess:Preprocessor = ({content, filename}) => {
   // clear lists until next call
   STYLESHEETS = [];
   DIRECTIVES = [];
-
   return {code: code.toString()};
 }
 
