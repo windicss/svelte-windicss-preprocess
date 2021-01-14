@@ -153,14 +153,13 @@ const _preprocess:Preprocessor = ({content, filename}) => {
   // preflights might lost when refresh
   const preflights = preflight(dev?Object.keys(TAGNAMES):updatedTags, FILES.length === 0 || FILES.indexOf(filename) === 0); // only enable global styles for first file
   
-  const outputCSS = (OPTIONS.globalPreflight? globalStyleSheet(preflights) : preflights)
-                    .extend(combineStyleList(STYLESHEETS))
-                    .extend(combineStyleList(DIRECTIVES))
-                    .build();
+  const outputCSS = optimizeBuild(
+                      (OPTIONS.globalPreflight? globalStyleSheet(preflights) : preflights)
+                      .extend(combineStyleList(STYLESHEETS))
+                      .extend(combineStyleList(DIRECTIVES))
+                    );
    
-  // if (parsed.css === undefined) {
   code.trimEnd().append(`\n\n<style>\n${outputCSS}</style>`);
-  // };
 
 
   if (!FILES.includes(filename)) FILES.push(filename);
