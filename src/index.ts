@@ -1,11 +1,12 @@
 import MagicString from 'magic-string';
-import { variants } from 'windicss/src/processor/variants';
-
 import { walk, parse } from 'svelte/compiler';
-import { StyleSheet } from 'windicss/src/utils/style';
-import { compile, interpret, preflight } from 'windicss/src';
-import { CSSParser } from 'windicss/src/utils/css';
-import { optimizeBuild } from 'windicss/src/utils/algorithm';
+import { StyleSheet } from 'windicss/utils/style';
+import { Processor } from 'windicss/lib';
+import { CSSParser } from 'windicss/utils/parser';
+
+const processor = new Processor();
+
+const variants = [...Object.keys(processor.resolveVariants()), 'xxl'];
 
 import type { TemplateNode } from 'svelte/types/compiler/interfaces'
 import type { Preprocessor } from 'svelte/types/compiler/preprocess';
@@ -19,7 +20,6 @@ interface ChildNode {
 
 const mode = process.env.NODE_ENV;
 const dev = mode === 'development';
-const variantKeys = [...Object.keys(variants), 'xxl'];
 
 let IGNORED_CLASSES:string[] = [];
 let STYLESHEETS:StyleSheet[] = [];
@@ -49,14 +49,14 @@ function globalStyleSheet(styleSheet:StyleSheet) {
 }
 
 function compilation(classNames:string) {
-  const utility = compile(classNames, OPTIONS.prefix, false);
+  const utility = processor.compile(classNames, OPTIONS.prefix, false);
   IGNORED_CLASSES = [...IGNORED_CLASSES, ...utility.ignored];
   STYLESHEETS.push(OPTIONS.globalUtility?globalStyleSheet(utility.styleSheet):utility.styleSheet);
   return utility.className ? [utility.className, ...utility.ignored].join(' ') : utility.ignored.join(' '); // return new className
 }
 
 function interpretation(classNames:string) {
-  const utility = interpret(classNames);
+  const utility = processor.interpret(classNames);
   IGNORED_CLASSES = [...IGNORED_CLASSES, ...utility.ignored];
   let styleSheet = utility.styleSheet;
   STYLESHEETS.push(OPTIONS.globalUtility?globalStyleSheet(styleSheet):styleSheet);
@@ -85,7 +85,7 @@ const _preprocess:Preprocessor = ({content, filename}) => {
   if (style) {
     // handle tailwind directives ...
     style = style.replace(/<\/?style[^>]*>/g, '');
-    STYLESHEETS.push(new CSSParser(style).parse(undefined, true));
+    STYLESHEETS.push(new CSSParser(style, processor).parse(undefined));
     content = content.replace(styleRegex, '');
   }
   const parsed = parse(content);
@@ -107,7 +107,7 @@ const _preprocess:Preprocessor = ({content, filename}) => {
             classStart = i.start;
             classes = [...classes, ...i.value.map(({data}:ChildNode)=>data)];
             code.overwrite(i.start, i.end, '');
-          } else if (variantKeys.includes(i.name)) {
+          } else if (variants.includes(i.name)) {
             // handle variant properties
             classStart = i.start;
             classes = [...classes, ...i.value.map(({data}:ChildNode)=>addVariant(data, i.name === 'xxl' ? '2xl' : i.name))];
@@ -127,7 +127,7 @@ const _preprocess:Preprocessor = ({content, filename}) => {
 
       if (node.type === 'Class') {
         // handle class directive
-        const utility = interpret(node.name);
+        const utility = processor.interpret(node.name);
         IGNORED_CLASSES = [...IGNORED_CLASSES, ...utility.ignored];
         DIRECTIVES.push(utility.styleSheet);
         // make sure directives add after all classes.
@@ -135,7 +135,7 @@ const _preprocess:Preprocessor = ({content, filename}) => {
 
       if (node.type==="ConditionalExpression") {
         // handle inline conditional expression
-        const utility = interpret(`${getReduceValue(node, 'consequent')} ${getReduceValue(node, 'alternate')}`);
+        const utility = processor.interpret(`${getReduceValue(node, 'consequent')} ${getReduceValue(node, 'alternate')}`);
         IGNORED_CLASSES = [...IGNORED_CLASSES, ...utility.ignored];
         DIRECTIVES.push(utility.styleSheet);
       }
@@ -151,13 +151,12 @@ const _preprocess:Preprocessor = ({content, filename}) => {
   };
 
   // preflights might lost when refresh
-  const preflights = preflight(dev?Object.keys(TAGNAMES):updatedTags, FILES.length === 0 || FILES.indexOf(filename) === 0); // only enable global styles for first file
+  const preflights = processor.preflight(dev?Object.keys(TAGNAMES):updatedTags, FILES.length === 0 || FILES.indexOf(filename) === 0); // only enable global styles for first file
   
-  const outputCSS = optimizeBuild(
-                      (OPTIONS.globalPreflight? globalStyleSheet(preflights) : preflights)
+  const outputCSS = (OPTIONS.globalPreflight? globalStyleSheet(preflights) : preflights)
                       .extend(combineStyleList(STYLESHEETS))
                       .extend(combineStyleList(DIRECTIVES))
-                    );
+                      .build();
    
   code.trimEnd().append(`\n\n<style>\n${outputCSS}</style>`);
 
