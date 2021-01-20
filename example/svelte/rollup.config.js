@@ -40,10 +40,11 @@ export default {
 		svelte({
 			preprocess: {
 				markup: require('../../src/index').preprocess({
+					config: 'tailwind.config.js',
 					compile: false,
+					prefix: 'windi-',
 					globalPreflight: true,
 					globalUtility: true, 
-					prefix: 'windi-',
 				})
 			},
 			compilerOptions: {
