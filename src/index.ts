@@ -88,7 +88,7 @@ const _preprocess:Preprocessor = ({content, filename}) => {
   if (style) {
     // handle tailwind directives ...
     style = style.replace(/<\/?style[^>]*>/g, '');
-    STYLESHEETS.push(new CSSParser(style, PROCESSOR).parse(undefined));
+    STYLESHEETS.push(new CSSParser(style, PROCESSOR, false).parse());
     content = content.replace(styleRegex, '');
   }
   const parsed = parse(content);
