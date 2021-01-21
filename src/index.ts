@@ -1,4 +1,5 @@
 import MagicString from 'magic-string';
+import { writeFileSync } from 'fs';
 import { walk, parse } from 'svelte/compiler';
 import { StyleSheet } from 'windicss/utils/style';
 import { Processor } from 'windicss/lib';
@@ -18,6 +19,7 @@ const DEV = process.env.NODE_ENV === 'development';
 
 let PROCESSOR:Processor;
 let VARIANTS:string[] = [];
+let BUNDLEFILE:string;
 let IGNORED_CLASSES:string[] = [];
 let STYLESHEETS:StyleSheet[] = [];
 let DIRECTIVES:StyleSheet[] = [];
@@ -38,9 +40,7 @@ let OPTIONS:{
 };
 
 function combineStyleList(stylesheets:StyleSheet[]) {
-  // Fix reduce of empty array with no initial value
-  if (stylesheets.length === 0) return;
-  return stylesheets.reduce((previousValue, currentValue) => previousValue.extend(currentValue)).combine();//.sort();
+  return stylesheets.reduce((previousValue, currentValue) => previousValue.extend(currentValue), new StyleSheet()).combine();//.sort();
 }
 
 function globalStyleSheet(styleSheet:StyleSheet) {
@@ -172,9 +172,19 @@ const _preprocess:Preprocessor = ({content, filename}) => {
   return {code: code.toString()};
 }
 
+function _optimize(types:string, typeNodes:{[key:string]:string}) {
+  const parser = new CSSParser(types, undefined, false);
+  writeFileSync(BUNDLEFILE, parser.parse().build(true));
+}
+
 export function preprocess(options: typeof OPTIONS = {}) {
   OPTIONS = {...OPTIONS, ...options}; // change global settings here;
   PROCESSOR = new Processor(OPTIONS.config);
   VARIANTS = [...Object.keys(PROCESSOR.resolveVariants()), 'xxl'];
   return _preprocess;
+}
+
+export function optimize(path:string) {
+  BUNDLEFILE = path;
+  return _optimize;
 }

@@ -7,6 +7,8 @@ import css from 'rollup-plugin-css-only';
 
 const production = !process.env.ROLLUP_WATCH;
 
+const windicss = require('../../src/index');
+
 function serve() {
 	let server;
 
@@ -39,13 +41,13 @@ export default {
 	plugins: [
 		svelte({
 			preprocess: {
-				markup: require('../../src/index').preprocess({
-					config: 'tailwind.config.js',
+				markup: windicss.preprocess({
+					// config: 'tailwind.config.js',
 					compile: false,
 					prefix: 'windi-',
 					globalPreflight: true,
 					globalUtility: true, 
-				})
+				}),
 			},
 			compilerOptions: {
 				// enable run-time checks when not in production
@@ -54,7 +56,8 @@ export default {
 		}),
 		// we'll extract any component CSS out into
 		// a separate file - better for performance
-		css({ output: 'bundle.css' }),
+		// css({ output: 'bundle.css' }),
+		css({ output: production? windicss.optimize('public/build/bundle.css') : 'bundle.css' }),
 
 		// If you have external dependencies installed from
 		// npm, you'll most likely need these plugins. In
