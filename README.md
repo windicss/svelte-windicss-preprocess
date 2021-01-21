@@ -24,10 +24,11 @@ export default {
             preprocess: {
                 // svelte-windicss-preprocess
                 markup: require('svelte-windicss-preprocess').preprocess({
+                    config: 'tailwind.config.js', // tailwind config file path
                     compile: true,          // false: interpretation mode; true: compilation mode
+                    prefix: 'windi-'        // set compilation mode style prefix
                     globalPreflight: true,  // set preflight style is global or scoped
                     globalUtility: true,    // set utility style is global or scoped
-                    prefix: 'windi-'        // set compilation mode style prefix
                 })
             },
             // ...
@@ -46,10 +47,11 @@ Add `svelte-windicss-preprocess` to your `svelte.config.js`.
 module.exports = {
     preprocess: {
         markup: require('svelte-windicss-preprocess').preprocess({
+            // config: 'tailwind.config.js',
             compile: false,
+            prefix: 'windi-',
             globalPreflight: true,
             globalUtility: true, 
-            prefix: 'windi-',
         }),
         // The following code is to ensure that the svelte vscode plugin will not consider tailwind directives to be a syntax error, and will not run during development or compilation.
         // And you should also add "svelte.plugin.css.diagnostics.enable": false to your vscode configuration.
@@ -82,10 +84,11 @@ export default {
                 preprocess: {
                     // svelte-windicss-preprocess
                     markup: require('../../src/index').preprocess({
+                        config: 'tailwind.config.js', // tailwind config file path
                         compile: true,          // false: interpretation mode; true: compilation mode
+                        prefix: 'windi-'        // set compilation mode style prefix
                         globalPreflight: true,  // set preflight style is global or scoped
                         globalUtility: true,    // set utility style is global or scoped
-                        prefix: 'windi-'        // set compilation mode style prefix
                     }),
                 },
                 compilerOptions: {
@@ -105,10 +108,11 @@ export default {
                 preprocess: {
                     // svelte-windicss-preprocess
                     markup: require('../../src/index').preprocess({
+                        config: 'tailwind.config.js', // tailwind config file path
                         compile: true,          // false: interpretation mode; true: compilation mode
+                        prefix: 'windi-'        // set compilation mode style prefix
                         globalPreflight: true,  // set preflight style is global or scoped
                         globalUtility: true,    // set utility style is global or scoped
-                        prefix: 'windi-'        // set compilation mode style prefix
                     }),
                 },
                 compilerOptions: {
@@ -142,10 +146,11 @@ module.exports = {
                             preprocess: {
                                 // svelte-windicss-preprocess
                                 markup: require('../../src/index').preprocess({
+                                    config: 'tailwind.config.js', // tailwind config file path
                                     compile: true,          // false: interpretation mode; true: compilation mode
+                                    prefix: 'windi-'        // set compilation mode style prefix
                                     globalPreflight: true,  // set preflight style is global or scoped
                                     globalUtility: true,    // set utility style is global or scoped
-                                    prefix: 'windi-'        // set compilation mode style prefix
                                 })
                             }
                         }
@@ -169,10 +174,11 @@ module.exports = {
                             preprocess: {
                                 // svelte-windicss-preprocess
                                 markup: require('../../src/index').preprocess({
+                                    config: 'tailwind.config.js', // tailwind config file path
                                     compile: true,          // false: interpretation mode; true: compilation mode
+                                    prefix: 'windi-'        // set compilation mode style prefix
                                     globalPreflight: true,  // set preflight style is global or scoped
                                     globalUtility: true,    // set utility style is global or scoped
-                                    prefix: 'windi-'        // set compilation mode style prefix
                                 })
                             }
                         }
