@@ -46,7 +46,7 @@ function combineStyleList(stylesheets:StyleSheet[]) {
 function globalStyleSheet(styleSheet:StyleSheet) {
   // turn all styles in stylesheet to global style
   styleSheet.children.forEach(style=>{
-    style.wrap = (rule:string)=>`:global(${rule})`;
+    style.wrapRule((rule:string)=>`:global(${rule})`);
   });
   return styleSheet;
 }
@@ -88,7 +88,7 @@ const _preprocess:Preprocessor = ({content, filename}) => {
   if (style) {
     // handle tailwind directives ...
     style = style.replace(/<\/?style[^>]*>/g, '');
-    STYLESHEETS.push(new CSSParser(style, PROCESSOR, false).parse());
+    STYLESHEETS.push(new CSSParser(style, PROCESSOR).parse());
     content = content.replace(styleRegex, '');
   }
   const parsed = parse(content);
@@ -173,7 +173,7 @@ const _preprocess:Preprocessor = ({content, filename}) => {
 }
 
 function _optimize(types:string, typeNodes:{[key:string]:string}) {
-  const parser = new CSSParser(types, undefined, false);
+  const parser = new CSSParser(types);
   writeFileSync(BUNDLEFILE, parser.parse().build(true));
 }
 
