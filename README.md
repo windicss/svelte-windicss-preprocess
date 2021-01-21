@@ -293,7 +293,7 @@ Interpretation mode will not modify your classes, it will only compile the origi
 
 * States attribute: such as `sm md lg xl xxl focus hover dark ...` after applid media rules then also will be merged into the `class` attribute. (Attributes like `sm:hover` are not available because they may be rarely used and slow down the parsing speed.)
 
-* Customize: support `tailwind.config.js`.
+* [Customize](https://github.com/voorjaar/svelte-windicss-preprocess/blob/main/docs/using-tailwind-configuration.md): support `tailwind.config.js`.
 
 * For more details, please refer to [windicss](https://github.com/voorjaar/windicss).
 
