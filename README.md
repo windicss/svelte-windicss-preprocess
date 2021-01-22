@@ -83,7 +83,7 @@ export default {
             svelte({
                 preprocess: {
                     // svelte-windicss-preprocess
-                    markup: require('../../src/index').preprocess({
+                    markup: require('svelte-windicss-preprocess').preprocess({
                         config: 'tailwind.config.js', // tailwind config file path
                         compile: true,          // false: interpretation mode; true: compilation mode
                         prefix: 'windi-'        // set compilation mode style prefix
@@ -107,7 +107,7 @@ export default {
             svelte({
                 preprocess: {
                     // svelte-windicss-preprocess
-                    markup: require('../../src/index').preprocess({
+                    markup: require('svelte-windicss-preprocess').preprocess({
                         config: 'tailwind.config.js', // tailwind config file path
                         compile: true,          // false: interpretation mode; true: compilation mode
                         prefix: 'windi-'        // set compilation mode style prefix
@@ -145,7 +145,7 @@ module.exports = {
                             // ... other options
                             preprocess: {
                                 // svelte-windicss-preprocess
-                                markup: require('../../src/index').preprocess({
+                                markup: require('svelte-windicss-preprocess').preprocess({
                                     config: 'tailwind.config.js', // tailwind config file path
                                     compile: true,          // false: interpretation mode; true: compilation mode
                                     prefix: 'windi-'        // set compilation mode style prefix
@@ -173,7 +173,7 @@ module.exports = {
                             // ... other options
                             preprocess: {
                                 // svelte-windicss-preprocess
-                                markup: require('../../src/index').preprocess({
+                                markup: require('svelte-windicss-preprocess').preprocess({
                                     config: 'tailwind.config.js', // tailwind config file path
                                     compile: true,          // false: interpretation mode; true: compilation mode
                                     prefix: 'windi-'        // set compilation mode style prefix
