@@ -24,12 +24,14 @@ let IGNORED_CLASSES:string[] = [];
 let STYLESHEETS:StyleSheet[] = [];
 let DIRECTIVES:StyleSheet[] = [];
 let FILES:(string|undefined)[] = [];
+let BUNDLES: {[key:string]:StyleSheet} = {};
 
 let TAGNAMES:{[key:string]:string|undefined} = {};
 let OPTIONS:{
   config?: Config | string,
   compile?: boolean,
   prefix?: string,
+  bundle?: string,
   globalPreflight?: boolean,
   globalUtility?: boolean,
 } = {
@@ -54,7 +56,7 @@ function globalStyleSheet(styleSheet:StyleSheet) {
 function compilation(classNames:string) {
   const utility = PROCESSOR.compile(classNames, OPTIONS.prefix, false);
   IGNORED_CLASSES = [...IGNORED_CLASSES, ...utility.ignored];
-  STYLESHEETS.push(OPTIONS.globalUtility?globalStyleSheet(utility.styleSheet):utility.styleSheet);
+  STYLESHEETS.push(OPTIONS.globalUtility && !OPTIONS.bundle?globalStyleSheet(utility.styleSheet):utility.styleSheet);
   return utility.className ? [utility.className, ...utility.ignored].join(' ') : utility.ignored.join(' '); // return new className
 }
 
@@ -62,7 +64,7 @@ function interpretation(classNames:string) {
   const utility = PROCESSOR.interpret(classNames);
   IGNORED_CLASSES = [...IGNORED_CLASSES, ...utility.ignored];
   let styleSheet = utility.styleSheet;
-  STYLESHEETS.push(OPTIONS.globalUtility?globalStyleSheet(styleSheet):styleSheet);
+  STYLESHEETS.push(OPTIONS.globalUtility && !OPTIONS.bundle?globalStyleSheet(styleSheet):styleSheet);
 }
 
 function getReduceValue(node:TemplateNode, key="consequent"):TemplateNode|string|undefined {
@@ -82,14 +84,14 @@ function addVariant(classNames:string, variant:string) {
 }
 
 const _preprocess:Preprocessor = ({content, filename}) => {
-  const styleRegex = /<style[^>]*?(\/|(>([\s\S]*?)<\/style))>/;
+  const styleBlock = /<style[^>]*?(\/|(>([\s\S]*?)<\/style))>/;
   let updatedTags = [];
-  let style = content.match(styleRegex)?.[0];
+  let style = content.match(styleBlock)?.[0];
   if (style) {
     // handle tailwind directives ...
     style = style.replace(/<\/?style[^>]*>/g, '');
     STYLESHEETS.push(new CSSParser(style, PROCESSOR).parse());
-    content = content.replace(styleRegex, '');
+    content = content.replace(styleBlock, '');
   }
   const parsed = parse(content);
   const code = new MagicString(content);
@@ -156,13 +158,16 @@ const _preprocess:Preprocessor = ({content, filename}) => {
   // preflights might lost when refresh
   const preflights = PROCESSOR.preflight(DEV?Object.keys(TAGNAMES):updatedTags, FILES.length === 0 || FILES.indexOf(filename) === 0); // only enable global styles for first file
   
-  const outputCSS = (OPTIONS.globalPreflight? globalStyleSheet(preflights) : preflights)
+  const styleSheet = ((OPTIONS.globalPreflight && !OPTIONS.bundle)? globalStyleSheet(preflights) : preflights)
                       .extend(combineStyleList(STYLESHEETS))
-                      .extend(combineStyleList(DIRECTIVES))
-                      .build();
-   
-  code.trimEnd().append(`\n\n<style>\n${outputCSS}</style>`);
-
+                      .extend(combineStyleList(DIRECTIVES));
+  
+  if (OPTIONS.bundle) {
+    if (filename) BUNDLES[filename] = styleSheet;
+    writeFileSync(OPTIONS.bundle, combineStyleList(Object.values(BUNDLES)).build(true));
+  } else {
+    code.trimEnd().append(`\n\n<style>\n${styleSheet.build()}</style>`);
+  }
 
   if (!FILES.includes(filename)) FILES.push(filename);
   

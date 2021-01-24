@@ -43,6 +43,7 @@ export default {
 			preprocess: {
 				markup: windicss.preprocess({
 					// config: 'tailwind.config.js',
+					// bundle: './public/windi.css',
 					compile: false,
 					prefix: 'windi-',
 					globalPreflight: true,

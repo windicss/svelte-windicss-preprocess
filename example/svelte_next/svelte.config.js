@@ -3,6 +3,7 @@ module.exports = {
     preprocess: {
 		markup: require('../../src/index').preprocess({
 			compile: false,
+			// bundle: './static/windi.css',
 			globalPreflight: true,
 			globalUtility: true, 
 			prefix: 'windi-',
