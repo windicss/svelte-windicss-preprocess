@@ -42,7 +42,7 @@ export default {
 		svelte({
 			preprocess: {
 				markup: windicss.preprocess({
-					// config: 'tailwind.config.js',
+					config: 'tailwind.config.js',
 					// bundle: './public/windi.css',
 					compile: false,
 					prefix: 'windi-',

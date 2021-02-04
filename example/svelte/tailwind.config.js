@@ -28,5 +28,8 @@ module.exports = {
         '4xl': '2rem',
       }
     }
-  }
+  },
+  plugins: [
+    require('windicss/plugin/aspect-ratio')
+  ]
 }

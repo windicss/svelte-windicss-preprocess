@@ -156,7 +156,7 @@ const _preprocess:Preprocessor = ({content, filename}) => {
   };
 
   // preflights might lost when refresh
-  const preflights = PROCESSOR.preflight(DEV?Object.keys(TAGNAMES):updatedTags, FILES.length === 0 || FILES.indexOf(filename) === 0); // only enable global styles for first file
+  const preflights = PROCESSOR.preflight(content, true, FILES.length === 0 || FILES.indexOf(filename) === 0, true, !DEV);
   
   const styleSheet = ((OPTIONS.globalPreflight && !OPTIONS.bundle)? globalStyleSheet(preflights) : preflights)
                       .extend(combineStyleList(STYLESHEETS))

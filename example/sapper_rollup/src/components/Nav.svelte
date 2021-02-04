@@ -3,7 +3,7 @@
 </script>
 
 
-<nav class="fixed top-0 z-10 w-full flex items-center justify-between px-2 bg-white bg-green-300 shadow h-16">
+<nav class="fixed top-0 z-10 w-full flex items-center justify-between px-2 bg-white shadow h-16">
 	<div class='px-4'>
 		<a class="text-lg font-medium tracking-widest leading-relaxed inline-block mr-4 py-2 whitespace-no-wrap uppercase text-gray-900" href="/">
 			windicss

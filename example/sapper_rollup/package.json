@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "sapper": "^0.28.0",
-    "svelte": "^3.17.3",
+    "svelte": "3.29.0",
     "@babel/core": "^7.0.0",
     "@babel/plugin-syntax-dynamic-import": "^7.0.0",
     "@babel/plugin-transform-runtime": "^7.0.0",
