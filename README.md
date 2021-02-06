@@ -40,10 +40,10 @@ export default {
 
 ### Sveltekit
 
-Add `svelte-windicss-preprocess` to your `svelte.config.js`.
+Add `svelte-windicss-preprocess` to your `svelte.config.cjs`.
 
 ```js
-// svelte.config.js
+// svelte.config.cjs
 module.exports = {
     preprocess: {
         markup: require('svelte-windicss-preprocess').preprocess({
@@ -58,12 +58,21 @@ module.exports = {
         // For more details, see https://github.com/voorjaar/svelte-windicss-preprocess/blob/main/docs/using-tailwind-directives.md
         style: ({content, }) => {
             return new Promise((resolve, _) => {
-              resolve({ code: content.replace(/@apply[\s\S]+?;/g, '') });
+                resolve({ code: content.replace(/@apply[\s\S]+?;/g, '') });
             })
         }
     },
-    adapter:  '@sveltejs/adapter-node'
+    kit: {
+        // By default, `npm run build` will create a standard Node app.
+        // You can create optimized builds for different platforms by
+        // specifying a different adapter
+        adapter: '@sveltejs/adapter-node',
+
+        // hydrate the <div id="svelte"> element in src/app.html
+        target: '#svelte'
+    }
 };
+
 ```
 
 ### Sapper(rollup)
@@ -86,7 +95,7 @@ export default {
                     markup: require('svelte-windicss-preprocess').preprocess({
                         config: 'tailwind.config.js', // tailwind config file path
                         compile: true,          // false: interpretation mode; true: compilation mode
-                        prefix: 'windi-'        // set compilation mode style prefix
+                        prefix: 'windi-',        // set compilation mode style prefix
                         globalPreflight: true,  // set preflight style is global or scoped
                         globalUtility: true,    // set utility style is global or scoped
                     }),
@@ -109,10 +118,10 @@ export default {
                     // svelte-windicss-preprocess
                     markup: require('svelte-windicss-preprocess').preprocess({
                         config: 'tailwind.config.js', // tailwind config file path
-                        compile: true,          // false: interpretation mode; true: compilation mode
-                        prefix: 'windi-'        // set compilation mode style prefix
-                        globalPreflight: true,  // set preflight style is global or scoped
-                        globalUtility: true,    // set utility style is global or scoped
+                        compile: true,           // false: interpretation mode; true: compilation mode
+                        prefix: 'windi-',        // set compilation mode style prefix
+                        globalPreflight: true,   // set preflight style is global or scoped
+                        globalUtility: true,     // set utility style is global or scoped
                     }),
                 },
                 compilerOptions: {
@@ -147,10 +156,10 @@ module.exports = {
                                 // svelte-windicss-preprocess
                                 markup: require('svelte-windicss-preprocess').preprocess({
                                     config: 'tailwind.config.js', // tailwind config file path
-                                    compile: true,          // false: interpretation mode; true: compilation mode
-                                    prefix: 'windi-'        // set compilation mode style prefix
-                                    globalPreflight: true,  // set preflight style is global or scoped
-                                    globalUtility: true,    // set utility style is global or scoped
+                                    compile: true,           // false: interpretation mode; true: compilation mode
+                                    prefix: 'windi-',        // set compilation mode style prefix
+                                    globalPreflight: true,   // set preflight style is global or scoped
+                                    globalUtility: true,     // set utility style is global or scoped
                                 })
                             }
                         }
