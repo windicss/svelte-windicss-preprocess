@@ -40,7 +40,7 @@ export default {
 
 Add `svelte-windicss-preprocess` to your `svelte.config.cjs`.
 
-> For now, sveltekit has an issue of setting the preprocessor. Make sure your `snowpack.config.cjs` is consistent with our [example](https://github.com/voorjaar/svelte-windicss-preprocess/blob/main/example/svelte_next/svelte.config.cjs) before setting.
+> For now, sveltekit has an issue of setting the preprocessor. Make sure your `snowpack.config.cjs` is consistent with our [example](https://github.com/voorjaar/svelte-windicss-preprocess/blob/v2.1.0/example/svelte-next/snowpack.config.cjs) before setting.
 
 ```js
 // svelte.config.cjs
