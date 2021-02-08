@@ -25,7 +25,7 @@ export default {
       preprocess: require('svelte-windicss-preprocess').preprocess({
         config: 'tailwind.config.js', // tailwind config file path
         compile: true,          // false: interpretation mode; true: compilation mode
-        prefix: 'windi-'        // set compilation mode style prefix
+        prefix: 'windi-',       // set compilation mode style prefix
         globalPreflight: true,  // set preflight style is global or scoped
         globalUtility: true,    // set utility style is global or scoped
       })
@@ -188,7 +188,7 @@ module.exports = {
               preprocess: require('svelte-windicss-preprocess').preprocess({
                 config: 'tailwind.config.js',     // tailwind config file path
                 compile: true,                    // false: interpretation mode; true: compilation mode
-                prefix: 'windi-'                  // set compilation mode style prefix
+                prefix: 'windi-',                 // set compilation mode style prefix
                 globalPreflight: true,            // set preflight style is global or scoped
                 globalUtility: true,              // set utility style is global or scoped
               })
