@@ -322,7 +322,7 @@ Interpretation mode will not modify your classes, it will only compile the origi
 
 - [Roadmap](https://github.com/voorjaar/svelte-windicss-preprocess/projects/1)
 
-- [Documents](https://github.com/voorjaar/windicss)
+- [Documents](https://github.com/voorjaar/windicss/wiki/Introduction#what-is-windicss)
 
 - [Discussions](https://github.com/voorjaar/windicss/discussions)
 
