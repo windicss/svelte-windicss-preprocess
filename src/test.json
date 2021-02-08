@@ -1,0 +1,132 @@
+[
+  {
+    "start": 0,
+    "end": 103,
+    "name": "html",
+    "value": [
+      {
+        "start": 6,
+        "end": 66,
+        "type": "Attribute",
+        "name": "class",
+        "value": [
+          {
+            "start": 16,
+            "end": 25,
+            "data": "font-bold",
+            "type": "Text"
+          },
+          {
+            "start": 29,
+            "end": 32,
+            "data": "123",
+            "type": "Expression"
+          },
+          {
+            "start": 36,
+            "end": 44,
+            "data": "bg-white",
+            "type": "Text"
+          },
+          {
+            "start": 49,
+            "end": 55,
+            "data": "dafsdf",
+            "type": "Expression"
+          },
+          {
+            "start": 59,
+            "end": 63,
+            "data": "3232",
+            "type": "Text"
+          }
+        ]
+      },
+      {
+        "start": 68,
+        "end": 102,
+        "type": "Attribute",
+        "name": "class",
+        "value": [
+          {
+            "start": 75,
+            "end": 101,
+            "data": "bg-red-400 text-yellow-300",
+            "type": "Text"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "start": 103,
+    "end": 212,
+    "name": "p",
+    "value": [
+      {
+        "start": 106,
+        "end": 131,
+        "type": "Attribute",
+        "name": "class",
+        "value": [
+          {
+            "start": 113,
+            "end": 130,
+            "data": "font-bold text-lg",
+            "type": "Text"
+          }
+        ]
+      },
+      {
+        "start": 132,
+        "end": 155,
+        "type": "Attribute",
+        "name": "tw",
+        "value": [
+          {
+            "start": 136,
+            "end": 154,
+            "data": "font-lg text-green",
+            "type": "Text"
+          }
+        ]
+      },
+      {
+        "start": 156,
+        "end": 168,
+        "type": "Attribute",
+        "name": "class",
+        "value": {
+          "start": 163,
+          "end": 167,
+          "data": "helo",
+          "type": "Expression"
+        }
+      },
+      {
+        "start": 169,
+        "end": 194,
+        "type": "Directive",
+        "name": "bg-green-300",
+        "value": {
+          "start": 189,
+          "end": 193,
+          "data": "true",
+          "type": "Expression"
+        }
+      },
+      {
+        "start": 195,
+        "end": 211,
+        "type": "Attribute",
+        "name": "class",
+        "value": {
+          "start": 201,
+          "end": 211,
+          "data": "bg-red-500",
+          "type": "Text"
+        }
+      }
+    ]
+  }
+]

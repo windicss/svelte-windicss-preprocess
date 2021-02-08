@@ -40,16 +40,14 @@ export default {
 	},
 	plugins: [
 		svelte({
-			preprocess: {
-				markup: windicss.preprocess({
-					config: 'tailwind.config.js',
-					// bundle: './public/windi.css',
-					compile: false,
-					prefix: 'windi-',
-					globalPreflight: true,
-					globalUtility: true, 
-				}),
-			},
+			preprocess: windicss.preprocess({
+				// config: 'tailwind.config.js',
+				// bundle: './public/windi.css',
+				compile: false,
+				prefix: 'windi-',
+				globalPreflight: true,
+				globalUtility: true, 
+			}),
 			compilerOptions: {
 				// enable run-time checks when not in production
 				dev: !production

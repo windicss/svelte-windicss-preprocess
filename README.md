@@ -18,23 +18,21 @@ Add `svelte-windicss-preprocess` to your `rollup.config.js`.
 // rollup.config.js
 // ...
 export default {
-    // ...
-    plugins: [
-        svelte({
-            preprocess: {
-                // svelte-windicss-preprocess
-                markup: require('svelte-windicss-preprocess').preprocess({
-                    config: 'tailwind.config.js', // tailwind config file path
-                    compile: true,          // false: interpretation mode; true: compilation mode
-                    prefix: 'windi-'        // set compilation mode style prefix
-                    globalPreflight: true,  // set preflight style is global or scoped
-                    globalUtility: true,    // set utility style is global or scoped
-                })
-            },
-            // ...
-        }),
-    ]
-    // ...
+  // ...
+  plugins: [
+    svelte({
+      // svelte-windicss-preprocess
+      preprocess: require('svelte-windicss-preprocess').preprocess({
+        config: 'tailwind.config.js', // tailwind config file path
+        compile: true,          // false: interpretation mode; true: compilation mode
+        prefix: 'windi-'        // set compilation mode style prefix
+        globalPreflight: true,  // set preflight style is global or scoped
+        globalUtility: true,    // set utility style is global or scoped
+      })
+      // ...
+    }),
+  ]
+  // ...
 }
 ```
 
@@ -42,35 +40,47 @@ export default {
 
 Add `svelte-windicss-preprocess` to your `svelte.config.cjs`.
 
+> For now, sveltekit has an issue of setting the preprocessor. Make sure your `snowpack.config.cjs` is consistent with our [example](https://github.com/voorjaar/svelte-windicss-preprocess/blob/main/example/svelte_next/svelte.config.cjs) before setting.
+
 ```js
 // svelte.config.cjs
 module.exports = {
-    preprocess: {
-        markup: require('svelte-windicss-preprocess').preprocess({
-            // config: 'tailwind.config.js',
-            compile: false,
-            prefix: 'windi-',
-            globalPreflight: true,
-            globalUtility: true, 
-        }),
-        // The following code is to ensure that the svelte vscode plugin will not consider tailwind directives to be a syntax error, and will not run during development or compilation.
-        // And you should also add "svelte.plugin.css.diagnostics.enable": false to your vscode configuration.
-        // For more details, see https://github.com/voorjaar/svelte-windicss-preprocess/blob/main/docs/using-tailwind-directives.md
-        style: ({content, }) => {
-            return new Promise((resolve, _) => {
-                resolve({ code: content.replace(/@apply[\s\S]+?;/g, '') });
-            })
-        }
-    },
-    kit: {
-        // By default, `npm run build` will create a standard Node app.
-        // You can create optimized builds for different platforms by
-        // specifying a different adapter
-        adapter: '@sveltejs/adapter-node',
+  preprocess: require("svelte-windicss-preprocess").preprocess({
+    // uncomment this, if you need a config file
+    // config: 'tailwind.config.js',
+    compile: false,
+    prefix: "windi-",
+    globalPreflight: true,
+    globalUtility: true,
+  }),
+  kit: {
+    adapter: "@sveltejs/adapter-node",
+    target: "#svelte",
+  },
+};
+```
 
-        // hydrate the <div id="svelte"> element in src/app.html
-        target: '#svelte'
-    }
+with Typescript
+
+```js
+// svelte.config.cjs
+const sveltePreprocess = require('svelte-preprocess');
+module.exports = {
+  preprocess: [
+    sveltePreprocess.typescript(),
+    require('../../src/index.js').preprocess({
+      // uncomment this, if you need a config file
+      // config: 'tailwind.config.js',
+      compile: false,
+      prefix: 'windi-',
+      globalPreflight: true,
+      globalUtility: true, 
+    }),
+  ],
+  kit: {
+    adapter: '@sveltejs/adapter-node',
+    target: '#svelte'
+  }
 };
 
 ```
@@ -83,55 +93,51 @@ Add `svelte-windicss-preprocess` to your `rollup.config.js`.
 // rollup.config.js
 // ...
 export default {
-    // ...
-    client: {
-        input: config.client.input(),
-        output: config.client.output(),
-        plugins: [
-            // ...
-            svelte({
-                preprocess: {
-                    // svelte-windicss-preprocess
-                    markup: require('svelte-windicss-preprocess').preprocess({
-                        config: 'tailwind.config.js', // tailwind config file path
-                        compile: true,          // false: interpretation mode; true: compilation mode
-                        prefix: 'windi-',        // set compilation mode style prefix
-                        globalPreflight: true,  // set preflight style is global or scoped
-                        globalUtility: true,    // set utility style is global or scoped
-                    }),
-                },
-                compilerOptions: {
-                    // ...
-                }
-            }),
-            // ...
-        ]
-    // ...
-    }
-    server: {
-        input: config.server.input(),
-        output: config.server.output(),
-        plugins: [
-            // ...
-            svelte({
-                preprocess: {
-                    // svelte-windicss-preprocess
-                    markup: require('svelte-windicss-preprocess').preprocess({
-                        config: 'tailwind.config.js', // tailwind config file path
-                        compile: true,           // false: interpretation mode; true: compilation mode
-                        prefix: 'windi-',        // set compilation mode style prefix
-                        globalPreflight: true,   // set preflight style is global or scoped
-                        globalUtility: true,     // set utility style is global or scoped
-                    }),
-                },
-                compilerOptions: {
-                    // ...
-                },
-            }),
-            // ...
-        ]
-    }
-    // ...
+  // ...
+  client: {
+    input: config.client.input(),
+    output: config.client.output(),
+    plugins: [
+      // ...
+      svelte({
+        // svelte-windicss-preprocess
+        preprocess: require('svelte-windicss-preprocess').preprocess({
+          config: 'tailwind.config.js',     // tailwind config file path
+          compile: true,                    // false: interpretation mode; true: compilation mode
+          prefix: 'windi-',                 // set compilation mode style prefix
+          globalPreflight: true,            // set preflight style is global or scoped
+          globalUtility: true,              // set utility style is global or scoped
+        }),
+        compilerOptions: {
+          // ...
+        }
+      }),
+      // ...
+    ]
+  // ...
+  }
+  server: {
+    input: config.server.input(),
+    output: config.server.output(),
+    plugins: [
+      // ...
+      svelte({
+        // svelte-windicss-preprocess
+        preprocess: require('svelte-windicss-preprocess').preprocess({
+          config: 'tailwind.config.js',      // tailwind config file path
+          compile: true,                     // false: interpretation mode; true: compilation mode
+          prefix: 'windi-',                  // set compilation mode style prefix
+          globalPreflight: true,             // set preflight style is global or scoped
+          globalUtility: true,               // set utility style is global or scoped
+        }),
+        compilerOptions: {
+          // ...
+        },
+      }),
+      // ...
+    ]
+  }
+  // ...
 }
 ```
 
@@ -142,61 +148,57 @@ Add `svelte-windicss-preprocess` to your `webpack.config.js`.
 ```js
 // webpack.config.js
 module.exports = {
-    client: {
-        // ...
-        module: {
-            rules: [
-                {
-                    test: /\.(svelte|html)$/,
-                    use: {
-                        loader: 'svelte-loader',
-                        options: {
-                            // ... other options
-                            preprocess: {
-                                // svelte-windicss-preprocess
-                                markup: require('svelte-windicss-preprocess').preprocess({
-                                    config: 'tailwind.config.js', // tailwind config file path
-                                    compile: true,           // false: interpretation mode; true: compilation mode
-                                    prefix: 'windi-',        // set compilation mode style prefix
-                                    globalPreflight: true,   // set preflight style is global or scoped
-                                    globalUtility: true,     // set utility style is global or scoped
-                                })
-                            }
-                        }
-                    }
-                },
-                // ...
-            ]
+  client: {
+    // ...
+    module: {
+      rules: [
+        {
+          test: /\.(svelte|html)$/,
+          use: {
+            loader: 'svelte-loader',
+            options: {
+              // ... other options
+              // svelte-windicss-preprocess
+              preprocess: require('svelte-windicss-preprocess').preprocess({
+                config: 'tailwind.config.js',    // tailwind config file path
+                compile: true,                   // false: interpretation mode; true: compilation mode
+                prefix: 'windi-',                // set compilation mode style prefix
+                globalPreflight: true,           // set preflight style is global or scoped
+                globalUtility: true,             // set utility style is global or scoped
+              })
+            }
+          }
         },
+        // ...
+      ]
     },
+  },
 
-    server: {
-        // ...
-        module: {
-            rules: [
-                {
-                    test: /\.(svelte|html)$/,
-                    use: {
-                        loader: 'svelte-loader',
-                        options: {
-                            // ... other options
-                            preprocess: {
-                                // svelte-windicss-preprocess
-                                markup: require('svelte-windicss-preprocess').preprocess({
-                                    config: 'tailwind.config.js', // tailwind config file path
-                                    compile: true,          // false: interpretation mode; true: compilation mode
-                                    prefix: 'windi-'        // set compilation mode style prefix
-                                    globalPreflight: true,  // set preflight style is global or scoped
-                                    globalUtility: true,    // set utility style is global or scoped
-                                })
-                            }
-                        }
-                    }
-                },
-                // ...
-            ]
+  server: {
+    // ...
+    module: {
+      rules: [
+        {
+          test: /\.(svelte|html)$/,
+          use: {
+            loader: 'svelte-loader',
+            options: {
+              // ... other options
+              // svelte-windicss-preprocess
+              preprocess: require('svelte-windicss-preprocess').preprocess({
+                config: 'tailwind.config.js',     // tailwind config file path
+                compile: true,                    // false: interpretation mode; true: compilation mode
+                prefix: 'windi-'                  // set compilation mode style prefix
+                globalPreflight: true,            // set preflight style is global or scoped
+                globalUtility: true,              // set utility style is global or scoped
+              })
+            }
+          }
         },
-    }
+        // ...
+      ]
+    },
+  }
 }
 ```
 
@@ -206,22 +208,32 @@ You can write any [tailwindcss](https://github.com/tailwindlabs/tailwindcss) cla
 
 ```html
 <script>
-// ...
+  // ...
 </script>
 
-<div class="py-8 px-8 max-w-sm mx-auto bg-white rounded-xl shadow-md space-y-2 sm:py-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-6">
-  <img class="block mx-auto h-24 rounded-full sm:mx-0 sm:flex-shrink-0" src="/img/erin-lindford.jpg" alt="Woman's Face">
+<div
+  class="py-8 px-8 max-w-sm mx-auto bg-white rounded-xl shadow-md space-y-2 sm:py-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-6"
+>
+  <img
+    class="block mx-auto h-24 rounded-full sm:mx-0 sm:flex-shrink-0"
+    src="/img/erin-lindford.jpg"
+    alt="Woman's Face"
+  />
   <div class="text-center space-y-2 sm:text-left">
     <div class="space-y-0.5">
       <p class="text-lg text-black font-semibold">Erin Lindford</p>
       <p class="text-gray-500 font-medium">Product Engineer</p>
     </div>
-    <button class="px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">Message</button>
+    <button
+      class="px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2"
+    >
+      Message
+    </button>
   </div>
 </div>
 
 <style>
-/* ... */
+  /* ... */
 </style>
 ```
 
@@ -231,7 +243,7 @@ This is not css-in-js, [windicss](https://github.com/voorjaar/windicss) only mer
 
 ```html
 <div class="windi-15wa4me">
-  <img class="windi-1q7lotv" src="/img/erin-lindford.jpg" alt="Woman's Face">
+  <img class="windi-1q7lotv" src="/img/erin-lindford.jpg" alt="Woman's Face" />
   <div class="windi-7831z4">
     <div class="windi-x3f008">
       <p class="windi-2lluw6">Erin Lindford</p>
@@ -292,26 +304,26 @@ Interpretation mode will not modify your classes, it will only compile the origi
 
 ## Features
 
-* `tw` is an optional replacement attribute of `class`, The className in `tw` will be merged into the `class` attribute after compilation.
+- `tw` is an optional replacement attribute of `class`, The className in `tw` will be merged into the `class` attribute after compilation.
 
-* Group: You can also write groups in all the attributes mentioned above, such as `class="font-meidum sm:hover:(font-bold bg-gray-200)"`. This is a native feature supported by [windicss](https://github.com/voorjaar/windicss).
+- Group: You can also write groups in all the attributes mentioned above, such as `class="font-meidum sm:hover:(font-bold bg-gray-200)"`. This is a native feature supported by [windicss](https://github.com/voorjaar/windicss).
 
-* Unrestricted build: such as `bg-hex-1c1c1e p-3.2 p-3rem p-4px w-10/11 bg-$custom-variable ...`
+- Unrestricted build: such as `bg-hex-1c1c1e p-3.2 p-3rem p-4px w-10/11 bg-$custom-variable ...`
 
-* [Using tailwind directives](https://github.com/voorjaar/svelte-windicss-preprocess/blob/main/docs/using-tailwind-directives.md), such as @apply, @screen.
+- [Using tailwind directives](https://github.com/voorjaar/svelte-windicss-preprocess/blob/main/docs/using-tailwind-directives.md), such as @apply, @screen.
 
-* States attribute: such as `sm md lg xl xxl focus hover dark ...` after applid media rules then also will be merged into the `class` attribute. (Attributes like `sm:hover` are not available because they may be rarely used and slow down the parsing speed.)
+- States attribute: such as `sm md lg xl xxl focus hover dark ...` after applid media rules then also will be merged into the `class` attribute. (Attributes like `sm:hover` are not available because they may be rarely used and slow down the parsing speed.)
 
-* [Customize](https://github.com/voorjaar/svelte-windicss-preprocess/blob/main/docs/using-tailwind-configuration.md): support `tailwind.config.js`.
+- [Customize](https://github.com/voorjaar/svelte-windicss-preprocess/blob/main/docs/using-tailwind-configuration.md): support `tailwind.config.js`.
 
-* For more details, please refer to [windicss](https://github.com/voorjaar/windicss).
+- For more details, please refer to [windicss](https://github.com/voorjaar/windicss).
 
 ## Resources
 
-* [Roadmap](https://github.com/voorjaar/svelte-windicss-preprocess/projects/1)
+- [Roadmap](https://github.com/voorjaar/svelte-windicss-preprocess/projects/1)
 
-* [Documents](https://github.com/voorjaar/windicss)
+- [Documents](https://github.com/voorjaar/windicss)
 
-* [Discussions](https://github.com/voorjaar/windicss/discussions)
+- [Discussions](https://github.com/voorjaar/windicss/discussions)
 
-* [MIT License](https://github.com/voorjaar/svelte-windicss-preprocess/blob/main/LICENSE)
+- [MIT License](https://github.com/voorjaar/svelte-windicss-preprocess/blob/main/LICENSE)
