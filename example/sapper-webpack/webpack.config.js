@@ -32,9 +32,7 @@ module.exports = {
 							dev,
 							hydratable: true,
 							hotReload: false, // pending https://github.com/sveltejs/svelte/issues/2377
-							preprocess: {
-								markup: require('../../src/index').preprocess({compile:false})
-							}
+							preprocess: require('../../src/index').preprocess({ compile:false }),
 						}
 					}
 				},
@@ -70,9 +68,7 @@ module.exports = {
 							generate: 'ssr',
 							hydratable: true,
 							dev,
-							preprocess: {
-								markup: require('../../src/index').preprocess({compile:false})
-							}
+							preprocess: require('../../src/index').preprocess({ compile:false }),
 						}
 					}
 				},

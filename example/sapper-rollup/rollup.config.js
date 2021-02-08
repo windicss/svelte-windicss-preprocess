@@ -28,9 +28,7 @@ export default {
 				'process.env.NODE_ENV': JSON.stringify(mode)
 			}),
 			svelte({
-				preprocess: {
-					markup: require('../../src/index').preprocess({compile:false}),
-				},
+				preprocess: require('../../src/index').preprocess({compile:false}),
 				compilerOptions: {
 					dev,
 					hydratable: true
@@ -81,9 +79,7 @@ export default {
 				'process.env.NODE_ENV': JSON.stringify(mode)
 			}),
 			svelte({
-				preprocess: {
-					markup: require('../../src/index').preprocess({compile:false}),
-				},
+				preprocess: require('../../src/index').preprocess({compile:false}),
 				compilerOptions: {
 					dev,
 					generate: 'ssr',
