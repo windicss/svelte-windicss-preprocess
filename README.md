@@ -68,7 +68,7 @@ const sveltePreprocess = require('svelte-preprocess');
 module.exports = {
   preprocess: [
     sveltePreprocess.typescript(),
-    require('../../src/index.js').preprocess({
+    require('svelte-windicss-preprocess').preprocess({
       // uncomment this, if you need a config file
       // config: 'tailwind.config.js',
       compile: false,
