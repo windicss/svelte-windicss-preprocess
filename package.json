@@ -9,7 +9,7 @@
     "dev": "rollup -cw",
     "tsd": "tsc -p ./src --emitDeclarationOnly",
     "build": "rollup -c && npm run tsd",
-    "publish": "PUBLISH=true rollup -c && npm run tsd"
+    "product": "PUBLISH=true rollup -c && npm run tsd"
   },
   "repository": {
     "type": "git",
