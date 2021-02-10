@@ -72,7 +72,9 @@ const main = {
   ],
   external: [
     "magic-string",
-    "windicss"
+    "windicss/lib",
+    "windicss/utils/parser",
+    "windicss/utils/style",
   ]
 };
 
@@ -86,7 +88,7 @@ const browser = {
   ],
   plugins: [
     ts_plugin,
-    resolve(),
+    resolve({ browser: true }),
     nodePolyfills(),
     terser()
   ]

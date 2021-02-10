@@ -1,5 +1,5 @@
 module.exports = {
-	preprocess: require('../../src/index.js').preprocess({
+	preprocess: require('../../dist/index.js').preprocess({
 		// config: 'tailwind.config.js',
 		compile: false,
 		prefix: 'windi-',

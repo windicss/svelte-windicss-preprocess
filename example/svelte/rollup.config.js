@@ -7,7 +7,7 @@ import css from 'rollup-plugin-css-only';
 
 const production = !process.env.ROLLUP_WATCH;
 
-const windicss = require('../../src/index');
+const windicss = require('../../dist/index.js');
 
 function serve() {
 	let server;

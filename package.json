@@ -2,8 +2,9 @@
   "name": "svelte-windicss-preprocess",
   "version": "2.1.1",
   "description": "A Svelte Preprocessor to compile tailwindcss at build time based on windicss compiler.",
-  "main": "src/index.js",
-  "types": "src/index.d.ts",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "browser": "browser.js",
   "scripts": {
     "dev": "rollup -cw",
     "tsd": "tsc -p ./src --emitDeclarationOnly",
@@ -37,9 +38,5 @@
     "rollup-plugin-terser": "^7.0.2",
     "tslib": "^2.1.0",
     "typescript": "^4.1.3"
-  },
-  "files": [
-    "src/**/*.js",
-    "src/**/*.d.ts"
-  ]
+  }
 }

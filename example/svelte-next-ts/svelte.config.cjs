@@ -4,7 +4,7 @@ module.exports = {
 	// for more information about preprocessors
 	preprocess: [
 		sveltePreprocess.typescript(),
-		require('../../src/index.js').preprocess({
+		require('../../dist/index.js').preprocess({
 			// config: 'tailwind.config.js',
 			compile: false,
 			prefix: 'windi-',
