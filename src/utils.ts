@@ -1,6 +1,5 @@
 import { StyleSheet } from 'windicss/utils/style';
 
-
 export function searchNotEscape(text:string, char = "{") {
   if (text.charAt(0) === char) return 0;
   const index = text.search(new RegExp(String.raw`([^\\]${char})`));
@@ -37,4 +36,13 @@ export function globalStyleSheet(styleSheet:StyleSheet) {
     style.wrapRule((rule:string)=>`:global(${rule})`);
   });
   return styleSheet;
+}
+
+export function writeFileSync(path: string, data: string) {
+  if (!process.env.BROWSER) return require('fs').writeFileSync(path, data);
+}
+
+export function loadConfig(config?: string) {
+  if (process.env.BROWSER) return config;
+  return config ? require(require('path').resolve(config)) : undefined;
 }

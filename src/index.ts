@@ -1,10 +1,8 @@
 import MagicString from "magic-string";
-import { writeFileSync } from "fs";
 import { Processor } from "windicss/lib";
 import { CSSParser } from "windicss/utils/parser";
-import { combineStyleList, globalStyleSheet } from "./utils";
+import { loadConfig, writeFileSync, combineStyleList, globalStyleSheet } from "./utils";
 import { default as HTMLParser } from "./parser";
-import type { Config } from "windicss/types/interfaces";
 import type { StyleSheet } from "windicss/utils/style";
 
 const DEV = process.env.NODE_ENV === "development";
@@ -19,7 +17,7 @@ let FILES: (string | undefined)[] = [];
 let BUNDLES: { [key: string]: StyleSheet } = {};
 
 let OPTIONS: {
-  config?: Config | string;
+  config?: string;
   compile?: boolean;
   prefix?: string;
   bundle?: string;
@@ -214,7 +212,7 @@ function _optimize(types: string, typeNodes: { [key: string]: string }) {
 
 export function preprocess(options: typeof OPTIONS = {}) {
   OPTIONS = { ...OPTIONS, ...options }; // change global settings here;
-  PROCESSOR = new Processor(OPTIONS.config);
+  PROCESSOR = new Processor(loadConfig(OPTIONS.config));
   VARIANTS = [
     ...Object.keys(PROCESSOR.resolveVariants()),
     ...Object.keys(MODIFIED),

@@ -4,7 +4,6 @@ import resolve from "@rollup/plugin-node-resolve";
 import sucrase from "@rollup/plugin-sucrase";
 import replace from "@rollup/plugin-replace";
 import typescript from "@rollup/plugin-typescript";
-import nodePolyfills from 'rollup-plugin-node-polyfills';
 import { terser } from "rollup-plugin-terser";
 
 const output_dir = "./dist";
@@ -66,6 +65,7 @@ const main = {
   plugins: [
     ts_plugin,
     resolve(),
+    replace({ "process.env.BROWSER": false }),
     rmdir(output_dir),
     mkdir(output_dir),
     copy(["package.json", "README.md", "LICENSE"]),
@@ -86,19 +86,14 @@ const browser = {
       name: "windicss",
       file: dump("browser.js"),
       format: "umd",
-      globals: {
-        "buffer": "buffer",
-        "fs": "fs",
-        "path": "path"
-      }
     }
   ],
   plugins: [
     ts_plugin,
     resolve({ browser: true }),
-    nodePolyfills(),
     terser({ module: true, output: { comments: 'some' } }),
     replace({
+      "process.env.BROWSER": true,
       "process.env.NODE_ENV": `"publish"`
     })
   ]
