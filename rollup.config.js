@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import resolve from "@rollup/plugin-node-resolve";
 import sucrase from "@rollup/plugin-sucrase";
+import replace from "@rollup/plugin-replace";
 import typescript from "@rollup/plugin-typescript";
 import nodePolyfills from 'rollup-plugin-node-polyfills';
 import { terser } from "rollup-plugin-terser";
@@ -82,15 +83,24 @@ const browser = {
   input: "src/index.ts",
   output: [
     {
+      name: "windicss",
       file: dump("browser.js"),
-      format: "cjs"
+      format: "umd",
+      globals: {
+        "buffer": "buffer",
+        "fs": "fs",
+        "path": "path"
+      }
     }
   ],
   plugins: [
     ts_plugin,
     resolve({ browser: true }),
     nodePolyfills(),
-    terser()
+    terser({ module: true, output: { comments: 'some' } }),
+    replace({
+      "process.env.NODE_ENV": `"publish"`
+    })
   ]
 };
 
