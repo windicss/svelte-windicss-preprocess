@@ -4,6 +4,8 @@
 
 ## Installation
 
+> Now we have a great playground, you can [try it online](https://voorjaar.github.io/svelte-windicss-preprocess/) before installing it.
+
 ```sh
 npm install svelte-windicss-preprocess --save-dev
 ```
