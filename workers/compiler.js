@@ -12,12 +12,13 @@
 		switch (event.data.type) {
 			case 'init':
 				importScripts(`${event.data.svelteUrl}/compiler.js`);
+				importScripts('https://unpkg.com/svelte-windicss-preprocess/browser.js');
 				fulfil_ready();
 				break;
 
 			case 'compile':
 				await ready;
-				postMessage(compile(event.data));
+				postMessage(await compile(event.data));
 				break;
 		}
 	});
@@ -27,9 +28,14 @@
 		css: false
 	};
 
-	function compile({ id, source, options }) {
+	async function compile({ id, source, options }) {
 		try {
-			const { js, css } = svelte.compile(
+			source = await (
+				await svelte.preprocess(source, windicss.preprocess(), {
+					filename: options.filename,
+				})
+			).code;
+			const { js, css } = await svelte.compile(
 				source,
 				Object.assign({}, common_options, options)
 			);

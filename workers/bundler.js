@@ -5215,7 +5215,7 @@
 				packagesUrl = event.data.packagesUrl;
 				svelteUrl = event.data.svelteUrl;
 				importScripts(`${svelteUrl}/compiler.js`);
-
+				importScripts('https://unpkg.com/svelte-windicss-preprocess/browser.js');
 				break;
 
 			case 'bundle':
@@ -5375,7 +5375,7 @@
 				const res = await fetch_if_uncached(resolved);
 				return res.body;
 			},
-			transform(code, id) {
+			async transform(code, id) {
 				if (uid !== current_id) throw ABORT;
 
 				self.postMessage({ type: 'status', uid, message: `bundling ${id}` });
@@ -5383,10 +5383,17 @@
 				if (!/\.svelte$/.test(id)) return null;
 
 				const name = id.split('/').pop().split('.')[0];
-
-				const result = cache[id] && cache[id].code === code
-					? cache[id].result
-					: svelte.compile(code, Object.assign({
+				
+				let result;
+				if (cache[id] && cache[id].code === code) {
+					result = cache[id].result;
+				} else {
+					const resource = await (
+						await svelte.preprocess(code, windicss.preprocess(), {
+							filename: id,
+						})
+					).code;
+					result = svelte.compile(resource, Object.assign({
 						generate: mode,
 						format: 'esm',
 						dev: true,
@@ -5394,7 +5401,8 @@
 					}, has_loopGuardTimeout_feature() && {
 						loopGuardTimeout: 100
 					}));
-
+				}
+		
 				new_cache[id] = { code, result };
 
 				(result.warnings || result.stats.warnings).forEach(warning => { // TODO remove stats post-launch
