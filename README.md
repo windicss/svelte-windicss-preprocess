@@ -204,7 +204,7 @@ module.exports = {
 }
 ```
 
-## Usage
+## Basic Usage
 
 You can write any [tailwindcss](https://github.com/tailwindlabs/tailwindcss) classes in your `.svelte` files.
 
@@ -304,6 +304,32 @@ Interpretation mode will not modify your classes, it will only compile the origi
 }
 ```
 
+## Using tailwind directives
+
+```css
+<style>
+  .testApply {
+    @apply pt-6 text-base leading-6 font-bold sm:text-lg sm:leading-7;
+  }
+
+  @screen sm {
+    ul {
+      @apply bg-gray-100 p-2 rounded-lg;
+    }
+  }
+</style>
+```
+
+### Setup VSCode Extension
+
+If you are using `Svelte for VS Code` vscode extension, I believe most people are using it. You will need to add `"vetur.validation.style": false` to your configuration file.
+
+Hit `ctrl-shift-p` or `cmd-shift-p` on mac, type open settings, and select `Preferences: Open Settings (JSON)`. Add `"vetur.validation.style": false` to `settings.json` then save it.
+
+Then you will need to tell svelte-vscode to **restart the svelte language server** in order to pick up a new configuration.
+
+Hit `ctrl-shift-p` or `cmd-shift-p` on mac, type svelte restart, and select `Svelte: Restart Language Server`. Any errors you were seeing should now go away and you're now all set up!
+
 ## Features
 
 - `tw` is an optional replacement attribute of `class`, The className in `tw` will be merged into the `class` attribute after compilation.
@@ -312,7 +338,7 @@ Interpretation mode will not modify your classes, it will only compile the origi
 
 - Unrestricted build: such as `bg-hex-1c1c1e p-3.2 p-3rem p-4px w-10/11 bg-$custom-variable ...`
 
-- [Using tailwind directives](https://github.com/voorjaar/svelte-windicss-preprocess/blob/main/docs/using-tailwind-directives.md), such as @apply, @screen.
+- [Using tailwind directives], such as `@apply`, `@screen`, `@variants`.
 
 - States attribute: such as `sm md lg xl xxl focus hover dark ...` after applid media rules then also will be merged into the `class` attribute. (Attributes like `sm:hover` are not available because they may be rarely used and slow down the parsing speed.)
 
