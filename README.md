@@ -1,10 +1,10 @@
 # svelte-windicss-preprocess
 
-> A svelte preprocessor to compile [tailwindcss](https://github.com/tailwindlabs/tailwindcss) at build time based on [windicss](https://github.com/voorjaar/windicss) compiler.
+> A svelte preprocessor to compile [tailwindcss](https://github.com/tailwindlabs/tailwindcss) at build time based on [windicss](https://github.com/windicss/windicss) compiler.
 
 ## Installation
 
-> Now we have a great playground, you can [try it online](https://voorjaar.github.io/svelte-windicss-preprocess/) before installing it.
+> Now we have a great playground, you can [try it online](https://windicss.github.io/svelte-windicss-preprocess/) before installing it.
 
 ```sh
 npm install svelte-windicss-preprocess --save-dev
@@ -42,7 +42,7 @@ export default {
 
 Add `svelte-windicss-preprocess` to your `svelte.config.cjs`.
 
-> For now, sveltekit has an issue of setting the preprocessor. Make sure your `snowpack.config.cjs` is consistent with our [example](https://github.com/voorjaar/svelte-windicss-preprocess/blob/v2.1.0/example/svelte-next/snowpack.config.cjs) before setting.
+> For now, sveltekit has an issue of setting the preprocessor. Make sure your `snowpack.config.cjs` is consistent with our [example](https://github.com/windicss/svelte-windicss-preprocess/blob/v2.1.0/example/svelte-next/snowpack.config.cjs) before setting.
 
 ```js
 // svelte.config.cjs
@@ -241,7 +241,7 @@ You can write any [tailwindcss](https://github.com/tailwindlabs/tailwindcss) cla
 
 ### Compilation mode
 
-This is not css-in-js, [windicss](https://github.com/voorjaar/windicss) only merges and compiles the tailwind classes of each line into a new class. You can try to compile (`npm run build`) and check the generated css file.
+This is not css-in-js, [windicss](https://github.com/windicss/windicss) only merges and compiles the tailwind classes of each line into a new class. You can try to compile (`npm run build`) and check the generated css file.
 
 ```html
 <div class="windi-15wa4me">
@@ -334,7 +334,7 @@ Hit `ctrl-shift-p` or `cmd-shift-p` on mac, type svelte restart, and select `Sve
 
 - `tw` is an optional replacement attribute of `class`, The className in `tw` will be merged into the `class` attribute after compilation.
 
-- Group: You can also write groups in all the attributes mentioned above, such as `class="font-meidum sm:hover:(font-bold bg-gray-200)"`. This is a native feature supported by [windicss](https://github.com/voorjaar/windicss).
+- Group: You can also write groups in all the attributes mentioned above, such as `class="font-meidum sm:hover:(font-bold bg-gray-200)"`. This is a native feature supported by [windicss](https://github.com/windicss/windicss).
 
 - Unrestricted build: such as `bg-hex-1c1c1e p-3.2 p-3rem p-4px w-10/11 bg-$custom-variable ...`
 
@@ -348,10 +348,10 @@ Hit `ctrl-shift-p` or `cmd-shift-p` on mac, type svelte restart, and select `Sve
 
 ## Resources
 
-- [Roadmap](https://github.com/voorjaar/windicss/projects/1)
+- [Roadmap](https://github.com/windicss/windicss/projects/1)
 
-- [Documents](https://github.com/voorjaar/windicss/wiki/Introduction#what-is-windicss)
+- [Documents](https://windicss.netlify.app/)
 
-- [Discussions](https://github.com/voorjaar/windicss/discussions)
+- [Discussions](https://github.com/windicss/windicss/discussions)
 
-- [MIT License](https://github.com/voorjaar/svelte-windicss-preprocess/blob/main/LICENSE)
+- [MIT License](https://github.com/windicss/svelte-windicss-preprocess/blob/main/LICENSE)
