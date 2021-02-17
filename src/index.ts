@@ -239,8 +239,8 @@ export function preprocess(options: typeof OPTIONS = {}) {
     }: {
       content: string;
       filename: string;
-    }) => Promise<unknown>;
-    style: ({ content }: { content: string }) => Promise<unknown>;
+    }) => Promise<{ code: string }>;
+    style: ({ content }: { content: string }) => Promise<{ code: string }>;
   };
 }
 
