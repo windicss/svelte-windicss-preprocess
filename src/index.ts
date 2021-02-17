@@ -80,6 +80,7 @@ function addVariant(classNames: string, variant: string) {
 }
 
 function _preprocess(content: string, filename: string) {
+  content = content.replace(/<!--[\s\S]*?-->/g, '');
   let style = content.match(REGEXP.matchStyle)?.[0];
   if (style) {
     // handle tailwind directives ...
@@ -89,7 +90,6 @@ function _preprocess(content: string, filename: string) {
   }
 
   const code = new MagicString(content);
-  // const htmlBlock = content.replace(REGEXP.matchScript, '');
   const parser = new HTMLParser(content);
   parser.parse().forEach((tag) => {
     let classes: string[] = [];
