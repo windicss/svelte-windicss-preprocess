@@ -177,7 +177,7 @@ function _preprocess(content: string, filename: string) {
     true,
     FILES.length === 0 || FILES.indexOf(filename) === 0,
     true,
-    !DEV
+    DEV
   );
 
   const styleSheet = (OPTIONS.globalPreflight && !OPTIONS.bundle
