@@ -73,6 +73,7 @@ const main = {
   ],
   external: [
     "magic-string",
+    "chalk",
     "windicss/lib",
     "windicss/utils/parser",
     "windicss/utils/style",
