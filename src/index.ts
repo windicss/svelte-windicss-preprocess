@@ -82,6 +82,14 @@ function addVariant(classNames: string, variant: string) {
   return [...utilities, ...groups].map((i) => `${variant}:${i}`).join(" ");
 }
 
+function _convertTemplateSyntax(content: string): string {
+  let parsedContent = content;
+  parsedContent = parsedContent.replace(/\{`/g, '" ');
+  parsedContent = parsedContent.replace(/`\}/g, ' "');
+  parsedContent = parsedContent.replace(/\$/g, " ");
+  return parsedContent
+}
+
 function _preprocess(content: string, filename: string) {
   content = content.replace(/<!--[\s\S]*?-->/g, '');
   let style = content.match(REGEXP.matchStyle)?.[0];
@@ -93,7 +101,7 @@ function _preprocess(content: string, filename: string) {
   }
 
   const code = new MagicString(content);
-  const parser = new HTMLParser(content);
+  const parser = new HTMLParser(_convertTemplateSyntax(content));
   parser.parse().forEach((tag) => {
     let classes: string[] = [];
     let conditionClasses: string[] = [];
