@@ -7,11 +7,19 @@ devDependencies:
   '@rollup/plugin-replace': 2.3.4_rollup@2.39.0
   '@rollup/plugin-sucrase': 3.1.0_rollup@2.39.0
   '@rollup/plugin-typescript': 8.2.0_1219a9f9985ee12b9322d5007b6c7049
+  '@types/diff': 5.0.0
+  '@types/fs-extra': 9.0.7
   '@types/jasmine': 3.6.4
+  '@types/js-yaml': 4.0.0
   '@types/node': 14.14.31
   bumpp: 6.0.6
+  cross-env: 7.0.3
+  diff: 5.0.0
+  esno: 0.4.4
+  fs-extra: 9.1.0
   jasmine: 3.6.4
   jasmine-spec-reporter: 6.0.0
+  js-yaml: 4.0.0
   rollup: 2.39.0
   rollup-plugin-terser: 7.0.2_rollup@2.39.0
   ts-node: 9.1.1_typescript@4.1.5
@@ -139,14 +147,28 @@ packages:
       rollup: ^1.20.0||^2.0.0
     resolution:
       integrity: sha512-GksZ6pr6TpIjHm8h9lSQ8pi8BE9VeubNT0OMJ3B5uZJ8pz73NPiqOtCog/x2/QzM1ENChPKxMDhiQuRHsqc+lg==
+  /@types/diff/5.0.0:
+    dev: true
+    resolution:
+      integrity: sha512-jrm2K65CokCCX4NmowtA+MfXyuprZC13jbRuwprs6/04z/EcFg/MCwYdsHn+zgV4CQBiATiI7AEq7y1sZCtWKA==
   /@types/estree/0.0.39:
     dev: true
     resolution:
       integrity: sha512-EYNwp3bU+98cpU4lAWYYL7Zz+2gryWH1qbdDTidVd6hkiR6weksdbMadyXKXNPEkQFhXM+hVO9ZygomHXp+AIw==
+  /@types/fs-extra/9.0.7:
+    dependencies:
+      '@types/node': 14.14.31
+    dev: true
+    resolution:
+      integrity: sha512-YGq2A6Yc3bldrLUlm17VNWOnUbnEzJ9CMgOeLFtQF3HOCN5lQBO8VyjG00a5acA5NNSM30kHVGp1trZgnVgi1Q==
   /@types/jasmine/3.6.4:
     dev: true
     resolution:
       integrity: sha512-CTdMERA4iGNcxeqzD7pavb4WLIFq6bGnx6nIJD+1D4Knx24GE6QBPrWVhO8UlIy7gf7rbIt3ZD7iIzryRD2TgA==
+  /@types/js-yaml/4.0.0:
+    dev: true
+    resolution:
+      integrity: sha512-4vlpCM5KPCL5CfGmTbpjwVKbISRYhduEJvvUWsH5EB7QInhEj94XPZ3ts/9FPiLZFqYO0xoW4ZL8z2AabTGgJA==
   /@types/node/14.14.31:
     dev: true
     resolution:
@@ -194,6 +216,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-58S9QDqG0Xx27YwPSt9fJxivjYl432YCwfDMfZ+71RAqUrZef7LrKQZ3LHLOwCS4FLNBplP533Zx895SeOCHvA==
+  /argparse/2.0.1:
+    dev: true
+    resolution:
+      integrity: sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==
   /array-back/3.1.0:
     dev: true
     engines:
@@ -206,6 +232,12 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-HGyxoOTYUyCM6stUe6EJgnd4EoewAI7zMdfqO+kGjnlZmBDz/cR5pf8r/cR4Wq60sL/p0IkcjUEEPwS3GFrIyw==
+  /at-least-node/1.0.0:
+    dev: true
+    engines:
+      node: '>= 4.0.0'
+    resolution:
+      integrity: sha512-+q/t7Ekv1EDY2l6Gda6LLiX14rU9TV20Wa3ofeQmwPFZbOMo9DXrLbOjFaaclkXKWidIaopwAObQDqwWtGUjqg==
   /balanced-match/1.0.0:
     dev: true
     resolution:
@@ -346,6 +378,17 @@ packages:
     dev: true
     resolution:
       integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==
+  /cross-env/7.0.3:
+    dependencies:
+      cross-spawn: 7.0.3
+    dev: true
+    engines:
+      node: '>=10.14'
+      npm: '>=6'
+      yarn: '>=1'
+    hasBin: true
+    resolution:
+      integrity: sha512-+/HKd6EgcQCJGh2PSjZuUitQBQynKor4wrFbRg4DtAgS1aWO+gU52xpH7M9ScGgXSYmAVS9bIJ8EzuaGw0oNAw==
   /cross-spawn/7.0.3:
     dependencies:
       path-key: 3.1.1
@@ -380,6 +423,12 @@ packages:
       node: '>=0.3.1'
     resolution:
       integrity: sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==
+  /diff/5.0.0:
+    dev: true
+    engines:
+      node: '>=0.3.1'
+    resolution:
+      integrity: sha512-/VTCrvm5Z0JGty/BWHljh+BAiw3IK+2j87NGMu8Nwc/f48WoDAC395uomO9ZD117ZOBaHmkX1oyLvkVM/aIT3w==
   /dir-glob/3.0.1:
     dependencies:
       path-type: 4.0.0
@@ -392,11 +441,37 @@ packages:
     dev: true
     resolution:
       integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==
+  /esbuild-register/2.0.0_esbuild@0.8.50:
+    dependencies:
+      esbuild: 0.8.50
+      joycon: 2.2.5
+      pirates: 4.0.1
+      source-map-support: 0.5.19
+      strip-json-comments: 3.1.1
+    dev: true
+    peerDependencies:
+      esbuild: '>=0.8.31'
+    resolution:
+      integrity: sha512-98i1+7OnCURCbKaWw5wnY05e4v7uknFEER7LtVxi/lCs8U+sl6/LnITvfeoDLrsqxlA3O6BjxK8QqsirfYULfA==
+  /esbuild/0.8.50:
+    dev: true
+    hasBin: true
+    requiresBuild: true
+    resolution:
+      integrity: sha512-oidFLXssA7IccYzkqLVZSqNJDwDq8Mh/vqvrW+3fPWM7iUiC5O2bCllhnO8+K9LlyL/2Z6n+WwRJAz9fqSIVRg==
   /escape-string-regexp/1.0.5:
     engines:
       node: '>=0.8.0'
     resolution:
       integrity: sha1-G2HAViGQqN/2rjuyzwIAyhMLhtQ=
+  /esno/0.4.4:
+    dependencies:
+      esbuild: 0.8.50
+      esbuild-register: 2.0.0_esbuild@0.8.50
+    dev: true
+    hasBin: true
+    resolution:
+      integrity: sha512-YthG7d+wodPWKkJTdQPMrKZCbJgtyWsel6UBekjZw8AahUTtkqvtLXcMnRXeZ5YIcjviLXw3Cmq7hVlvB7dFyw==
   /estree-walker/1.0.1:
     dev: true
     resolution:
@@ -454,6 +529,17 @@ packages:
       node: '>=4.0.0'
     resolution:
       integrity: sha512-6Tb2myMioCAgv5kfvP5/PkZZ/ntTpVK39fHY7WkWBgvbeE+VHd/tZuZ4mrC+bxh4cfOZeYKVPaJIZtZXV7GNCQ==
+  /fs-extra/9.1.0:
+    dependencies:
+      at-least-node: 1.0.0
+      graceful-fs: 4.2.6
+      jsonfile: 6.1.0
+      universalify: 2.0.0
+    dev: true
+    engines:
+      node: '>=10'
+    resolution:
+      integrity: sha512-hcg3ZmepS30/7BSFqRvoo3DOMQu7IjqxO5nCDt+zM9XWjb33Wg7ziNT+Qvqbuc3+gWpzO02JubVyk2G4Zvo1OQ==
   /fs.realpath/1.0.0:
     dev: true
     resolution:
@@ -503,6 +589,10 @@ packages:
       node: '>=10'
     resolution:
       integrity: sha512-2ZThXDvvV8fYFRVIxnrMQBipZQDr7MxKAmQK1vujaj9/7eF0efG7BPUKJ7jP7G5SLF37xKDXvO4S/KKLj/Z0og==
+  /graceful-fs/4.2.6:
+    dev: true
+    resolution:
+      integrity: sha512-nTnJ528pbqxYanhpDYsi4Rd8MAeaBA67+RZ10CM1m3bTAVFEDcd5AuA4a6W5YkGZ1iNXHzZz8T6TBKLeBuNriQ==
   /has-flag/3.0.0:
     engines:
       node: '>=4'
@@ -635,10 +725,31 @@ packages:
       node: '>= 10.13.0'
     resolution:
       integrity: sha512-KWYVV1c4i+jbMpaBC+U++4Va0cp8OisU185o73T1vo99hqi7w8tSJfUXYswwqqrjzwxa6KpRK54WhPvwf5w6PQ==
+  /joycon/2.2.5:
+    dev: true
+    engines:
+      node: '>=6'
+    resolution:
+      integrity: sha512-YqvUxoOcVPnCp0VU1/56f+iKSdvIRJYPznH22BdXV3xMk75SFXhWeJkZ8C9XxUWt1b5x2X1SxuFygW1U0FmkEQ==
   /js-tokens/4.0.0:
     dev: true
     resolution:
       integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==
+  /js-yaml/4.0.0:
+    dependencies:
+      argparse: 2.0.1
+    dev: true
+    hasBin: true
+    resolution:
+      integrity: sha512-pqon0s+4ScYUvX30wxQi3PogGFAlUyH0awepWvwkj4jD4v+ova3RiYw8bmA6x2rDrEaj8i/oWKoRxpVNW+Re8Q==
+  /jsonfile/6.1.0:
+    dependencies:
+      universalify: 2.0.0
+    dev: true
+    optionalDependencies:
+      graceful-fs: 4.2.6
+    resolution:
+      integrity: sha512-5dgndWOriYSm5cnYaJNhalLNDKOqFwyDB/rr1E9ZsGciGvKPs8R2xYGCacuf3z6K1YKDz182fd+fY3cn3pMqXQ==
   /lines-and-columns/1.1.6:
     dev: true
     resolution:
@@ -954,6 +1065,12 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-AuvKTrTfQNYNIctbR1K/YGTR1756GycPsg7b9bdV9Duqur4gv6aKqHXah67Z8ImS7WEz5QVcOtlfW2rZEugt6w==
+  /strip-json-comments/3.1.1:
+    dev: true
+    engines:
+      node: '>=8'
+    resolution:
+      integrity: sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==
   /sucrase/3.17.1:
     dependencies:
       commander: 4.1.1
@@ -1082,6 +1199,12 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-VAH4IvQ7BDFYglMd7BPRDfLgxZZX4O4TFcRDA6EN5X7erNJJq+McIEp8np9aVtxrCJ6qx4GTYVfOWNjcqwZgRw==
+  /universalify/2.0.0:
+    dev: true
+    engines:
+      node: '>= 10.0.0'
+    resolution:
+      integrity: sha512-hAZsKq7Yy11Zu1DE0OzWjw7nnLZmJZYTDZZyEFHZdUhV8FkH5MCfoU1XMaxXovpyW5nq5scPqq0ZDP9Zyl04oQ==
   /which/2.0.2:
     dependencies:
       isexe: 2.0.0
@@ -1117,12 +1240,20 @@ specifiers:
   '@rollup/plugin-replace': ^2.3.4
   '@rollup/plugin-sucrase': ^3.1.0
   '@rollup/plugin-typescript': ^8.1.1
+  '@types/diff': ^5.0.0
+  '@types/fs-extra': ^9.0.7
   '@types/jasmine': ^3.6.3
+  '@types/js-yaml': ^4.0.0
   '@types/node': ^14.14.14
   bumpp: ^6.0.6
   chalk: ^2.4.2
+  cross-env: ^7.0.3
+  diff: ^5.0.0
+  esno: ^0.4.4
+  fs-extra: ^9.1.0
   jasmine: ^3.6.4
   jasmine-spec-reporter: ^6.0.0
+  js-yaml: ^4.0.0
   magic-string: ^0.25.7
   rollup: ^2.38.5
   rollup-plugin-terser: ^7.0.2

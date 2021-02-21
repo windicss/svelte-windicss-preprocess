@@ -1,4 +1,4 @@
-import { preprocess } from '../src/index';
+import { preprocess } from '../../src/index';
 
 describe("comment style test", () => {
   let result: string;
@@ -12,6 +12,6 @@ describe("comment style test", () => {
     result = await (await preprocess().markup({ content, filename: 'test.svelte'})).code;
   });
   it ("should not generate styles", () => {
-    expect(result.search('nav')).toBe(-1);
+    expect(result).toMatchSnapshot('styles');
   })
 });
