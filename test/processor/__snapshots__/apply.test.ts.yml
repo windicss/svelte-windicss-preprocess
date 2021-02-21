@@ -1,4 +1,4 @@
-comment style test / should generate apply styles / apply / 0: |-
+utilities style test / should generate apply styles / apply / 0: |-
   <div></div>
 
   <style>

@@ -1,4 +1,4 @@
-comment style test / should generate utilities / utilities / 0: >-
+utilities style test / should generate utilities / utilities / 0: >-
   <div   class="min-h-screen bg-gray-100 py-6 justify-center aspect-w-9
   aspect-h-16 flex flex-col sm:py-12"></div>
 

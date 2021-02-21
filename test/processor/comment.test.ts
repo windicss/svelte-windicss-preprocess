@@ -2,16 +2,16 @@ import { preprocess } from '../../src/index';
 
 describe("comment style test", () => {
   let result: string;
-  beforeEach(async function() {
+  beforeEach(async function () {
     const content = `<!-- <style lang="postcss">
     nav {
       border: 10px solid black;
       @apply bg-red-200;
     }
   </style> -->`;
-    result = await (await preprocess().markup({ content, filename: 'test.svelte'})).code;
+    result = (await preprocess().markup({ content, filename: 'test.svelte' })).code;
   });
-  it ("should not generate styles", () => {
+  it("should not generate styles", () => {
     expect(result).toMatchSnapshot('styles');
   })
 });

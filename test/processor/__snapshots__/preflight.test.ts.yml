@@ -1,4 +1,4 @@
-comment style test / should generate preflights / preflight / 0: |-
+utilities style test / should generate preflights / preflight / 0: |-
   <p>Hello World</p>
 
   <style>
