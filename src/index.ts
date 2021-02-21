@@ -83,7 +83,11 @@ function addVariant(classNames: string, variant: string) {
 }
 
 function _convertTemplateSyntax(content: string): string {
+  // converts content temporarily from special svelte syntax to more generic syntax for parsing ...
+  // from : <div class={`green ${myClass ? 'red' : 'green'}`}>Should be red!</div>
+  // to : <div class="green {myClass ? 'red' : 'green'}">Should be red!</div>
   let parsedContent = content;
+  // needs make sure length and position are the same, so replacing with spaces
   parsedContent = parsedContent.replace(/\{`/g, '" ');
   parsedContent = parsedContent.replace(/`\}/g, ' "');
   parsedContent = parsedContent.replace(/\$/g, " ");
@@ -101,6 +105,8 @@ function _preprocess(content: string, filename: string) {
   }
 
   const code = new MagicString(content);
+  // uses new convertion, can be reverted quickly if this breaks to much bu changing to
+  // old : const parser = new HTMLParser(content);
   const parser = new HTMLParser(_convertTemplateSyntax(content));
   parser.parse().forEach((tag) => {
     let classes: string[] = [];
