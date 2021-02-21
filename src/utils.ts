@@ -76,3 +76,15 @@ export function logging(options: Options) {
   process.stdout.write(`${chalk.blueBold("│")}\n`)
   process.stdout.write(`${chalk.blueBold("└──────────")}\n`)
 }
+
+export function convertTemplateSyntax(content: string): string {
+  // converts content temporarily from special svelte syntax to more generic syntax for parsing ...
+  // from : <div class={`green ${myClass ? 'red' : 'green'}`}>Should be red!</div>
+  // to : <div class="green {myClass ? 'red' : 'green'}">Should be red!</div>
+  let parsedContent = content;
+  // needs make sure length and position are the same, so replacing with spaces
+  parsedContent = parsedContent.replace(/\{`/g, '" ');
+  parsedContent = parsedContent.replace(/`\}/g, ' "');
+  parsedContent = parsedContent.replace(/\$/g, " ");
+  return parsedContent
+}
