@@ -204,8 +204,8 @@ function _optimize(types: string, typeNodes: { [key: string]: string }) {
 }
 
 export function preprocess(options: typeof OPTIONS = {}) {
-  if (!process.env.BROWSER && options?.silent === false) logging(options);
   OPTIONS = { ...OPTIONS, ...options }; // change global settings here;
+  if (!process.env.BROWSER && options?.silent === false) logging(OPTIONS);
   PROCESSOR = new Processor(loadConfig(OPTIONS.config));
   VARIANTS = [
     ...Object.keys(PROCESSOR.resolveVariants()),

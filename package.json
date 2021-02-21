@@ -10,7 +10,8 @@
     "tsd": "tsc -p ./src --emitDeclarationOnly",
     "test": "ts-node -O '{\"module\":\"commonjs\"}' node_modules/jasmine/bin/jasmine --config=jasmine.json",
     "build": "rollup -c && pnpm tsd",
-    "build:prod": "PUBLISH=true rollup -c && pnpm tsd"
+    "build:prod": "PUBLISH=true rollup -c && pnpm tsd",
+    "release": "bumpp --tag --commit --push"
   },
   "repository": {
     "type": "git",
@@ -37,6 +38,7 @@
     "@rollup/plugin-typescript": "^8.1.1",
     "@types/jasmine": "^3.6.3",
     "@types/node": "^14.14.14",
+    "bumpp": "^6.0.6",
     "jasmine": "^3.6.4",
     "jasmine-spec-reporter": "^6.0.0",
     "rollup": "^2.38.5",
