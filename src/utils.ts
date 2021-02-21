@@ -1,4 +1,5 @@
 import { StyleSheet } from 'windicss/utils/style';
+import type { Options } from './interfaces';
 
 export function searchNotEscape(text:string, char = "{") {
   if (text.charAt(0) === char) return 0;
@@ -45,4 +46,33 @@ export function writeFileSync(path: string, data: string) {
 export function loadConfig(config?: string) {
   if (process.env.BROWSER) return config;
   return config ? require(require('path').resolve(config)) : undefined;
+}
+
+export function chalkColor() {
+  const chalk = require('chalk');
+  return {
+    blueBold: (text:string) => chalk.hex("#0ea5e9").bold(text),
+    blackBold: (text:string) => chalk.hex("#000").bold(text),
+    yellowBold: (text:string) => chalk.hex("#FFB11B").bold(text),
+    redBold: (text:string) => chalk.hex("#FF4000").bold(text),
+    green: (text:string) => chalk.hex("#00D17A")(text),
+    gray: (text:string) => chalk.hex("#717272")(text),
+  }
+}
+
+export function logging(options: Options) {
+  const chalk = chalkColor();
+  process.stdout.write(`${chalk.blueBold("│")}\n`)
+  process.stdout.write(`${chalk.blueBold("│")} ${chalk.blueBold("svelte-windicss-preprocess")} - v${require("./package.json").version}\n`)
+  process.stdout.write(`${chalk.blueBold("│")} ${process.env.NODE_ENV == undefined ? chalk.redBold("NODE_ENV is undefined") : ""}\n`)
+  process.stdout.write(`${chalk.blueBold("│")} ${chalk.blackBold("-")} windicss running mode: ${process.env.NODE_ENV === 'development' ? chalk.yellowBold("dev") : chalk.green("prod")}\n`)
+  process.stdout.write(`${chalk.blueBold("│")} ${chalk.blackBold("-")} advanced debug logs: ${options?.debug === true ? chalk.yellowBold("on") : chalk.green("off")}\n`)
+  if (options?.debug === true) {
+    process.stdout.write(`${chalk.blueBold("│")}    ${chalk.blackBold("•")} compilation mode: ${options?.compile == true ? chalk.gray("enabled") : chalk.gray("disabled")}\n`)
+    process.stdout.write(`${chalk.blueBold("│")}    ${chalk.blackBold("•")} class prefix: ${options?.prefix ? chalk.gray(options.prefix) : chalk.yellowBold("not set")}\n`)
+    process.stdout.write(`${chalk.blueBold("│")}    ${chalk.blackBold("•")} global preflights: ${options?.globalPreflight == true ? chalk.gray("enabled") : chalk.gray("disabled")}\n`)
+    process.stdout.write(`${chalk.blueBold("│")}    ${chalk.blackBold("•")} global utilities: ${options?.globalUtility == true ? chalk.gray("enabled") : chalk.gray("disabled")}\n`)
+  }
+  process.stdout.write(`${chalk.blueBold("│")}\n`)
+  process.stdout.write(`${chalk.blueBold("└──────────")}\n`)
 }

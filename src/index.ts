@@ -1,9 +1,9 @@
 import MagicString from "magic-string";
-import chalk from "chalk";
 import { Processor } from "windicss/lib";
 import { CSSParser } from "windicss/utils/parser";
-import { loadConfig, writeFileSync, combineStyleList, globalStyleSheet } from "./utils";
+import { loadConfig, writeFileSync, combineStyleList, globalStyleSheet, logging } from "./utils";
 import { default as HTMLParser } from "./parser";
+import type { Options } from "./interfaces";
 import type { StyleSheet } from "windicss/utils/style";
 
 const DEV = process.env.NODE_ENV === "development";
@@ -17,16 +17,7 @@ let CONDITIONS: StyleSheet[] = [];
 let FILES: (string | undefined)[] = [];
 let BUNDLES: { [key: string]: StyleSheet } = {};
 
-let OPTIONS: {
-  debug?: boolean;
-  silent?: boolean;
-  config?: string;
-  compile?: boolean;
-  prefix?: string;
-  bundle?: string;
-  globalPreflight?: boolean;
-  globalUtility?: boolean;
-} = {
+let OPTIONS: Options = {
   compile: false,
   prefix: "windi-",
   globalPreflight: true,
@@ -225,40 +216,8 @@ function _optimize(types: string, typeNodes: { [key: string]: string }) {
   writeFileSync(BUNDLEFILE, parser.parse().build(true));
 }
 
-function _blueBold(text: string) {
-  return chalk.hex("#0ea5e9").bold(text);
-}
-function _blackBold(text: string) {
-  return chalk.hex("#000").bold(text);
-}
-function _yellowBold(text: string) {
-  return chalk.hex("#FFB11B").bold(text);
-}
-function _redBold(text: string) {
-  return chalk.hex("#FF4000").bold(text);
-}
-function _green(text: string) {
-  return chalk.hex("#00D17A")(text);
-}
-function _gray(text: string) {
-  return chalk.hex("#717272")(text);
-}
 export function preprocess(options: typeof OPTIONS = {}) {
-  if (options?.silent === false) {
-    process.stdout.write(`${_blueBold("│")}\n`)
-    process.stdout.write(`${_blueBold("│")} ${_blueBold("svelte-windicss-preprocess")} - v${require("./package.json").version}\n`)
-    process.stdout.write(`${_blueBold("│")} ${process.env.NODE_ENV == undefined ? _redBold("NODE_ENV is undefined") : ""}\n`)
-    process.stdout.write(`${_blueBold("│")} ${_blackBold("-")} windicss running mode: ${process.env.NODE_ENV === 'development' ? _yellowBold("dev") : _green("prod")}\n`)
-    process.stdout.write(`${_blueBold("│")} ${_blackBold("-")} advanced debug logs: ${options?.debug === true ? _yellowBold("on") : _green("off")}\n`)
-    if (options?.debug === true) {
-      process.stdout.write(`${_blueBold("│")}    ${_blackBold("•")} compilation mode: ${options?.compile == true ? _gray("enabled") : _gray("disabled")}\n`)
-      process.stdout.write(`${_blueBold("│")}    ${_blackBold("•")} class prefix: ${options?.prefix ? _gray(options.prefix) : _yellowBold("not set")}\n`)
-      process.stdout.write(`${_blueBold("│")}    ${_blackBold("•")} global preflights: ${options?.globalPreflight == true ? _gray("enabled") : _gray("disabled")}\n`)
-      process.stdout.write(`${_blueBold("│")}    ${_blackBold("•")} global utilities: ${options?.globalUtility == true ? _gray("enabled") : _gray("disabled")}\n`)
-    }
-    process.stdout.write(`${_blueBold("│")}\n`)
-    process.stdout.write(`${_blueBold("└──────────")}\n`)
-  }
+  if (!process.env.BROWSER && options?.silent === false) logging(options);
   OPTIONS = { ...OPTIONS, ...options }; // change global settings here;
   PROCESSOR = new Processor(loadConfig(OPTIONS.config));
   VARIANTS = [

@@ -33,3 +33,14 @@ export interface Tag {
   name: string,
   value: (Attribute | Directive)[]
 }
+
+export interface Options {
+  debug?: boolean;
+  silent?: boolean;
+  config?: string;
+  compile?: boolean;
+  prefix?: string;
+  bundle?: string;
+  globalPreflight?: boolean;
+  globalUtility?: boolean;
+}
