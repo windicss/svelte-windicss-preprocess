@@ -2,19 +2,19 @@ export interface Node {
   start: number,
   end: number,
   type: string,
-  value?: Text | Expression | ( Text | Expression)[],
+  value?: Text | Expression | (Text | Expression)[],
 }
 
 export interface Attribute extends Node {
   type: 'Attribute',
   name: string,
-  value: Text | Expression | ( Text | Expression)[],
+  value: Text | Expression | (Text | Expression)[],
 }
 
 export interface Directive extends Node {
   type: 'Directive',
   name: string,
-  value: Text | Expression | ( Text | Expression)[],
+  value: Text | Expression | (Text | Expression)[],
 }
 
 export interface Expression extends Node {
