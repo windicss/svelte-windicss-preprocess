@@ -1,10 +1,7 @@
-utilities style test / should generate utilities / utilities / 0: >-
-  <div   class="min-h-screen bg-gray-100 py-6 justify-center aspect-w-9
-  aspect-h-16 flex flex-col sm:py-12"></div>
-
+Utilities test suite / should generate utility classes globally / globalUtilityClasses / 0: |-
+  <div class="bg-red-200">Hello World!</div>
 
   <style>
-
   :global(*, ::before, ::after) {
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
@@ -12,7 +9,6 @@ utilities style test / should generate utilities / utilities / 0: >-
     border-style: solid;
     border-color: #e5e7eb;
   }
-
   :global(*) {
     --tw-ring-inset: var(--tw-empty,/*!*/ /*!*/);
     --tw-ring-offset-width: 0px;
@@ -22,102 +18,119 @@ utilities style test / should generate utilities / utilities / 0: >-
     --tw-ring-shadow: 0 0 #0000;
     --tw-shadow: 0 0 #0000;
   }
-
   :global(:root) {
     -moz-tab-size: 4;
     -o-tab-size: 4;
     tab-size: 4;
   }
-
   :global(:-moz-focusring) {
     outline: 1px dotted ButtonText;
   }
-
   :global(:-moz-ui-invalid) {
     box-shadow: none;
   }
-
   :global(::moz-focus-inner) {
     border-style: none;
     padding: 0;
   }
-
   :global(::-webkit-inner-spin-button, ::-webkit-outer-spin-button) {
     height: auto;
   }
-
   :global(::-webkit-search-decoration) {
     -webkit-appearance: none;
   }
-
   :global(::-webkit-file-upload-button) {
     -webkit-appearance: button;
     font: inherit;
   }
-
   :global([type='search']) {
     -webkit-appearance: textfield;
     outline-offset: -2px;
   }
-
   :global(abbr[title]) {
     -webkit-text-decoration: underline dotted;
     text-decoration: underline dotted;
   }
-
   :global(body) {
     margin: 0;
     font-family: inherit;
     line-height: inherit;
   }
-
   :global(html) {
     -webkit-text-size-adjust: 100%;
     font-family: ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
     line-height: 1.5;
   }
-
-  :global(.bg-gray-100) {
+  :global(.bg-red-200) {
     --tw-bg-opacity: 1;
-    background-color: rgba(243, 244, 246, var(--tw-bg-opacity));
+    background-color: rgba(254, 202, 202, var(--tw-bg-opacity));
   }
+  </style>
+Utilities test suite / should generate utility classes locally / lokalUtilityClasses / 0: |-
+  <div class="bg-red-200">Hello World!</div>
 
-  :global(.flex) {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
+  <style>
+  :global(*, ::before, ::after) {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    border-width: 0;
+    border-style: solid;
+    border-color: #e5e7eb;
   }
-
-  :global(.flex-col) {
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    -ms-flex-direction: column;
-    -webkit-flex-direction: column;
-    flex-direction: column;
+  :global(*) {
+    --tw-ring-inset: var(--tw-empty,/*!*/ /*!*/);
+    --tw-ring-offset-width: 0px;
+    --tw-ring-offset-color: #fff;
+    --tw-ring-color: rgba(59, 130, 246, 0.5);
+    --tw-ring-offset-shadow: 0 0 #0000;
+    --tw-ring-shadow: 0 0 #0000;
+    --tw-shadow: 0 0 #0000;
   }
-
-  :global(.min-h-screen) {
-    min-height: 100vh;
+  :global(:root) {
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
   }
-
-  :global(.py-6) {
-    padding-top: 1.5rem;
-    padding-bottom: 1.5rem;
+  :global(:-moz-focusring) {
+    outline: 1px dotted ButtonText;
   }
-
-  :global(.justify-center) {
-    -webkit-box-pack: center;
-    -ms-flex-pack: center;
-    -webkit-justify-content: center;
-    justify-content: center;
+  :global(:-moz-ui-invalid) {
+    box-shadow: none;
   }
-
-  @media (min-width: 640px) {
-    :global(.sm\:py-12) {
-      padding-top: 3rem;
-      padding-bottom: 3rem;
-    }
+  :global(::moz-focus-inner) {
+    border-style: none;
+    padding: 0;
   }
-
+  :global(::-webkit-inner-spin-button, ::-webkit-outer-spin-button) {
+    height: auto;
+  }
+  :global(::-webkit-search-decoration) {
+    -webkit-appearance: none;
+  }
+  :global(::-webkit-file-upload-button) {
+    -webkit-appearance: button;
+    font: inherit;
+  }
+  :global([type='search']) {
+    -webkit-appearance: textfield;
+    outline-offset: -2px;
+  }
+  :global(abbr[title]) {
+    -webkit-text-decoration: underline dotted;
+    text-decoration: underline dotted;
+  }
+  :global(body) {
+    margin: 0;
+    font-family: inherit;
+    line-height: inherit;
+  }
+  :global(html) {
+    -webkit-text-size-adjust: 100%;
+    font-family: ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+    line-height: 1.5;
+  }
+  .bg-red-200 {
+    --tw-bg-opacity: 1;
+    background-color: rgba(254, 202, 202, var(--tw-bg-opacity));
+  }
   </style>

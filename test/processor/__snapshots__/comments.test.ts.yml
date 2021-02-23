@@ -1,5 +1,7 @@
-utilities style test / should generate apply styles / apply / 0: |-
-  <div></div>
+Utilities test suite / should ignore comments / globalCommentClasses / 0: |-
+
+
+  <div>Hello World!</div>
 
   <style>
   :global(*, ::before, ::after) {
@@ -60,18 +62,5 @@ utilities style test / should generate apply styles / apply / 0: |-
     -webkit-text-size-adjust: 100%;
     font-family: ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
     line-height: 1.5;
-  }
-  .testApply {
-    background: red;
-    padding-top: 1.5rem;
-    font-size: 1rem;
-    line-height: 1.5rem;
-    font-weight: 700;
-  }
-  @media (min-width: 640px) {
-    .testApply {
-      font-size: 1.125rem;
-      line-height: 1.75rem;
-    }
   }
   </style>

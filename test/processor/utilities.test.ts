@@ -1,14 +1,19 @@
-import { writeFileSync } from 'fs';
 import { preprocess } from '../../src/index';
+import { testConfig } from '../helpers/utils';
 
-describe("utilities style test", () => {
+describe("Utilities test suite", () => {
   let result: string;
-  beforeEach(async function () {
-    const content = `<div class="min-h-screen bg-gray-100 py-6 justify-center aspect-w-9 aspect-h-16" tw="flex flex-col" sm="py-12"></div>`;
-    result = (await preprocess().markup({ content, filename: 'test.svelte' })).code;
-  });
-  it("should generate utilities", () => {
-    writeFileSync('test.css', result);
-    expect(result).toMatchSnapshot('utilities');
-  });
-});
+  let content = '<div class="bg-red-200">Hello World!</div>';
+  it("should generate utility classes globally", async () => {
+    result = ""
+    result = (await preprocess({ ...testConfig, globalUtility: true }).markup({ content, filename: "test.svelte" })).code;
+    expect(result).toMatchSnapshot('globalUtilityClasses')
+  })
+
+  it("should generate utility classes locally", async () => {
+    result = ""
+    result = (await preprocess({ ...testConfig, globalUtility: false }).markup({ content, filename: "test.svelte" })).code;
+    expect(result).toMatchSnapshot('lokalUtilityClasses')
+  })
+
+})

@@ -1,5 +1,5 @@
-utilities style test / should generate preflights / preflight / 0: |-
-  <p>Hello World</p>
+Utilities test suite / should generate preflights globally / globalPreflight / 0: |-
+  <p>Hello World!</p>
 
   <style>
   :global(*, ::before, ::after) {
