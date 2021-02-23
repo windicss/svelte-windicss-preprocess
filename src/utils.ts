@@ -1,7 +1,7 @@
 import { StyleSheet } from 'windicss/utils/style';
 import type { Options } from './interfaces';
 
-export function searchNotEscape(text:string, char = "{") {
+export function searchNotEscape(text: string, char = "{") {
   if (text.charAt(0) === char) return 0;
   const index = text.search(new RegExp(String.raw`([^\\]${char})`));
   if (index === -1) return -1;
@@ -27,14 +27,14 @@ export function searchGroup(text: string) {
   return -1;
 }
 
-export function combineStyleList(stylesheets:StyleSheet[]) {
+export function combineStyleList(stylesheets: StyleSheet[]) {
   return stylesheets.reduce((previousValue, currentValue) => previousValue.extend(currentValue), new StyleSheet()).combine();//.sort();
 }
 
-export function globalStyleSheet(styleSheet:StyleSheet) {
+export function globalStyleSheet(styleSheet: StyleSheet) {
   // turn all styles in stylesheet to global style
-  styleSheet.children.forEach(style=>{
-    style.wrapRule((rule:string)=>`:global(${rule})`);
+  styleSheet.children.forEach(style => {
+    style.wrapRule((rule: string) => `:global(${rule})`);
   });
   return styleSheet;
 }
@@ -51,12 +51,12 @@ export function loadConfig(config?: string) {
 export function chalkColor() {
   const chalk = require('chalk');
   return {
-    blueBold: (text:string) => chalk.hex("#0ea5e9").bold(text),
-    blackBold: (text:string) => chalk.hex("#000").bold(text),
-    yellowBold: (text:string) => chalk.hex("#FFB11B").bold(text),
-    redBold: (text:string) => chalk.hex("#FF4000").bold(text),
-    green: (text:string) => chalk.hex("#00D17A")(text),
-    gray: (text:string) => chalk.hex("#717272")(text),
+    blueBold: (text: string) => chalk.hex("#0ea5e9").bold(text),
+    blackBold: (text: string) => chalk.hex("#000").bold(text),
+    yellowBold: (text: string) => chalk.hex("#FFB11B").bold(text),
+    redBold: (text: string) => chalk.hex("#FF4000").bold(text),
+    green: (text: string) => chalk.hex("#00D17A")(text),
+    gray: (text: string) => chalk.hex("#717272")(text),
   }
 }
 

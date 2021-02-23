@@ -74,6 +74,8 @@ function addVariant(classNames: string, variant: string) {
 }
 function _preprocess(content: string, filename: string) {
   content = content.replace(/<!--[\s\S]*?-->/g, '');
+  // transforms groups to multiple classes
+  content = content.replace(/([!\w][\w:_/-]*?):\(([\w\s/-]*?)\)/gm, (_, groupOne: string, groupTwo: string) => groupTwo.split(/\s/g).map(cssClass => `${groupOne}:${cssClass}`).join(' '))
   let style = content.match(REGEXP.matchStyle)?.[0];
   if (style) {
     // handle tailwind directives ...
@@ -81,7 +83,6 @@ function _preprocess(content: string, filename: string) {
     STYLESHEETS.push(new CSSParser(style, PROCESSOR).parse());
     content = content.replace(REGEXP.matchStyle, "");
   }
-
   const code = new MagicString(content);
   // uses new convertion, can be reverted quickly if this breaks to much bu changing to
   // old : const parser = new HTMLParser(content);
