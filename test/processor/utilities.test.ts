@@ -12,8 +12,8 @@ describe("Utilities test suite", () => {
 
   it("should generate utility classes locally", async () => {
     result = ""
-    result = (await preprocess({ ...testConfig, globalUtility: false }).markup({ content, filename: "test.svelte" })).code;
-    expect(result).toMatchSnapshot('lokalUtilityClasses')
+    result = (await preprocess({ ...testConfig, globalUtility: true }).markup({ content, filename: "test.svelte" })).code;
+    expect(result).toMatchSnapshot('localUtilityClasses')
   })
 
 })
