@@ -34,7 +34,9 @@ export function combineStyleList(stylesheets: StyleSheet[]) {
 export function globalStyleSheet(styleSheet: StyleSheet) {
   // turn all styles in stylesheet to global style
   styleSheet.children.forEach(style => {
-    style.wrapRule((rule: string) => `:global(${rule})`);
+    if (!style.rule.includes(":global")) {
+      style.wrapRule((rule: string) => `:global(${rule})`);
+    }
   });
   return styleSheet;
 }
