@@ -1,13 +1,25 @@
-import { writeFileSync } from 'fs';
 import { preprocess } from '../../src/index';
+import { testConfig } from '../helpers/utils';
 
-describe("templates style test", () => {
+describe("Templates test suite", () => {
   let result: string;
-  beforeEach(async function () {
-    const content = '<div class={`px-1.5 ${myClass ? "bg-red-100" : "bg-teal-500"}`}>Should be red!</div>';
-    result = (await preprocess().markup({ content, filename: 'test.svelte' })).code;
-  });
-  it("should generate utilities", () => {
-    expect(result).toMatchSnapshot('templates');
-  });
-});
+  let content = '<div class={`px-1.5 ${myClass ? "bg-red-100" : "bg-teal-500"} `}>Hello World!</div>';
+  it("schould parse template syntax globally", async () => {
+    result = ""
+    result = (await preprocess({ ...testConfig, globalUtility: true, compile: false }).markup({ content, filename: "test.svelte" })).code;
+    expect(result).toMatchSnapshot('globalTemplateClasses')
+  })
+
+  it("schould parse template syntax locally", async () => {
+    result = ""
+    result = (await preprocess({ ...testConfig, globalUtility: false, compile: false }).markup({ content, filename: "test.svelte" })).code;
+    expect(result).toMatchSnapshot('localTemplateClasses')
+  })
+
+  it("schould parse template syntax locally and compile", async () => {
+    result = ""
+    result = (await preprocess({ ...testConfig, globalUtility: false, compile: true }).markup({ content, filename: "test.svelte" })).code;
+    expect(result).toMatchSnapshot('localTemplateClassesCompiled')
+  })
+
+})
