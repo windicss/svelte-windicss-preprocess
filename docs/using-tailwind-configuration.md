@@ -6,7 +6,7 @@ Basically it is a simple tailwind configuration file, you need to replace tailwi
 
 ```js
 // tailwind.config.js
-const colors = require('windicss/colors')
+const colors = require('windicss/colors');
 
 module.exports = {
   theme: {
@@ -28,39 +28,50 @@ module.exports = {
     },
     extend: {
       spacing: {
-        '128': '32rem',
-        '144': '36rem',
+        128: '32rem',
+        144: '36rem',
       },
       borderRadius: {
         '4xl': '2rem',
-      }
-    }
-  }
-}
+      },
+    },
+  },
+};
 ```
 
-## Add your config file to windicss
+## Add plugins
 
-Add `config` option to your `rollup.config.js`/`svelte.config.js`.
+Windi CSS provides official plugins which you can add in your configuration file.
+
+They are similar to the ones from Tailwind CSS, but adapted to the interface of Windi CSS to add improvements like auto-inferred utilities.
+
+### Compatibility Chart
+
+| Directive                                                                | Status                                                                             |
+| :----------------------------------------------------------------------- | :--------------------------------------------------------------------------------- |
+| [typography](https://github.com/tailwindlabs/tailwindcss-typography)     | ✅ &ensp;[Supported](https://windicss.netlify.app/guide/plugins.html#typography)   |
+| [forms](https://github.com/tailwindlabs/tailwindcss-forms)               | ✅ &ensp;[Supported](https://windicss.netlify.app/guide/plugins.html#forms)        |
+| [aspect-ratio](https://github.com/tailwindlabs/tailwindcss-aspect-ratio) | ✅ &ensp;[Supported](https://windicss.netlify.app/guide/plugins.html#aspect-ratio) |
+| [line-clamp](https://github.com/tailwindlabs/tailwindcss-line-clamp)     | ✅ &ensp;[Supported](https://windicss.netlify.app/guide/plugins.html#line-clamp)   |
+| filters                                                                  | ✅ &ensp;[Supported](https://windicss.netlify.app/guide/plugins.html#filters)      |
+| scroll-snap                                                              | ✅ &ensp;[Supported](https://windicss.netlify.app/guide/plugins.html#scroll-snap)  |
+
+### Configuration file
 
 ```js
-const windicss = require('svelte-windicss-preprocess');
-// ...
-plugins: [
-    svelte({
-        preprocess: {
-            markup: windicss.preprocess({
-                config: 'tailwind.config.js', // things like ./src/tailwind.config.js also works
-                compile: false,
-                prefix: 'windi-',
-                globalPreflight: true,
-                globalUtility: true, 
-            }),
-        },
-       // ...
-    }),
+// tailwind.config.js
+module.exports = {
+  theme: {
     // ...
-]
+  },
+  plugins: [
+    require('windicss/plugin/typography'),
+    require('windicss/plugin/forms'),
+    require('windicss/plugin/aspect-ratio'),
+    require('windicss/plugin/line-clamp'),
+    require('windicss/plugin/filters'),
+    require('windicss/plugin/scroll-snap'),
+    // ...
+  ],
+};
 ```
-
-Now you can test whether your configuration file is working properly, and welcome feedback if you find any problems.
