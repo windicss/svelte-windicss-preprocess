@@ -1,5 +1,5 @@
 module.exports = {
-  preprocess: require('svelte-windicss-preprocess').preprocess({
+  preprocess: require('../../dist/index.js').preprocess({
     silent: false,
     debug: true,
     compile: true,
