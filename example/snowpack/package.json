@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "svelte": "^3.32.3",
+    "svelte-windicss-preprocess": "^2.2.1"
+  },
+  "devDependencies": {
+    "@snowpack/plugin-svelte": "^3.5.2",
+    "rollup": "^2.39.1",
+    "snowpack": "^3.0.13",
+    "svelte-hmr": "^0.12.6"
+  },
+  "scripts": {
+    "build": "snowpack build",
+    "dev": "snowpack dev --open none",
+    "test": "echo \"This template does not include a test runner by default.\" && exit 1"
+  }
+}
