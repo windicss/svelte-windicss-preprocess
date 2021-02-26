@@ -20,6 +20,7 @@ devDependencies:
   jasmine: 3.6.4
   jasmine-spec-reporter: 6.0.0
   js-yaml: 4.0.0
+  pnpm: 5.17.3
   rollup: 2.39.1
   rollup-plugin-terser: 7.0.2_rollup@2.39.1
   ts-node: 9.1.1_typescript@4.2.2
@@ -899,6 +900,13 @@ packages:
       node: '>= 6'
     resolution:
       integrity: sha512-WuNqLTbMI3tmfef2TKxlQmAiLHKtFhlsCZnPIpuv2Ow0RDVO8lfy1Opf4NUzlMXLjPl+Men7AuVdX6TA+s+uGA==
+  /pnpm/5.17.3:
+    dev: true
+    engines:
+      node: '>=10.16'
+    hasBin: true
+    resolution:
+      integrity: sha512-Dy2MkOEYsE/9xRNEc6JdiA5HXRo0hxtBOKiYbnbU2BPtBmUt7FVwhnJI4oPW5LrbP1p6lXt/RpPFWl3WmwRH9A==
   /queue-microtask/1.2.2:
     dev: true
     resolution:
@@ -1256,6 +1264,7 @@ specifiers:
   jasmine-spec-reporter: ^6.0.0
   js-yaml: ^4.0.0
   magic-string: ^0.25.7
+  pnpm: ^5.17.3
   rollup: ^2.39.1
   rollup-plugin-terser: ^7.0.2
   ts-node: ^9.1.1
