@@ -21,7 +21,7 @@ let OPTIONS: Options = {
   compile: false,
   prefix: "windi-",
   globalPreflight: true,
-  globalUtility: true,
+  globalUtility: false,
 };
 
 const REGEXP = {
