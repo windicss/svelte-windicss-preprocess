@@ -79,8 +79,13 @@ function _preprocess(content: string, filename: string) {
   let style = content.match(REGEXP.matchStyle)?.[0];
   if (style) {
     // handle tailwind directives ...
+    var global = style.match(new RegExp("global", "g"));
     style = style.replace(/<\/?style[^>]*>/g, "");
-    STYLESHEETS.push(new CSSParser(style, PROCESSOR).parse());
+    if (global) {
+      STYLESHEETS.push(globalStyleSheet(new CSSParser(style, PROCESSOR).parse()));
+    } else {
+      STYLESHEETS.push(new CSSParser(style, PROCESSOR).parse());
+    }
     content = content.replace(REGEXP.matchStyle, "");
   }
   const code = new MagicString(content);

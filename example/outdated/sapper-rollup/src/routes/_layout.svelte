@@ -1,11 +1,14 @@
 <script>
-	import Nav from '../components/Nav.svelte';
+  import Nav from '../components/Nav.svelte';
 
-	export let segment;
+  export let segment;
 </script>
 
-<Nav {segment}/>
+<Nav {segment} />
 
-<main class="pt-24 px-12 container mx-auto">
-	<slot></slot>
+<main class="container px-12 pt-24 mx-auto ">
+  <slot />
 </main>
+
+<style>
+</style>

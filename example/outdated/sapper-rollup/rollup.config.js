@@ -28,7 +28,13 @@ export default {
         'process.env.NODE_ENV': JSON.stringify(mode),
       }),
       svelte({
-        preprocess: require('../../../dist/index.js').preprocess({ compile: false }),
+        preprocess: require('../../../dist/index.js').preprocess({
+          silent: false,
+          debug: true,
+          compile: false,
+          prefix: 'windi-',
+          globalUtility: true,
+        }),
         compilerOptions: {
           dev,
           hydratable: true,
@@ -87,7 +93,13 @@ export default {
         'process.env.NODE_ENV': JSON.stringify(mode),
       }),
       svelte({
-        preprocess: require('../../../dist/index.js').preprocess({ compile: false }),
+        preprocess: require('../../../dist/index.js').preprocess({
+          silent: false,
+          debug: true,
+          compile: false,
+          prefix: 'windi-',
+          globalUtility: true,
+        }),
         compilerOptions: {
           dev,
           generate: 'ssr',

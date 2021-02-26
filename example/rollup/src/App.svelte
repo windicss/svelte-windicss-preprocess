@@ -10,4 +10,8 @@
   <Widget />
 </div>
 
-<style></style>
+<style global>
+  .test {
+    @apply bg-red-100;
+  }
+</style>
