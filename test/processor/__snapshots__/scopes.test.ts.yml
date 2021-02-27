@@ -1,4 +1,4 @@
-Utilities test suite / should generate scoped classes globally / globalScopedClasses / 0: |-
+Templates test suite / should generate scoped classes globally / globalScopedClasses / 0: |-
 
   <div class="scoped bg-red-200">Hello, World!</div>
 
@@ -77,7 +77,7 @@ Utilities test suite / should generate scoped classes globally / globalScopedCla
     }
   }
   </style>
-Utilities test suite / should generate scoped classes locally / localScopedClasses / 0: |-
+Templates test suite / should generate scoped classes locally / localScopedClasses / 0: |-
 
   <div class="scoped bg-red-200">Hello, World!</div>
 
@@ -156,7 +156,7 @@ Utilities test suite / should generate scoped classes locally / localScopedClass
     }
   }
   </style>
-Utilities test suite / should generate scoped classes locally and compile / localScopedClassesCompiled / 0: |-
+Templates test suite / should generate scoped classes locally and compile / localScopedClassesCompiled / 0: |-
 
   <div class="windi-wca1md scoped">Hello, World!</div>
 

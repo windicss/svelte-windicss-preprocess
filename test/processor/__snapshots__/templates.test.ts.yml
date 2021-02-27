@@ -1,4 +1,4 @@
-Utilities test suite / schould parse template syntax globally / globalTemplateClasses / 0: >-
+Templates test suite / schould parse template syntax globally / globalTemplateClasses / 0: >-
   <div class="px-1.5 {myClass ? "bg-red-100" : "bg-teal-500"}">Hello
   World!</div>
 
@@ -93,7 +93,7 @@ Utilities test suite / schould parse template syntax globally / globalTemplateCl
   }
 
   </style>
-Utilities test suite / schould parse template syntax locally / localTemplateClasses / 0: >-
+Templates test suite / schould parse template syntax locally / localTemplateClasses / 0: >-
   <div class="px-1.5 {myClass ? "bg-red-100" : "bg-teal-500"}">Hello
   World!</div>
 
@@ -188,7 +188,7 @@ Utilities test suite / schould parse template syntax locally / localTemplateClas
   }
 
   </style>
-Utilities test suite / schould parse template syntax locally and compile / localTemplateClassesCompiled / 0: >-
+Templates test suite / schould parse template syntax locally and compile / localTemplateClassesCompiled / 0: >-
   <div class="windi-3xlqtq {myClass ? "bg-red-100" : "bg-teal-500"}">Hello
   World!</div>
 

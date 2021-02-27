@@ -1,4 +1,4 @@
-Utilities test suite / should generate preflights globally / globalPreflight / 0: |-
+Templates test suite / should generate preflights globally / globalPreflight / 0: |-
   <p>Hello World!</p>
 
   <style>
