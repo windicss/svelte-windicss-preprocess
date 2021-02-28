@@ -3,7 +3,7 @@ Templates test suite / should generate scoped classes globally / globalScopedCla
   <div class="scoped bg-red-200">Hello, World!</div>
 
   <style>
-  :global(*, ::before, ::after) {
+  :global(*), :global(::before), :global(::after) {
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     border-width: 0;
@@ -34,7 +34,7 @@ Templates test suite / should generate scoped classes globally / globalScopedCla
     border-style: none;
     padding: 0;
   }
-  :global(::-webkit-inner-spin-button, ::-webkit-outer-spin-button) {
+  :global(::-webkit-inner-spin-button), :global(::-webkit-outer-spin-button) {
     height: auto;
   }
   :global(::-webkit-search-decoration) {
@@ -82,7 +82,7 @@ Templates test suite / should generate scoped classes locally / localScopedClass
   <div class="scoped bg-red-200">Hello, World!</div>
 
   <style>
-  :global(*, ::before, ::after) {
+  :global(*), :global(::before), :global(::after) {
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     border-width: 0;
@@ -113,7 +113,7 @@ Templates test suite / should generate scoped classes locally / localScopedClass
     border-style: none;
     padding: 0;
   }
-  :global(::-webkit-inner-spin-button, ::-webkit-outer-spin-button) {
+  :global(::-webkit-inner-spin-button), :global(::-webkit-outer-spin-button) {
     height: auto;
   }
   :global(::-webkit-search-decoration) {
@@ -161,7 +161,7 @@ Templates test suite / should generate scoped classes locally and compile / loca
   <div class="windi-wca1md scoped">Hello, World!</div>
 
   <style>
-  :global(*, ::before, ::after) {
+  :global(*), :global(::before), :global(::after) {
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     border-width: 0;
@@ -192,7 +192,7 @@ Templates test suite / should generate scoped classes locally and compile / loca
     border-style: none;
     padding: 0;
   }
-  :global(::-webkit-inner-spin-button, ::-webkit-outer-spin-button) {
+  :global(::-webkit-inner-spin-button), :global(::-webkit-outer-spin-button) {
     height: auto;
   }
   :global(::-webkit-search-decoration) {

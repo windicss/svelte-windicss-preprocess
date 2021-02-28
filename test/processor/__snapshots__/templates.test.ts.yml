@@ -5,7 +5,7 @@ Templates test suite / schould parse template syntax globally / globalTemplateCl
 
   <style>
 
-  :global(*, ::before, ::after) {
+  :global(*), :global(::before), :global(::after) {
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     border-width: 0;
@@ -42,7 +42,7 @@ Templates test suite / schould parse template syntax globally / globalTemplateCl
     padding: 0;
   }
 
-  :global(::-webkit-inner-spin-button, ::-webkit-outer-spin-button) {
+  :global(::-webkit-inner-spin-button), :global(::-webkit-outer-spin-button) {
     height: auto;
   }
 
@@ -100,7 +100,7 @@ Templates test suite / schould parse template syntax locally / localTemplateClas
 
   <style>
 
-  :global(*, ::before, ::after) {
+  :global(*), :global(::before), :global(::after) {
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     border-width: 0;
@@ -137,7 +137,7 @@ Templates test suite / schould parse template syntax locally / localTemplateClas
     padding: 0;
   }
 
-  :global(::-webkit-inner-spin-button, ::-webkit-outer-spin-button) {
+  :global(::-webkit-inner-spin-button), :global(::-webkit-outer-spin-button) {
     height: auto;
   }
 
@@ -195,7 +195,7 @@ Templates test suite / schould parse template syntax locally and compile / local
 
   <style>
 
-  :global(*, ::before, ::after) {
+  :global(*), :global(::before), :global(::after) {
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     border-width: 0;
@@ -232,7 +232,7 @@ Templates test suite / schould parse template syntax locally and compile / local
     padding: 0;
   }
 
-  :global(::-webkit-inner-spin-button, ::-webkit-outer-spin-button) {
+  :global(::-webkit-inner-spin-button), :global(::-webkit-outer-spin-button) {
     height: auto;
   }
 
