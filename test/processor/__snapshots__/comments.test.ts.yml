@@ -1,10 +1,10 @@
-Utilities test suite / should ignore comments / globalCommentClasses / 0: |-
+Templates test suite / should ignore comments / globalCommentClasses / 0: |-
 
 
   <div>Hello World!</div>
 
   <style>
-  :global(*, ::before, ::after) {
+  :global(*), :global(::before), :global(::after) {
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     border-width: 0;
@@ -35,7 +35,7 @@ Utilities test suite / should ignore comments / globalCommentClasses / 0: |-
     border-style: none;
     padding: 0;
   }
-  :global(::-webkit-inner-spin-button, ::-webkit-outer-spin-button) {
+  :global(::-webkit-inner-spin-button), :global(::-webkit-outer-spin-button) {
     height: auto;
   }
   :global(::-webkit-search-decoration) {
