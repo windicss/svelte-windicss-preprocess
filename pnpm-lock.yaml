@@ -1,7 +1,7 @@
 dependencies:
   chalk: 4.1.0
   magic-string: 0.25.7
-  windicss: 2.2.1
+  windicss: 2.2.2
 devDependencies:
   '@rollup/plugin-node-resolve': 11.2.0_rollup@2.40.0
   '@rollup/plugin-replace': 2.4.1_rollup@2.40.0
@@ -15,15 +15,13 @@ devDependencies:
   bumpp: 6.0.6
   cross-env: 7.0.3
   diff: 5.0.0
-  esno: 0.4.4
   fs-extra: 9.1.0
   jasmine: 3.6.4
   jasmine-spec-reporter: 6.0.0
   js-yaml: 4.0.0
-  pnpm: 5.18.1
   rollup: 2.40.0
   rollup-plugin-terser: 7.0.2_rollup@2.40.0
-  ts-node: 9.1.1_typescript@4.2.2
+  sucrase: 3.17.1
   tslib: 2.1.0
   typescript: 4.2.2
 lockfileVersion: 5.2
@@ -213,10 +211,6 @@ packages:
     dev: true
     resolution:
       integrity: sha1-q8av7tzqUugJzcA3au0845Y10X8=
-  /arg/4.1.3:
-    dev: true
-    resolution:
-      integrity: sha512-58S9QDqG0Xx27YwPSt9fJxivjYl432YCwfDMfZ+71RAqUrZef7LrKQZ3LHLOwCS4FLNBplP533Zx895SeOCHvA==
   /argparse/2.0.1:
     dev: true
     resolution:
@@ -375,10 +369,6 @@ packages:
     dev: true
     resolution:
       integrity: sha1-2Klr13/Wjfd5OnMDajug1UBdR3s=
-  /create-require/1.1.1:
-    dev: true
-    resolution:
-      integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==
   /cross-env/7.0.3:
     dependencies:
       cross-spawn: 7.0.3
@@ -418,12 +408,6 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-TLz+x/vEXm/Y7P7wn1EJFNLxYpUD4TgMosxY6fAVJUnJMbupHBOncxyWUG9OpTaH9EBD7uFI5LfEgmMOc54DsA==
-  /diff/4.0.2:
-    dev: true
-    engines:
-      node: '>=0.3.1'
-    resolution:
-      integrity: sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==
   /diff/5.0.0:
     dev: true
     engines:
@@ -442,38 +426,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==
-  /esbuild-register/2.0.0_esbuild@0.8.50:
-    dependencies:
-      esbuild: 0.8.50
-      joycon: 2.2.5
-      pirates: 4.0.1
-      source-map-support: 0.5.19
-      strip-json-comments: 3.1.1
-    dev: true
-    peerDependencies:
-      esbuild: '>=0.8.31'
-    resolution:
-      integrity: sha512-98i1+7OnCURCbKaWw5wnY05e4v7uknFEER7LtVxi/lCs8U+sl6/LnITvfeoDLrsqxlA3O6BjxK8QqsirfYULfA==
-  /esbuild/0.8.50:
-    dev: true
-    hasBin: true
-    requiresBuild: true
-    resolution:
-      integrity: sha512-oidFLXssA7IccYzkqLVZSqNJDwDq8Mh/vqvrW+3fPWM7iUiC5O2bCllhnO8+K9LlyL/2Z6n+WwRJAz9fqSIVRg==
   /escape-string-regexp/1.0.5:
     dev: true
     engines:
       node: '>=0.8.0'
     resolution:
       integrity: sha1-G2HAViGQqN/2rjuyzwIAyhMLhtQ=
-  /esno/0.4.4:
-    dependencies:
-      esbuild: 0.8.50
-      esbuild-register: 2.0.0_esbuild@0.8.50
-    dev: true
-    hasBin: true
-    resolution:
-      integrity: sha512-YthG7d+wodPWKkJTdQPMrKZCbJgtyWsel6UBekjZw8AahUTtkqvtLXcMnRXeZ5YIcjviLXw3Cmq7hVlvB7dFyw==
   /estree-walker/1.0.1:
     dev: true
     resolution:
@@ -727,12 +685,6 @@ packages:
       node: '>= 10.13.0'
     resolution:
       integrity: sha512-KWYVV1c4i+jbMpaBC+U++4Va0cp8OisU185o73T1vo99hqi7w8tSJfUXYswwqqrjzwxa6KpRK54WhPvwf5w6PQ==
-  /joycon/2.2.5:
-    dev: true
-    engines:
-      node: '>=6'
-    resolution:
-      integrity: sha512-YqvUxoOcVPnCp0VU1/56f+iKSdvIRJYPznH22BdXV3xMk75SFXhWeJkZ8C9XxUWt1b5x2X1SxuFygW1U0FmkEQ==
   /js-tokens/4.0.0:
     dev: true
     resolution:
@@ -785,10 +737,6 @@ packages:
       sourcemap-codec: 1.4.8
     resolution:
       integrity: sha512-4CrMT5DOHTDk4HYDlzmwu4FVCcIYI8gauveasrdCu2IKIFOJ3f0v/8MDGJCDL9oD2ppz/Av1b0Nj345H9M+XIA==
-  /make-error/1.3.6:
-    dev: true
-    resolution:
-      integrity: sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==
   /merge-stream/2.0.0:
     dev: true
     resolution:
@@ -900,13 +848,6 @@ packages:
       node: '>= 6'
     resolution:
       integrity: sha512-WuNqLTbMI3tmfef2TKxlQmAiLHKtFhlsCZnPIpuv2Ow0RDVO8lfy1Opf4NUzlMXLjPl+Men7AuVdX6TA+s+uGA==
-  /pnpm/5.18.1:
-    dev: true
-    engines:
-      node: '>=10.16'
-    hasBin: true
-    resolution:
-      integrity: sha512-pGOoysRHIarMHkF8ZxRwCN39ZWSffivlK+Bo4mkuFeRSKwQhF2e04n/PxQttyj6kfN0nR+4RkxFcY7Ts+Y10ZA==
   /queue-microtask/1.2.2:
     dev: true
     resolution:
@@ -1074,12 +1015,6 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-AuvKTrTfQNYNIctbR1K/YGTR1756GycPsg7b9bdV9Duqur4gv6aKqHXah67Z8ImS7WEz5QVcOtlfW2rZEugt6w==
-  /strip-json-comments/3.1.1:
-    dev: true
-    engines:
-      node: '>=8'
-    resolution:
-      integrity: sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==
   /sucrase/3.17.1:
     dependencies:
       commander: 4.1.1
@@ -1158,23 +1093,6 @@ packages:
     dev: true
     resolution:
       integrity: sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA==
-  /ts-node/9.1.1_typescript@4.2.2:
-    dependencies:
-      arg: 4.1.3
-      create-require: 1.1.1
-      diff: 4.0.2
-      make-error: 1.3.6
-      source-map-support: 0.5.19
-      typescript: 4.2.2
-      yn: 3.1.1
-    dev: true
-    engines:
-      node: '>=10.0.0'
-    hasBin: true
-    peerDependencies:
-      typescript: '>=2.7'
-    resolution:
-      integrity: sha512-hPlt7ZACERQGf03M253ytLY3dHbGNGrAq9qIHWUY9XHYl1z7wYngSr3OQ5xmui8o2AaxsONxIzjafLUiWBo1Fg==
   /tslib/1.14.1:
     dev: true
     resolution:
@@ -1223,13 +1141,13 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==
-  /windicss/2.2.1:
+  /windicss/2.2.2:
     dev: false
     engines:
       node: '>= 12'
     hasBin: true
     resolution:
-      integrity: sha512-eMwRN0YQZ2ipL9IsS6YgA2D564BiyHr5c6jDbND6ZwmMl1DmhLDfC5cr5Tbfp7vUceUxFonLM/1tx8pyPdLEZQ==
+      integrity: sha512-+yOlyx+j3/MJaoqhZb6BjjXnGMJcIdjaKs8cIYXkCr5t/wJLFBS35uDrqxo31IaSHOo/gtw+fcMyw8D+3oq6qg==
   /wrappy/1.0.2:
     dev: true
     resolution:
@@ -1238,12 +1156,6 @@ packages:
     dev: true
     resolution:
       integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==
-  /yn/3.1.1:
-    dev: true
-    engines:
-      node: '>=6'
-    resolution:
-      integrity: sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==
 specifiers:
   '@rollup/plugin-node-resolve': ^11.2.0
   '@rollup/plugin-replace': ^2.4.1
@@ -1258,16 +1170,14 @@ specifiers:
   chalk: ^4.1.0
   cross-env: ^7.0.3
   diff: ^5.0.0
-  esno: ^0.4.4
   fs-extra: ^9.1.0
   jasmine: ^3.6.4
   jasmine-spec-reporter: ^6.0.0
   js-yaml: ^4.0.0
   magic-string: ^0.25.7
-  pnpm: ^5.18.1
   rollup: ^2.40.0
   rollup-plugin-terser: ^7.0.2
-  ts-node: ^9.1.1
+  sucrase: ^3.17.1
   tslib: ^2.1.0
   typescript: ^4.2.2
-  windicss: ^2.2.1
+  windicss: ^2.2.2
