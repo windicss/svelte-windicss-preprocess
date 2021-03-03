@@ -82,11 +82,6 @@ Templates test suite / schould parse template syntax globally / globalTemplateCl
     background-color: rgba(254, 226, 226, var(--tw-bg-opacity));
   }
 
-  :global(.bg-teal-500) {
-    --tw-bg-opacity: 1;
-    background-color: rgba(20, 184, 166, var(--tw-bg-opacity));
-  }
-
   .px-1\.5 {
     padding-left: 0.375rem;
     padding-right: 0.375rem;
