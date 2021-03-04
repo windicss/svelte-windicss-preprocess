@@ -29,7 +29,7 @@
   "dependencies": {
     "chalk": "^4.1.0",
     "magic-string": "^0.25.7",
-    "windicss": "^2.2.3"
+    "windicss": "^2.2.6"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^11.2.0",

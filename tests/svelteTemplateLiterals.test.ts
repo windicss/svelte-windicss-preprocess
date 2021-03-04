@@ -85,9 +85,9 @@ padding-right: 0.375rem;
 }
 </style>
 `;
-test('templates', async () => {
+test('svelteTemplates', async () => {
   let result = (
-    await preprocess({ ...testConfig, globalUtility: false }).markup({ content, filename: 'nested.svelte' })
+    await preprocess({ ...testConfig, globalUtility: false }).markup({ content, filename: 'svelteTemplates.svelte' })
   ).code;
   expect(result.replace(/\n+|\t+|\s+/gm, '')).toBe(expectedOutput.replace(/\n+|\t+|\s+/gm, ''));
 });
