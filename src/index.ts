@@ -133,13 +133,13 @@ function _preprocess(content: string, filename: string) {
       if (OPTIONS.compile) {
         code.prependLeft(
           classStart,
-          `class="${compilation(classes.join(' '))}${expressions.length > 0 ? ' ' + expressions.join(' ') : ''}"`
+          `class="${compilation(classes.join(' '))}${expressions.length > 0 ? expressions.join(' ') : ''}"`
         );
       } else {
         interpretation(classes.join(' '));
         code.prependLeft(
           classStart,
-          `class="${classes.join(' ')}${expressions.length > 0 ? ' ' + expressions.join(' ') : ''}"`
+          `class="${classes.join(' ')}${expressions.length > 0 ? expressions.join(' ') : ''}"`
         );
       }
     }
