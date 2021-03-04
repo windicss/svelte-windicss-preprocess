@@ -1,4 +1,25 @@
-:global(*, ::before, ::after) {
+import { preprocess } from '../src/index';
+import { testConfig } from './utils';
+
+let content = `
+<div class="nestedColor">Hello, World!</div>
+<style>
+.nestedColor {
+  @apply text-red-500;
+}
+
+@screen sm {
+  .nestedColor {
+    @apply text-blue-500;
+  }
+}
+</style>
+`;
+let expectedOutput = `
+<div class="nestedColor">Hello, World!</div>
+
+<style>
+:global(*), :global(::before), :global(::after) {
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
   border-width: 0;
@@ -29,7 +50,7 @@
   border-style: none;
   padding: 0;
 }
-:global(::-webkit-inner-spin-button, ::-webkit-outer-spin-button) {
+:global(::-webkit-inner-spin-button), :global(::-webkit-outer-spin-button) {
   height: auto;
 }
 :global(::-webkit-search-decoration) {
@@ -57,3 +78,19 @@
   font-family: ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
   line-height: 1.5;
 }
+.nestedColor {
+  --tw-text-opacity: 1;
+  color: rgba(239, 68, 68, var(--tw-text-opacity));
+}
+@media (min-width: 640px) {
+  .nestedColor {
+    --tw-text-opacity: 1;
+    color: rgba(59, 130, 246, var(--tw-text-opacity));
+  }
+}
+</style>
+`;
+test('preflights', async () => {
+  let result = (await preprocess({ ...testConfig }).markup({ content, filename: 'nested.svelte' })).code;
+  expect(result.replace(/\n+|\t+|\s+/gm, '')).toBe(expectedOutput.replace(/\n+|\t+|\s+/gm, ''));
+});

@@ -65,6 +65,7 @@ function addVariant(classNames: string, variant: string) {
   return [...utilities, ...groups].map(i => `${variant}:${i}`).join(' ');
 }
 function _preprocess(content: string, filename: string) {
+  // FIXME: needs to be refactored. shouldn't remove comments completly, just for parsing
   content = content.replace(/<!--[\s\S]*?-->/g, '');
   // transforms groups to multiple classes
   content = content.replace(/([!\w][\w:_/-]*?):\(([\w\s/-]*?)\)/gm, (_, groupOne: string, groupTwo: string) =>
