@@ -151,8 +151,13 @@ function _preprocess(content: string, filename: string) {
   });
 
   // preflights might lost when refresh, so develop mode will always generate all preflights
-  // FILES.length === 0 || FILES.indexOf(filename) === 0
-  const preflights = PROCESSOR.preflight(content, true, true, true, !DEV);
+  const preflights = PROCESSOR.preflight(
+    content,
+    true,
+    FILES.length === 0 || FILES.indexOf(filename) === 0,
+    true,
+    !DEV
+  );
 
   const styleSheet = (OPTIONS.globalPreflight && !OPTIONS.bundle ? globalStyleSheet(preflights) : preflights)
     .extend(combineStyleList(STYLESHEETS))
