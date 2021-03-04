@@ -85,7 +85,7 @@ padding-right: 0.375rem;
 }
 </style>
 `;
-test('preflights', async () => {
+test('templates', async () => {
   let result = (
     await preprocess({ ...testConfig, globalUtility: false }).markup({ content, filename: 'nested.svelte' })
   ).code;

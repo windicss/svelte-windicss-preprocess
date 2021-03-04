@@ -90,7 +90,7 @@ let expectedOutput = `
 }
 </style>
 `;
-test('preflights', async () => {
+test('nested', async () => {
   let result = (await preprocess({ ...testConfig }).markup({ content, filename: 'nested.svelte' })).code;
   expect(result.replace(/\n+|\t+|\s+/gm, '')).toBe(expectedOutput.replace(/\n+|\t+|\s+/gm, ''));
 });
