@@ -1,5 +1,5 @@
 <script>
-  import Repl from './components/Repl/Repl.svelte';
+  import Repl from './Components/Repl/Repl.svelte';
   import { onMount } from 'svelte';
   let repl;
 
