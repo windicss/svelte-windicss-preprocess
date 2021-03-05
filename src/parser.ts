@@ -1,5 +1,5 @@
-import { searchGroup, searchNotEscape } from "./utils";
-import type { Tag, Text, Expression } from "./interfaces";
+import { searchGroup, searchNotEscape } from './utils';
+import type { Tag, Text, Expression } from './interfaces';
 
 export default class Parser {
   content: string;
@@ -8,12 +8,12 @@ export default class Parser {
     this.content = content;
   }
 
-  _parseTag(): Tag["value"] {
-    const nodes: Tag["value"] = [];
+  _parseTag(): Tag['value'] {
+    const nodes: Tag['value'] = [];
 
     while (!this.end) {
       const attr = this.food.match(/\S+\s*=\s*/);
-      const endTag = searchNotEscape(this.food, ">");
+      const endTag = searchNotEscape(this.food, '>');
 
       if (!attr || attr.index === undefined) break;
       if (endTag === -1 || endTag < attr.index) break;
@@ -21,11 +21,9 @@ export default class Parser {
       const start = this.index + attr.index;
       this.eatTo(attr.index + attr[0].length);
 
-      let name = attr[0].replace(/\s*=\s*$/, "");
-      let type = /^class:\S+/.test(name)
-        ? "Directive"
-        : ("Attribute" as "Directive" | "Attribute");
-      if (type === "Directive") name = name.replace(/^class:/, "");
+      let name = attr[0].replace(/\s*=\s*$/, '');
+      let type = /^class:\S+/.test(name) ? 'Directive' : ('Attribute' as 'Directive' | 'Attribute');
+      if (type === 'Directive') name = name.replace(/^class:/, '');
 
       const startChar = this.first;
       switch (startChar) {
@@ -36,33 +34,33 @@ export default class Parser {
           const children: (Text | Expression)[] = [];
 
           while (!this.end) {
-            const nextBracket = searchNotEscape(this.food, "{");
+            const nextBracket = searchNotEscape(this.food, '{');
             const nextQuote = searchNotEscape(this.food, startChar);
 
             if (nextQuote < nextBracket || nextBracket === -1) {
               let value = this.spitSpace(this.eatTo(nextQuote));
-              if (value.data) children.push({ ...value, type: "Text" });
+              if (value.data) children.push({ ...value, type: 'Text' });
               break;
             }
 
             // text before group
             const value = this.spitSpace(this.eatTo(nextBracket));
-            if (value.data) children.push({ ...value, type: "Text" });
+            if (value.data) children.push({ ...value, type: 'Text' });
 
             // handle group
-            this.eat("{");
+            this.eat('{');
             const groupEnd = searchGroup(this.food);
             const group = this.eatTo(groupEnd);
-            this.eat("}");
+            this.eat('}');
             this.eatSpace();
-            children.push({ ...group, type: "Expression" });
+            children.push({ ...group, type: 'Expression' });
           }
 
           const endChar = this.eat(startChar); // eat end quote
           nodes.push({ start, end: endChar.end, type, name, value: children });
           break;
 
-        case "{":
+        case '{':
           this.eat(startChar);
           const groupEnd = searchGroup(this.food);
           const value = this.eatTo(groupEnd);
@@ -72,7 +70,7 @@ export default class Parser {
             end: value.end + 1,
             type,
             name,
-            value: { ...value, type: "Expression" },
+            value: { ...value, type: 'Expression' },
           });
           break;
 
@@ -85,7 +83,7 @@ export default class Parser {
               end: value.end,
               type,
               name,
-              value: { ...value, type: "Text" },
+              value: { ...value, type: 'Text' },
             });
           }
           break;
@@ -101,7 +99,7 @@ export default class Parser {
       if (!tag || tag.index === undefined) break;
       const decl = this.eat(tag[0]);
       const value = this._parseTag();
-      this.eat(">");
+      this.eat('>');
       output.push({
         start: decl.start,
         end: this.index,
@@ -131,15 +129,7 @@ export default class Parser {
     if (spaces) this.index += spaces[0].length;
   }
 
-  spitSpace({
-    start,
-    end,
-    data,
-  }: {
-    start: number;
-    end: number;
-    data: string;
-  }) {
+  spitSpace({ start, end, data }: { start: number; end: number; data: string }) {
     const spaces = data.match(/\s+$/);
     if (spaces) {
       data = data.slice(0, spaces.index);
