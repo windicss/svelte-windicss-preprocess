@@ -1,6 +1,6 @@
 # svelte-repl
 
-This is a minimal implementation of the Svelte REPL, which preprocesses Tailwind CSS.
+This is a minimal implementation of the Svelte REPL, which preprocesses Windi CSS.
 
 ## Usage
 
