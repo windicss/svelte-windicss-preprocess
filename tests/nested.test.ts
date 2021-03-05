@@ -1,5 +1,6 @@
 import { preprocess } from '../src/index';
 import { testConfig } from './utils';
+import { html } from 'js-beautify';
 
 let content = `
 <div class="nestedColor">Hello, World!</div>
@@ -92,5 +93,5 @@ let expectedOutput = `
 `;
 test('nested', async () => {
   let result = (await preprocess({ ...testConfig }).markup({ content, filename: 'nested.svelte' })).code;
-  expect(result.replace(/\n+|\t+|\s+/gm, '')).toBe(expectedOutput.replace(/\n+|\t+|\s+/gm, ''));
+  expect(html(result, { preserve_newlines: false })).toBe(html(expectedOutput, { preserve_newlines: false }));
 });

@@ -1,10 +1,11 @@
-import MagicString from 'magic-string';
+// import MagicString from 'magic-string';
 import { Processor } from 'windicss/lib';
 import { CSSParser } from 'windicss/utils/parser';
 import { loadConfig, writeFileSync, combineStyleList, globalStyleSheet, logging, convertTemplateSyntax } from './utils';
-import { default as HTMLParser } from './parser';
+// import { default as HTMLParser } from './parser';
 import type { Options } from './interfaces';
 import type { StyleSheet } from 'windicss/utils/style';
+import { html } from 'js-beautify';
 
 const DEV = process.env.NODE_ENV === 'development';
 
@@ -37,33 +38,34 @@ const MODIFIED: { [key: string]: string } = {
   'tw-checked': 'checked',
 };
 
-function compilation(classNames: string) {
-  const utility = PROCESSOR.compile(classNames, OPTIONS.prefix, false);
-  IGNORED_CLASSES = [...IGNORED_CLASSES, ...utility.ignored];
-  STYLESHEETS.push(
-    OPTIONS.globalUtility && !OPTIONS.bundle ? globalStyleSheet(utility.styleSheet) : utility.styleSheet
-  );
-  return utility.className ? [utility.className, ...utility.ignored].join(' ') : utility.ignored.join(' '); // return new className
-}
+// function compilation(classNames: string) {
+//   const utility = PROCESSOR.compile(classNames, OPTIONS.prefix, false);
+//   IGNORED_CLASSES = [...IGNORED_CLASSES, ...utility.ignored];
+//   STYLESHEETS.push(
+//     OPTIONS.globalUtility && !OPTIONS.bundle ? globalStyleSheet(utility.styleSheet) : utility.styleSheet
+//   );
+//   return utility.className ? [utility.className, ...utility.ignored].join(' ') : utility.ignored.join(' '); // return new className
+// }
 
-function interpretation(classNames: string) {
-  const utility = PROCESSOR.interpret(classNames);
-  IGNORED_CLASSES = [...IGNORED_CLASSES, ...utility.ignored];
-  let styleSheet = utility.styleSheet;
-  STYLESHEETS.push(OPTIONS.globalUtility && !OPTIONS.bundle ? globalStyleSheet(styleSheet) : styleSheet);
-}
+// function interpretation(classNames: string) {
+//   const utility = PROCESSOR.interpret(classNames);
+//   IGNORED_CLASSES = [...IGNORED_CLASSES, ...utility.ignored];
+//   let styleSheet = utility.styleSheet;
+//   STYLESHEETS.push(OPTIONS.globalUtility && !OPTIONS.bundle ? globalStyleSheet(styleSheet) : styleSheet);
+// }
 
-function addVariant(classNames: string, variant: string) {
-  // prepend variant before each className
-  if (variant in MODIFIED) variant = MODIFIED[variant];
-  const groupRegex = /[\S]+:\([\s\S]*?\)/g;
-  const groups = [...(classNames.match(groupRegex) ?? [])];
-  const utilities = classNames
-    .replace(groupRegex, '')
-    .split(/\s+/)
-    .filter(i => i);
-  return [...utilities, ...groups].map(i => `${variant}:${i}`).join(' ');
-}
+// function addVariant(classNames: string, variant: string) {
+//   // prepend variant before each className
+//   if (variant in MODIFIED) variant = MODIFIED[variant];
+//   const groupRegex = /[\S]+:\([\s\S]*?\)/g;
+//   const groups = [...(classNames.match(groupRegex) ?? [])];
+//   const utilities = classNames
+//     .replace(groupRegex, '')
+//     .split(/\s+/)
+//     .filter(i => i);
+//   return [...utilities, ...groups].map(i => `${variant}:${i}`).join(' ');
+// }
+
 function _preprocess(content: string, filename: string) {
   // FIXME: needs to be refactored. shouldn't remove comments completly, just for parsing
   // TODO: move to utils
@@ -88,12 +90,21 @@ function _preprocess(content: string, filename: string) {
     }
     content = content.replace(REGEXP.matchStyle, '');
   }
+
   //const code = new MagicString(content);
   // uses new convertion, can be reverted quickly if this breaks to much bu changing to
   // old : const parser = new HTMLParser(content);
 
   let convertedContent = convertTemplateSyntax(content);
-  let lines = convertedContent.split('\n');
+  let checkedHtml = html(convertedContent, {
+    preserve_newlines: true,
+    end_with_newline: true,
+    indent_size: 2,
+    indent_char: ' ',
+    wrap_line_length: 0,
+    indent_empty_lines: true,
+  });
+  let lines = checkedHtml.split('\n');
   const VARIANTS_REGEX = VARIANTS.map(element => element.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')).join('|');
   const CLASS_REGEX = 'class|className';
   const COMBINED_REGEX = `(${CLASS_REGEX}|${VARIANTS_REGEX})`;
@@ -114,7 +125,7 @@ function _preprocess(content: string, filename: string) {
 
         if (GROUPED_MATCH) {
           if (VARIANTS.includes(GROUPED_MATCH[2])) {
-            console.log(GROUPED_MATCH);
+            // console.log(GROUPED_MATCH);
 
             // prepend variant before each className
             // if (variant in MODIFIED) variant = MODIFIED[variant];
@@ -125,7 +136,6 @@ function _preprocess(content: string, filename: string) {
             //   .split(/\s+/)
             //   .filter(i => i);
             // return [...utilities, ...groups].map(i => `${variant}:${i}`).join(' ');
-            // FIXME: allow groups
             lines[i] = lines[i].replace(new RegExp(new RegExp(GROUPED_MATCH[0]), 'i'), '');
             let prefix = GROUPED_MATCH[2];
             if (prefix in MODIFIED) prefix = MODIFIED[prefix];
@@ -133,7 +143,7 @@ function _preprocess(content: string, filename: string) {
             let convertedVariants = splittedVariants.map(variant => {
               return `${prefix}:${variant}`;
             });
-            console.log(convertedVariants);
+            // console.log(convertedVariants);
             // console.log(convertedVariants);
             lines[i] = lines[i].replace(
               new RegExp(new RegExp(TEXT_REGEX_MATCHER), 'i'),
@@ -337,6 +347,11 @@ function _optimize(types: string, typeNodes: { [key: string]: string }) {
   writeFileSync(BUNDLEFILE, parser.parse().build(true));
 }
 
+export function optimize(path: string) {
+  BUNDLEFILE = path;
+  return _optimize;
+}
+
 export function preprocess(options: typeof OPTIONS = {}) {
   OPTIONS = { ...OPTIONS, ...options }; // change global settings here;
   if (!process.env.BROWSER && options?.silent === false) logging(OPTIONS);
@@ -363,9 +378,4 @@ export function preprocess(options: typeof OPTIONS = {}) {
     markup: ({ content, filename }: { content: string; filename: string }) => Promise<{ code: string }>;
     style: ({ content }: { content: string }) => Promise<{ code: string }>;
   };
-}
-
-export function optimize(path: string) {
-  BUNDLEFILE = path;
-  return _optimize;
 }

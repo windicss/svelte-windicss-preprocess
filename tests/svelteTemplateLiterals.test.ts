@@ -1,8 +1,9 @@
 import { preprocess } from '../src/index';
 import { testConfig } from './utils';
+import { html } from 'js-beautify';
 
 let content = `
-<div class={\`px-1.5 \${myClass ? "bg-red-100" : "bg-teal-500"} \`}>
+<div class={\`px-1.5 \${myClass ? "bg-red-100" : "bg-teal-500"}\`}>
   Hello World!
 </div>
 `;
@@ -89,5 +90,5 @@ test('svelteTemplates', async () => {
   let result = (
     await preprocess({ ...testConfig, globalUtility: false }).markup({ content, filename: 'svelteTemplates.svelte' })
   ).code;
-  expect(result.replace(/\n+|\t+|\s+/gm, '')).toBe(expectedOutput.replace(/\n+|\t+|\s+/gm, ''));
+  expect(html(result, { preserve_newlines: false })).toBe(html(expectedOutput, { preserve_newlines: false }));
 });

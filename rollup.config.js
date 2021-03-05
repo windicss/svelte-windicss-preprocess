@@ -72,7 +72,7 @@ const main = {
     types("index.d.ts", "./types/index", "*"),
   ],
   external: [
-    "magic-string",
+    "js-beautify",
     "chalk",
     "windicss/lib",
     "windicss/utils/parser",
