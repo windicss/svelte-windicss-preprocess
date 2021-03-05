@@ -1,13 +1,14 @@
 import { preprocess } from '../src/index';
 import { testConfig } from './utils';
+import { html } from 'js-beautify';
 
 let content = `
-<div class={\`px-1.5 \${myClass ? "bg-red-100" : "bg-teal-500"} \`}>
+<div class={\`px-1.5 \${myClass ? "bg-red-100" : "bg-teal-500"}\`}>
   Hello World!
 </div>
 `;
 let expectedOutput = `
-<div class="px-1.5 {myClass ? "bg-red-100" : "bg-teal-500"}">
+<div class={\`px-1.5 \${myClass ? "bg-red-100" : "bg-teal-500"}\`}>
 Hello World!
 </div>
 
@@ -71,11 +72,11 @@ line-height: inherit;
 font-family: ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
 line-height: 1.5;
 }
-:global(.bg-red-100) {
+.bg-red-100 {
 --tw-bg-opacity: 1;
 background-color: rgba(254, 226, 226, var(--tw-bg-opacity));
 }
-:global(.bg-teal-500) {
+.bg-teal-500 {
 --tw-bg-opacity: 1;
 background-color: rgba(20, 184, 166, var(--tw-bg-opacity));
 }
@@ -89,5 +90,5 @@ test('svelteTemplates', async () => {
   let result = (
     await preprocess({ ...testConfig, globalUtility: false }).markup({ content, filename: 'svelteTemplates.svelte' })
   ).code;
-  expect(result.replace(/\n+|\t+|\s+/gm, '')).toBe(expectedOutput.replace(/\n+|\t+|\s+/gm, ''));
+  expect(html(result, { preserve_newlines: false })).toBe(html(expectedOutput, { preserve_newlines: false }));
 });

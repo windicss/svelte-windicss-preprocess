@@ -2,6 +2,28 @@
 
 > A svelte preprocessor to compile [tailwindcss](https://github.com/tailwindlabs/tailwindcss) at build time based on [windicss](https://github.com/windicss/windicss) compiler.
 
+## v3.0.0 - experimental Parser
+
+first beta of experimental parser is released [v3.0.0](https://github.com/windicss/svelte-windicss-preprocess/releases/tag/v3.0.0-beta.1)
+
+Feature compatibility:
+
+```html
+<div
+  class={isActive ? 'bg-amber-100' : 'bg-gray-100'} // ✅ supported
+  hover={isActive ? 'bg-amber-100' : 'bg-gray-100'} // ❌ not supported
+/>
+
+<div hover="bg-gray-100 text-white" />// ✅ supported
+<div hover="sm:bg-gray-100 disabled:text-gray" /> // ❌ not supported
+
+<div class={darker ? 'bg-amber-200' : 'bg-amber-50' } /> // ✅ supported
+<div class=`bg-amber-${shade}` /> // ❌ not supported
+
+```
+
+---
+
 ## Installation
 
 > Now we have a great playground, you can [try it online](https://windicss.github.io/svelte-windicss-preprocess/) before installing it.
@@ -26,16 +48,16 @@ export default {
       // svelte-windicss-preprocess
       preprocess: require('svelte-windicss-preprocess').preprocess({
         config: 'tailwind.config.js', // tailwind config file path (optional)
-        compile: true,          // false: interpretation mode; true: compilation mode
-        prefix: 'windi-',       // set compilation mode style prefix
-        globalPreflight: true,  // set preflight style is global or scoped
-        globalUtility: true,    // set utility style is global or scoped
-      })
+        compile: true, // false: interpretation mode; true: compilation mode
+        prefix: 'windi-', // set compilation mode style prefix
+        globalPreflight: true, // set preflight style is global or scoped
+        globalUtility: true, // set utility style is global or scoped
+      }),
       // ...
     }),
-  ]
+  ],
   // ...
-}
+};
 ```
 
 ### Sveltekit
@@ -47,17 +69,17 @@ Add `svelte-windicss-preprocess` to your `svelte.config.cjs`.
 ```js
 // svelte.config.cjs
 module.exports = {
-  preprocess: require("svelte-windicss-preprocess").preprocess({
+  preprocess: require('svelte-windicss-preprocess').preprocess({
     // uncomment this, if you need a config file
     // config: 'tailwind.config.js',
     compile: false,
-    prefix: "windi-",
+    prefix: 'windi-',
     globalPreflight: true,
     globalUtility: true,
   }),
   kit: {
-    adapter: "@sveltejs/adapter-node",
-    target: "#svelte",
+    adapter: '@sveltejs/adapter-node',
+    target: '#svelte',
   },
 };
 ```
@@ -76,15 +98,14 @@ module.exports = {
       compile: false,
       prefix: 'windi-',
       globalPreflight: true,
-      globalUtility: true, 
+      globalUtility: true,
     }),
   ],
   kit: {
     adapter: '@sveltejs/adapter-node',
-    target: '#svelte'
-  }
+    target: '#svelte',
+  },
 };
-
 ```
 
 ### Sapper(rollup)
@@ -162,17 +183,17 @@ module.exports = {
               // ... other options
               // svelte-windicss-preprocess
               preprocess: require('svelte-windicss-preprocess').preprocess({
-                config: 'tailwind.config.js',    // tailwind config file path
-                compile: true,                   // false: interpretation mode; true: compilation mode
-                prefix: 'windi-',                // set compilation mode style prefix
-                globalPreflight: true,           // set preflight style is global or scoped
-                globalUtility: true,             // set utility style is global or scoped
-              })
-            }
-          }
+                config: 'tailwind.config.js', // tailwind config file path
+                compile: true, // false: interpretation mode; true: compilation mode
+                prefix: 'windi-', // set compilation mode style prefix
+                globalPreflight: true, // set preflight style is global or scoped
+                globalUtility: true, // set utility style is global or scoped
+              }),
+            },
+          },
         },
         // ...
-      ]
+      ],
     },
   },
 
@@ -188,20 +209,20 @@ module.exports = {
               // ... other options
               // svelte-windicss-preprocess
               preprocess: require('svelte-windicss-preprocess').preprocess({
-                config: 'tailwind.config.js',     // tailwind config file path
-                compile: true,                    // false: interpretation mode; true: compilation mode
-                prefix: 'windi-',                 // set compilation mode style prefix
-                globalPreflight: true,            // set preflight style is global or scoped
-                globalUtility: true,              // set utility style is global or scoped
-              })
-            }
-          }
+                config: 'tailwind.config.js', // tailwind config file path
+                compile: true, // false: interpretation mode; true: compilation mode
+                prefix: 'windi-', // set compilation mode style prefix
+                globalPreflight: true, // set preflight style is global or scoped
+                globalUtility: true, // set utility style is global or scoped
+              }),
+            },
+          },
         },
         // ...
-      ]
+      ],
     },
-  }
-}
+  },
+};
 ```
 
 ## Basic Usage
@@ -214,20 +235,20 @@ You can write any [tailwindcss](https://github.com/tailwindlabs/tailwindcss) cla
 </script>
 
 <div
-  class="py-8 px-8 max-w-sm mx-auto bg-white rounded-xl shadow-md space-y-2 sm:py-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-6"
+  class="bg-white rounded-xl mx-auto max-w-sm space-y-2 shadow-md py-8 px-8 sm:flex sm:space-y-0 sm:space-x-6 sm:py-4 sm:items-center"
 >
   <img
-    class="block mx-auto h-24 rounded-full sm:mx-0 sm:flex-shrink-0"
+    class="rounded-full mx-auto h-24 block sm:flex-shrink-0 sm:mx-0"
     src="/img/erin-lindford.jpg"
     alt="Woman's Face"
   />
-  <div class="text-center space-y-2 sm:text-left">
+  <div class="space-y-2 text-center sm:text-left">
     <div class="space-y-0.5">
-      <p class="text-lg text-black font-semibold">Erin Lindford</p>
-      <p class="text-gray-500 font-medium">Product Engineer</p>
+      <p class="font-semibold text-lg text-black">Erin Lindford</p>
+      <p class="font-medium text-gray-500">Product Engineer</p>
     </div>
     <button
-      class="px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2"
+      class="border rounded-full font-semibold border-purple-200 text-sm py-1 px-4 text-purple-600 hover:border-transparent hover:bg-purple-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2"
     >
       Message
     </button>

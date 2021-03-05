@@ -130,8 +130,8 @@ export function convertTemplateSyntax(content: string): string {
   // let parsedContent = splittedContent.join('\n');
   let parsedContent = content;
   parsedContent = parsedContent.replace(/windi`.*`/g, '');
-  parsedContent = parsedContent.replace(/\{`/g, '" ');
-  parsedContent = parsedContent.replace(/`\}/g, ' "');
-  parsedContent = parsedContent.replace(/(?<!windi`.*)\$/g, ' ');
+  // parsedContent = parsedContent.replace(/\{`/g, '" ');
+  // parsedContent = parsedContent.replace(/`\}/g, ' "');
+  // parsedContent = parsedContent.replace(/(?<!windi`.*)\$/g, ' ');
   return parsedContent;
 }

@@ -1,5 +1,6 @@
 import { preprocess } from '../src/index';
 import { testConfig } from './utils';
+import { html } from 'js-beautify';
 
 let content = '<p>Hello World</p>';
 let expectedOutput = `
@@ -70,10 +71,6 @@ let expectedOutput = `
 </style>
 `;
 test('preflights', async () => {
-  expect(
-    (await preprocess({ ...testConfig }).markup({ content, filename: 'preflightsTest.svelte' })).code.replace(
-      /\n+|\t+|\s+/gm,
-      ''
-    )
-  ).toBe(expectedOutput.replace(/\n+|\t+|\s+/gm, ''));
+  let result = (await preprocess({ ...testConfig }).markup({ content, filename: 'preflightsTest.svelte' })).code;
+  expect(html(result, { preserve_newlines: false })).toBe(html(expectedOutput, { preserve_newlines: false }));
 });

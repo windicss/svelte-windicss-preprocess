@@ -1,5 +1,6 @@
 import { preprocess } from '../src/index';
 import { testConfig } from './utils';
+import { html } from 'js-beautify';
 
 let content = `
 <div class="bg-red-200 text-white customClass">Hello, World!</div>
@@ -183,11 +184,15 @@ test('uncompiled', async () => {
   let resultUncompiled = (
     await preprocess({ ...testConfig, compile: false }).markup({ content, filename: 'preflightsTest.svelte' })
   ).code;
-  expect(resultUncompiled.replace(/\n+|\t+|\s+/gm, '')).toBe(expectedOutputUncompiled.replace(/\n+|\t+|\s+/gm, ''));
+  expect(html(resultUncompiled, { preserve_newlines: false })).toBe(
+    html(expectedOutputUncompiled, { preserve_newlines: false })
+  );
 });
 test('compiled', async () => {
   let resultCompiled = (
     await preprocess({ ...testConfig, compile: true }).markup({ content, filename: 'preflightsTest.svelte' })
   ).code;
-  expect(resultCompiled.replace(/\n+|\t+|\s+/gm, '')).toBe(expectedOutputCompiled.replace(/\n+|\t+|\s+/gm, ''));
+  expect(html(resultCompiled, { preserve_newlines: false })).toBe(
+    html(expectedOutputCompiled, { preserve_newlines: false })
+  );
 });
