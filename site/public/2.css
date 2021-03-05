@@ -22,6 +22,7 @@
 
 .CodeMirror-lines {
   padding: 4px 0; /* Vertical padding around content */
+  font: 400 0.8rem/1.7 'Fira Code', 'Courier New', Courier, monospace;
 }
 .CodeMirror pre {
   padding: 0 4px; /* Horizontal padding of content */
