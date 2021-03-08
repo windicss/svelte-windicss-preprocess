@@ -5,7 +5,6 @@ import { loadConfig, writeFileSync, combineStyleList, globalStyleSheet, logging,
 // import { default as HTMLParser } from './parser';
 import type { Options } from './interfaces';
 import type { StyleSheet } from 'windicss/utils/style';
-import { html } from 'js-beautify';
 
 const DEV = process.env.NODE_ENV === 'development';
 
@@ -96,14 +95,20 @@ function _preprocess(content: string, filename: string) {
   // old : const parser = new HTMLParser(content);
 
   let convertedContent = convertTemplateSyntax(content);
-  let checkedHtml = html(convertedContent, {
-    preserve_newlines: true,
-    end_with_newline: true,
-    indent_size: 2,
-    indent_char: ' ',
-    wrap_line_length: 0,
-    indent_empty_lines: true,
-  });
+  let checkedHtml;
+  if (!process.env.BROWSER) {
+    const { html } = require('js-beautify');
+    checkedHtml = html(convertedContent, {
+      preserve_newlines: true,
+      end_with_newline: true,
+      indent_size: 2,
+      indent_char: ' ',
+      wrap_line_length: 0,
+      indent_empty_lines: true,
+    });
+  } else {
+    checkedHtml = convertedContent;
+  }
   let lines = checkedHtml.split('\n');
   const modifiedVARIANTS = VARIANTS.filter((value, index, arr) => {
     if (value !== 'target' && value !== '@light' && value !== '@dark' && value !== '.light' && value !== '.dark') {
@@ -144,7 +149,7 @@ function _preprocess(content: string, filename: string) {
             lines[i] = lines[i].replace(new RegExp(new RegExp(GROUPED_MATCH[0]), 'i'), '');
             let prefix = GROUPED_MATCH[2];
             if (prefix in MODIFIED) prefix = MODIFIED[prefix];
-            let splittedVariants = GROUPED_MATCH[3].split(' ');
+            let splittedVariants: string[] = GROUPED_MATCH[3].split(' ');
             let convertedVariants = splittedVariants.map(variant => {
               return `${prefix}:${variant}`;
             });
