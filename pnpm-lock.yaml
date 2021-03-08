@@ -2,7 +2,7 @@ dependencies:
   chalk: 4.1.0
   js-beautify: 1.13.5
   magic-string: 0.25.7
-  windicss: 2.2.6
+  windicss: 2.3.0
 devDependencies:
   '@rollup/plugin-node-resolve': 11.2.0_rollup@2.40.0
   '@rollup/plugin-replace': 2.4.1_rollup@2.40.0
@@ -13,7 +13,7 @@ devDependencies:
   '@types/jest': 26.0.20
   '@types/js-beautify': 1.13.1
   '@types/js-yaml': 4.0.0
-  '@types/node': 14.14.31
+  '@types/node': 14.14.32
   bumpp: 6.0.6
   cross-env: 7.0.3
   diff: 5.0.0
@@ -733,6 +733,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-vFHy/ezP5qI0rFgJ7aQnjDXwAMrG0KqqIH7tQG5PPv3BWBayOPIQNBjVc/P6hhdZfMx51REc6tfDNXHUio893g==
+  /@types/node/14.14.32:
+    dev: true
+    resolution:
+      integrity: sha512-/Ctrftx/zp4m8JOujM5ZhwzlWLx22nbQJiVqz8/zE15gOeEW+uly3FSX4fGFpcfEvFzXcMCJwq9lGVWgyARXhg==
   /@types/normalize-package-data/2.4.0:
     dev: true
     resolution:
@@ -4517,13 +4521,13 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==
-  /windicss/2.2.6:
+  /windicss/2.3.0:
     dev: false
     engines:
       node: '>= 12'
     hasBin: true
     resolution:
-      integrity: sha512-RK502Xwsw0ptjVueJum0TEr286YJgtqK6kXpa60R6a1z2gGkVpEcaIfr6okQ5EYUk8WMRLrXoK6B2E6dSRg/sw==
+      integrity: sha512-OR/ULZmcVhtEJDIFnkz4S4v4efpZ8DuvDtzBwXNgbtiPQIxN0Zhpo59q0rfF0i3tfwjKw2KCQXNxL5E98bMuVA==
   /word-wrap/1.2.3:
     dev: true
     engines:
@@ -4629,7 +4633,7 @@ specifiers:
   '@types/jest': ^26.0.20
   '@types/js-beautify': ^1.13.1
   '@types/js-yaml': ^4.0.0
-  '@types/node': ^14.14.31
+  '@types/node': ^14.14.32
   bumpp: ^6.0.6
   chalk: ^4.1.0
   cross-env: ^7.0.3
@@ -4645,4 +4649,4 @@ specifiers:
   ts-jest: ^26.5.3
   tslib: ^2.1.0
   typescript: ^4.2.3
-  windicss: ^2.2.6
+  windicss: ^2.3.0
