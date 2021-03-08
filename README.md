@@ -20,6 +20,8 @@ Feature compatibility:
 <div class={darker ? 'bg-amber-200' : 'bg-amber-50' } /> // ✅ supported
 <div class=`bg-amber-${shade}` /> // ❌ not supported
 
+<div class="bg-amber-200 h-1.25 mx-auto rounded-lg {width === 'large' ? 'w-40' : ''} {width === 'medium' ? 'w-30' : ''} {width === 'small' ? 'w-20' : ''}" /> // ✅ supported
+
 ```
 
 ---
