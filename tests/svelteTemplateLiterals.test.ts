@@ -90,5 +90,19 @@ test('svelteTemplates', async () => {
   let result = (
     await preprocess({ ...testConfig, globalUtility: false }).markup({ content, filename: 'svelteTemplates.svelte' })
   ).code;
-  expect(html(result, { preserve_newlines: false })).toBe(html(expectedOutput, { preserve_newlines: false }));
+  expect(
+    html(
+      result
+        .replace(/\>[\r\n ]+\</g, '><')
+        .replace(/(<.*?>)|\s+/g, (_m, $1) => ($1 ? $1 : ' '))
+        .trim()
+    )
+  ).toBe(
+    html(
+      expectedOutput
+        .replace(/\>[\r\n ]+\</g, '><')
+        .replace(/(<.*?>)|\s+/g, (_m, $1) => ($1 ? $1 : ' '))
+        .trim()
+    )
+  );
 });

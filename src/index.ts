@@ -98,14 +98,14 @@ function _preprocess(content: string, filename: string) {
   let checkedHtml;
   if (!process.env.BROWSER) {
     const { html } = require('js-beautify');
-    checkedHtml = html(convertedContent, {
-      preserve_newlines: true,
-      end_with_newline: true,
-      indent_size: 2,
-      indent_char: ' ',
-      wrap_line_length: 0,
-      indent_empty_lines: true,
-    });
+    convertedContent = convertedContent
+      .replace(/\>[\r\n ]+\</g, '><')
+      .replace(/(<.*?>)|\s+/g, (_m, $1) => ($1 ? $1 : ' '))
+      .trim();
+    // console.log(convertedContent);
+
+    checkedHtml = html(convertedContent, { preserve_newlines: false, indent_size: 2 });
+    // console.log(checkedHtml);
   } else {
     checkedHtml = convertedContent;
   }
@@ -127,15 +127,16 @@ function _preprocess(content: string, filename: string) {
     const EXPRESSION_MATCHES = lines[i].toString().match(new RegExp(EXPRESSION_REGEX_MATCHER, 'gi'));
 
     if (TEXT_MATCHES) {
+      // console.log(TEXT_MATCHES);
       for (let j = 0; j < TEXT_MATCHES.length; j++) {
-        // console.log('line', lines[i]);
-        // console.log('handling Match', TEXT_MATCHES[j]);
+        // // console.log('line', lines[i]);
+        // // console.log('handling Match', TEXT_MATCHES[j]);
         let GROUPED_MATCH = TEXT_MATCHES[j].toString().match(new RegExp(TEXT_REGEX_MATCHER, 'i'));
-        // console.log(GROUPED_MATCH);
+        // // console.log(GROUPED_MATCH);
 
         if (GROUPED_MATCH) {
           if (VARIANTS.includes(GROUPED_MATCH[2])) {
-            // console.log(GROUPED_MATCH);
+            // // console.log(GROUPED_MATCH);
 
             // prepend variant before each className
             // if (variant in MODIFIED) variant = MODIFIED[variant];
@@ -153,20 +154,27 @@ function _preprocess(content: string, filename: string) {
             let convertedVariants = splittedVariants.map(variant => {
               return `${prefix}:${variant}`;
             });
-            // console.log(convertedVariants);
-            // console.log(convertedVariants);
+            // // console.log(convertedVariants);
+            // // console.log(convertedVariants);
             lines[i] = lines[i].replace(
               new RegExp(new RegExp(TEXT_REGEX_MATCHER), 'i'),
               `$1$3 ${convertedVariants.join(' ')} $4`
             );
-            // console.log('new Line', lines[i]);
+            // // console.log('new Line', lines[i]);
           }
         }
       }
       const FINAL_TEXT_MATCHES = lines[i].toString().match(new RegExp(TEXT_REGEX_MATCHER, 'i'));
       if (FINAL_TEXT_MATCHES) {
+        // console.log(FINAL_TEXT_MATCHES);
+        let extractedClasses = FINAL_TEXT_MATCHES[3];
+        let INLINE_EXPRESSION = FINAL_TEXT_MATCHES[3].toString().match(/([\{].*?[\}])/gi);
+        if (INLINE_EXPRESSION) {
+          // console.log(INLINE_EXPRESSION);
+          extractedClasses = FINAL_TEXT_MATCHES[3].replace(/('|:|\}|[\{].*?\?)/gi, '');
+        }
         if (OPTIONS.compile) {
-          const COMPILED_CLASSES = PROCESSOR.compile(FINAL_TEXT_MATCHES[3], OPTIONS.prefix, false);
+          const COMPILED_CLASSES = PROCESSOR.compile(extractedClasses, OPTIONS.prefix, false);
           IGNORED_CLASSES = [...IGNORED_CLASSES, ...COMPILED_CLASSES.ignored];
           STYLESHEETS.push(
             OPTIONS.globalUtility && !OPTIONS.bundle
@@ -178,25 +186,30 @@ function _preprocess(content: string, filename: string) {
             : COMPILED_CLASSES.ignored.join(' ');
 
           lines[i] = lines[i].replace(new RegExp(TEXT_REGEX_MATCHER, 'i'), `$1${replacementValue}$4`);
-          // console.log(lines[i]);
+          // // console.log(lines[i]);
         } else {
-          const INTERPRETED_CLASSES = PROCESSOR.interpret(FINAL_TEXT_MATCHES[3]);
+          // console.log(extractedClasses);
+
+          const INTERPRETED_CLASSES = PROCESSOR.interpret(extractedClasses);
+          // console.log(INTERPRETED_CLASSES);
           IGNORED_CLASSES = [...IGNORED_CLASSES, ...INTERPRETED_CLASSES.ignored];
           let styleSheet = INTERPRETED_CLASSES.styleSheet;
           STYLESHEETS.push(OPTIONS.globalUtility && !OPTIONS.bundle ? globalStyleSheet(styleSheet) : styleSheet);
         }
       }
     } else if (EXPRESSION_MATCHES) {
+      // console.log(EXPRESSION_MATCHES);
+
       for (let j = 0; j < EXPRESSION_MATCHES.length; j++) {
-        // console.log('line', lines[i]);
-        // console.log('handling Match', TEXT_MATCHES[j]);
+        // // console.log('line', lines[i]);
+        // // console.log('handling Match', TEXT_MATCHES[j]);
         let GROUPED_MATCH = EXPRESSION_MATCHES[j].toString().match(new RegExp(EXPRESSION_REGEX_MATCHER, 'i'));
-        // console.log(GROUPED_MATCH);
+        // // console.log(GROUPED_MATCH);
 
         if (GROUPED_MATCH) {
-          // console.log(GROUPED_MATCH);
+          // // console.log(GROUPED_MATCH);
           let CLEANDED_CLASSES = GROUPED_MATCH[3].replace(/[^\w|\-|\.]+/gi, ' ');
-          // console.log('cleanedClasses', CLEANDED_CLASSES);
+          // // console.log('cleanedClasses', CLEANDED_CLASSES);
 
           // TODO: allow VARIANTS WITH EXPRESSIONS
           // if (VARIANTS.includes(GROUPED_MATCH[2])) {
@@ -206,12 +219,12 @@ function _preprocess(content: string, filename: string) {
           //   let convertedVariants = splittedVariants.map(variant => {
           //     return `${prefix}:${variant}`;
           //   });
-          //   console.log(convertedVariants);
+          //   // console.log(convertedVariants);
           //   lines[i] = lines[i].replace(
           //     new RegExp(new RegExp(EXPRESSION_REGEX_MATCHER), 'i'),
           //     `$1$3 ${convertedVariants.join(' ')} $4`
           //   );
-          //   console.log('new Line', lines[i]);
+          //   // console.log('new Line', lines[i]);
           // }
 
           if (OPTIONS.compile) {
@@ -227,7 +240,7 @@ function _preprocess(content: string, filename: string) {
             //   : COMPILED_CLASSES.ignored.join(' ');
 
             // lines[i] = lines[i].replace(new RegExp(TEXT_REGEX_MATCHER, 'i'), `$1${replacementValue}$4`);
-            // console.log(lines[i]);
+            // // console.log(lines[i]);
           } else {
             const INTERPRETED_CLASSES = PROCESSOR.interpret(CLEANDED_CLASSES);
             IGNORED_CLASSES = [...IGNORED_CLASSES, ...INTERPRETED_CLASSES.ignored];
@@ -264,7 +277,7 @@ function _preprocess(content: string, filename: string) {
   // clear lists until next call
   STYLESHEETS = [];
   CONDITIONS = [];
-  console.log(finalContent.toString());
+  // // console.log(finalContent.toString());
   return finalContent.toString();
 
   // ##### OLD
