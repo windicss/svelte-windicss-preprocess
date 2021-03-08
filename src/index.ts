@@ -105,7 +105,12 @@ function _preprocess(content: string, filename: string) {
     indent_empty_lines: true,
   });
   let lines = checkedHtml.split('\n');
-  const VARIANTS_REGEX = VARIANTS.map(element => element.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')).join('|');
+  const modifiedVARIANTS = VARIANTS.filter((value, index, arr) => {
+    if (value !== 'target' && value !== '@light' && value !== '@dark' && value !== '.light' && value !== '.dark') {
+      return value;
+    }
+  });
+  const VARIANTS_REGEX = modifiedVARIANTS.map(element => element.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')).join('|');
   const CLASS_REGEX = 'class|className';
   const COMBINED_REGEX = `(${CLASS_REGEX}|${VARIANTS_REGEX})`;
   const TEXT_REGEX_MATCHER = `(${COMBINED_REGEX}=["])([^"]*)(["])`;
@@ -251,6 +256,13 @@ function _preprocess(content: string, filename: string) {
     finalContent += `\n\n<style>\n${styleSheet.build()}\n</style>`;
   }
 
+  // clear lists until next call
+  STYLESHEETS = [];
+  CONDITIONS = [];
+  console.log(finalContent.toString());
+  return finalContent.toString();
+
+  // ##### OLD
   // const parser = new HTMLParser(convertTemplateSyntax(content));
   // parser.parse().forEach(tag => {
   //   let classes: string[] = [];
@@ -334,12 +346,6 @@ function _preprocess(content: string, filename: string) {
   // }
 
   // if (!FILES.includes(filename)) FILES.push(filename);
-
-  // clear lists until next call
-  STYLESHEETS = [];
-  CONDITIONS = [];
-
-  return finalContent.toString();
 }
 
 function _optimize(types: string, typeNodes: { [key: string]: string }) {
