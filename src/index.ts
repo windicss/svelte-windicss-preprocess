@@ -116,7 +116,15 @@ function _preprocess(content: string, filename: string) {
   // console.log(checkedHtml);
   let lines = checkedHtml.split('\n');
   const modifiedVARIANTS = VARIANTS.filter((value, index, arr) => {
-    if (value !== 'target' && value !== '@light' && value !== '@dark' && value !== '.light' && value !== '.dark') {
+    if (
+      value !== 'target' &&
+      value !== '@light' &&
+      value !== '@dark' &&
+      value !== '.light' &&
+      value !== '.dark' &&
+      value !== 'even' &&
+      value !== 'even-of-type'
+    ) {
       return value;
     }
   });
