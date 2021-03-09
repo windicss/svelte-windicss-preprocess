@@ -97,23 +97,20 @@ function _preprocess(content: string, filename: string) {
   let convertedContent = convertTemplateSyntax(content);
   let checkedHtml;
   if (!process.env.BROWSER) {
-    const { html } = require('js-beautify');
-    convertedContent = convertedContent
-      .replace(/\>[\r\n ]+\</g, '><')
-      .replace(/(<.*?>)|\s+/g, (_m, $1) => ($1 ? $1 : ' '))
-      .trim();
     // console.log(convertedContent);
-
-    checkedHtml = html(convertedContent, {
-      preserve_newlines: false,
-      indent_size: 2,
-      wrap_line_length: 0,
-      wrap_attributes: 'preserve',
+    const { format } = require('prettier');
+    checkedHtml = format(convertedContent, {
+      parser: 'html',
+      printWidth: 9999,
+      tabWidth: 2,
+      useTabs: false,
+      proseWrap: 'never',
     });
     // console.log(checkedHtml);
   } else {
     checkedHtml = convertedContent;
   }
+  // console.log(checkedHtml);
   let lines = checkedHtml.split('\n');
   const modifiedVARIANTS = VARIANTS.filter((value, index, arr) => {
     if (value !== 'target' && value !== '@light' && value !== '@dark' && value !== '.light' && value !== '.dark') {
