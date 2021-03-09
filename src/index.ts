@@ -125,11 +125,11 @@ function _preprocess(content: string, filename: string) {
   const COMBINED_REGEX = `(${CLASS_REGEX}|${VARIANTS_REGEX})`;
   const TEXT_REGEX_MATCHER = `(${COMBINED_REGEX}=["])([^"]*)(["])`;
   // FIXME: EXPRESSION REGEX
-  const EXPRESSION_REGEX_MATCHER = `(${COMBINED_REGEX}=[\{])(.*)([\}])`;
+  //const EXPRESSION_REGEX_MATCHER = `(${COMBINED_REGEX}=[\{])(.*)([\}])`;
 
   for (let i = 0; i < lines.length; i++) {
     const TEXT_MATCHES = lines[i].toString().match(new RegExp(TEXT_REGEX_MATCHER, 'gi'));
-    const EXPRESSION_MATCHES = lines[i].toString().match(new RegExp(EXPRESSION_REGEX_MATCHER, 'gi'));
+    //const EXPRESSION_MATCHES = lines[i].toString().match(new RegExp(EXPRESSION_REGEX_MATCHER, 'gi'));
 
     if (TEXT_MATCHES) {
       // console.log(TEXT_MATCHES);
@@ -200,58 +200,6 @@ function _preprocess(content: string, filename: string) {
           IGNORED_CLASSES = [...IGNORED_CLASSES, ...INTERPRETED_CLASSES.ignored];
           let styleSheet = INTERPRETED_CLASSES.styleSheet;
           STYLESHEETS.push(OPTIONS.globalUtility && !OPTIONS.bundle ? globalStyleSheet(styleSheet) : styleSheet);
-        }
-      }
-    } else if (EXPRESSION_MATCHES) {
-      // console.log(EXPRESSION_MATCHES);
-
-      for (let j = 0; j < EXPRESSION_MATCHES.length; j++) {
-        // // console.log('line', lines[i]);
-        // // console.log('handling Match', TEXT_MATCHES[j]);
-        let GROUPED_MATCH = EXPRESSION_MATCHES[j].toString().match(new RegExp(EXPRESSION_REGEX_MATCHER, 'i'));
-        // // console.log(GROUPED_MATCH);
-
-        if (GROUPED_MATCH) {
-          // // console.log(GROUPED_MATCH);
-          let CLEANDED_CLASSES = GROUPED_MATCH[3].replace(/[^\w|\-|\.]+/gi, ' ');
-          // // console.log('cleanedClasses', CLEANDED_CLASSES);
-
-          // TODO: allow VARIANTS WITH EXPRESSIONS
-          // if (VARIANTS.includes(GROUPED_MATCH[2])) {
-          //   lines[i] = lines[i].replace(new RegExp(new RegExp(GROUPED_MATCH[0]), 'i'), '');
-          //   let prefix = GROUPED_MATCH[2];
-          //   let splittedVariants = CLEANDED_CLASSES.split(' ');
-          //   let convertedVariants = splittedVariants.map(variant => {
-          //     return `${prefix}:${variant}`;
-          //   });
-          //   // console.log(convertedVariants);
-          //   lines[i] = lines[i].replace(
-          //     new RegExp(new RegExp(EXPRESSION_REGEX_MATCHER), 'i'),
-          //     `$1$3 ${convertedVariants.join(' ')} $4`
-          //   );
-          //   // console.log('new Line', lines[i]);
-          // }
-
-          if (OPTIONS.compile) {
-            const COMPILED_CLASSES = PROCESSOR.compile(CLEANDED_CLASSES, OPTIONS.prefix, false);
-            IGNORED_CLASSES = [...IGNORED_CLASSES, ...COMPILED_CLASSES.ignored];
-            STYLESHEETS.push(
-              OPTIONS.globalUtility && !OPTIONS.bundle
-                ? globalStyleSheet(COMPILED_CLASSES.styleSheet)
-                : COMPILED_CLASSES.styleSheet
-            );
-            // let replacementValue = COMPILED_CLASSES.className
-            //   ? [COMPILED_CLASSES.className, ...COMPILED_CLASSES.ignored].join(' ')
-            //   : COMPILED_CLASSES.ignored.join(' ');
-
-            // lines[i] = lines[i].replace(new RegExp(TEXT_REGEX_MATCHER, 'i'), `$1${replacementValue}$4`);
-            // // console.log(lines[i]);
-          } else {
-            const INTERPRETED_CLASSES = PROCESSOR.interpret(CLEANDED_CLASSES);
-            IGNORED_CLASSES = [...IGNORED_CLASSES, ...INTERPRETED_CLASSES.ignored];
-            let styleSheet = INTERPRETED_CLASSES.styleSheet;
-            STYLESHEETS.push(OPTIONS.globalUtility && !OPTIONS.bundle ? globalStyleSheet(styleSheet) : styleSheet);
-          }
         }
       }
     }

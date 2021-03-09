@@ -13,7 +13,6 @@ devDependencies:
   '@types/diff': 5.0.0
   '@types/fs-extra': 9.0.8
   '@types/jest': 26.0.20
-  '@types/js-beautify': 1.13.1
   '@types/js-yaml': 4.0.0
   '@types/node': 14.14.32
   bumpp: 6.0.6
@@ -723,10 +722,6 @@ packages:
     dev: true
     resolution:
       integrity: sha512-9zi2Y+5USJRxd0FsahERhBwlcvFh6D2GLQnY2FH2BzK8J9s9omvNHIbvABwIluXa0fD8XVKMLTO0aOEuUfACAA==
-  /@types/js-beautify/1.13.1:
-    dev: true
-    resolution:
-      integrity: sha512-F3YCoZS//n74Wu+hxoVrxX1H8qaWo+WAgQ+ObmFH4ZFwI0fIwiJTW7pvkCRShw8ST7+ej7sB68K+ZHAZgK4S4Q==
   /@types/js-yaml/4.0.0:
     dev: true
     resolution:
@@ -4600,7 +4595,6 @@ specifiers:
   '@types/diff': ^5.0.0
   '@types/fs-extra': ^9.0.8
   '@types/jest': ^26.0.20
-  '@types/js-beautify': ^1.13.1
   '@types/js-yaml': ^4.0.0
   '@types/node': ^14.14.32
   bumpp: ^6.0.6

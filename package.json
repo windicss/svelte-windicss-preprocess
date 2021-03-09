@@ -42,7 +42,6 @@
     "@types/diff": "^5.0.0",
     "@types/fs-extra": "^9.0.8",
     "@types/jest": "^26.0.20",
-    "@types/js-beautify": "^1.13.1",
     "@types/js-yaml": "^4.0.0",
     "@types/node": "^14.14.32",
     "bumpp": "^6.0.6",
