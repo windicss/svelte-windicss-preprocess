@@ -1,6 +1,6 @@
 import { preprocess } from '../src/index';
 import { testConfig } from './utils';
-import { html } from 'js-beautify';
+import { format } from 'prettier';
 
 let content = `
 <div class="bg-red-200 text-white customClass">Hello, World!</div>
@@ -12,6 +12,7 @@ let content = `
 `;
 let expectedOutputCompiled = `
 <div class="windi-xewwwb customClass">Hello, World!</div>
+
 <style>
 :global(*),
 :global(::before),
@@ -22,7 +23,6 @@ let expectedOutputCompiled = `
   border-style: solid;
   border-color: #e5e7eb;
 }
-
 :global(*) {
   --tw-ring-inset: var(--tw-empty, /*!*/ /*!*/);
   --tw-ring-offset-width: 0px;
@@ -32,67 +32,54 @@ let expectedOutputCompiled = `
   --tw-ring-shadow: 0 0 #0000;
   --tw-shadow: 0 0 #0000;
 }
-
 :global(:root) {
   -moz-tab-size: 4;
   -o-tab-size: 4;
   tab-size: 4;
 }
-
 :global(:-moz-focusring) {
   outline: 1px dotted ButtonText;
 }
-
 :global(:-moz-ui-invalid) {
   box-shadow: none;
 }
-
 :global(::moz-focus-inner) {
   border-style: none;
   padding: 0;
 }
-
 :global(::-webkit-inner-spin-button),
 :global(::-webkit-outer-spin-button) {
   height: auto;
 }
-
 :global(::-webkit-search-decoration) {
   -webkit-appearance: none;
 }
-
 :global(::-webkit-file-upload-button) {
   -webkit-appearance: button;
   font: inherit;
 }
-
 :global([type='search']) {
   -webkit-appearance: textfield;
   outline-offset: -2px;
 }
-
 :global(abbr[title]) {
   -webkit-text-decoration: underline dotted;
   text-decoration: underline dotted;
 }
-
 :global(body) {
   margin: 0;
           font-family: inherit;
   line-height: inherit;
 }
-
 :global(html) {
   -webkit-text-size-adjust: 100%;
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   line-height: 1.5;
 }
-
 .customClass {
   --tw-text-opacity: 1;
   color: rgba(239, 68, 68, var(--tw-text-opacity));
 }
-
 .windi-xewwwb {
   --tw-bg-opacity: 1;
   background-color: rgba(254, 202, 202, var(--tw-bg-opacity));
@@ -103,6 +90,7 @@ let expectedOutputCompiled = `
 `;
 let expectedOutputUncompiled = `
 <div class="bg-red-200 text-white customClass">Hello, World!</div>
+
 <style>
 :global(*),
 :global(::before),
@@ -185,19 +173,21 @@ test('uncompiled', async () => {
     await preprocess({ ...testConfig, compile: false }).markup({ content, filename: 'preflightsTest.svelte' })
   ).code;
   expect(
-    html(
-      resultUncompiled
-        .replace(/\>[\r\n ]+\</g, '><')
-        .replace(/(<.*?>)|\s+/g, (_m, $1) => ($1 ? $1 : ' '))
-        .trim()
-    )
+    format(resultUncompiled, {
+      parser: 'html',
+      printWidth: 9999,
+      tabWidth: 2,
+      useTabs: false,
+      proseWrap: 'never',
+    })
   ).toBe(
-    html(
-      expectedOutputUncompiled
-        .replace(/\>[\r\n ]+\</g, '><')
-        .replace(/(<.*?>)|\s+/g, (_m, $1) => ($1 ? $1 : ' '))
-        .trim()
-    )
+    format(expectedOutputUncompiled, {
+      parser: 'html',
+      printWidth: 9999,
+      tabWidth: 2,
+      useTabs: false,
+      proseWrap: 'never',
+    })
   );
 });
 test('compiled', async () => {
@@ -205,18 +195,20 @@ test('compiled', async () => {
     await preprocess({ ...testConfig, compile: true }).markup({ content, filename: 'preflightsTest.svelte' })
   ).code;
   expect(
-    html(
-      resultCompiled
-        .replace(/\>[\r\n ]+\</g, '><')
-        .replace(/(<.*?>)|\s+/g, (_m, $1) => ($1 ? $1 : ' '))
-        .trim()
-    )
+    format(resultCompiled, {
+      parser: 'html',
+      printWidth: 9999,
+      tabWidth: 2,
+      useTabs: false,
+      proseWrap: 'never',
+    })
   ).toBe(
-    html(
-      expectedOutputCompiled
-        .replace(/\>[\r\n ]+\</g, '><')
-        .replace(/(<.*?>)|\s+/g, (_m, $1) => ($1 ? $1 : ' '))
-        .trim()
-    )
+    format(expectedOutputCompiled, {
+      parser: 'html',
+      printWidth: 9999,
+      tabWidth: 2,
+      useTabs: false,
+      proseWrap: 'never',
+    })
   );
 });

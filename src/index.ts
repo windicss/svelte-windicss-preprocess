@@ -100,13 +100,16 @@ function _preprocess(content: string, filename: string) {
     // console.log(convertedContent);
     const { format } = require('prettier');
     checkedHtml = format(convertedContent, {
-      parser: 'html',
+      parser: 'svelte',
+      pluginSearchDirs: ['.'],
+      plugin: [require('prettier-plugin-svelte')],
       printWidth: 9999,
       tabWidth: 2,
-      useTabs: false,
-      proseWrap: 'never',
+      svelteStrictMode: true,
+      svelteAllowShorthand: false,
+      svelteBracketNewLine: false,
+      svelteIndentScriptAndStyle: false,
     });
-    // console.log(checkedHtml);
   } else {
     checkedHtml = convertedContent;
   }

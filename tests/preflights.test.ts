@@ -1,10 +1,11 @@
 import { preprocess } from '../src/index';
 import { testConfig } from './utils';
-import { html } from 'js-beautify';
+import { format } from 'prettier';
 
 let content = '<p>Hello World</p>';
 let expectedOutput = `
 <p>Hello World</p>
+
 <style>
 :global(*), :global(::before), :global(::after) {
   -webkit-box-sizing: border-box;
@@ -73,18 +74,20 @@ let expectedOutput = `
 test('preflights', async () => {
   let result = (await preprocess({ ...testConfig }).markup({ content, filename: 'preflightsTest.svelte' })).code;
   expect(
-    html(
-      result
-        .replace(/\>[\r\n ]+\</g, '><')
-        .replace(/(<.*?>)|\s+/g, (_m, $1) => ($1 ? $1 : ' '))
-        .trim()
-    )
+    format(result, {
+      parser: 'html',
+      printWidth: 9999,
+      tabWidth: 2,
+      useTabs: false,
+      proseWrap: 'never',
+    })
   ).toBe(
-    html(
-      expectedOutput
-        .replace(/\>[\r\n ]+\</g, '><')
-        .replace(/(<.*?>)|\s+/g, (_m, $1) => ($1 ? $1 : ' '))
-        .trim()
-    )
+    format(expectedOutput, {
+      parser: 'html',
+      printWidth: 9999,
+      tabWidth: 2,
+      useTabs: false,
+      proseWrap: 'never',
+    })
   );
 });

@@ -72,7 +72,6 @@ const main = {
     types("index.d.ts", "./types/index", "*"),
   ],
   external: [
-    "prettier",
     "chalk",
     "windicss/lib",
     "windicss/utils/parser",
