@@ -104,7 +104,12 @@ function _preprocess(content: string, filename: string) {
       .trim();
     // console.log(convertedContent);
 
-    checkedHtml = html(convertedContent, { preserve_newlines: false, indent_size: 2 });
+    checkedHtml = html(convertedContent, {
+      preserve_newlines: false,
+      indent_size: 2,
+      wrap_line_length: 0,
+      wrap_attributes: 'preserve',
+    });
     // console.log(checkedHtml);
   } else {
     checkedHtml = convertedContent;
@@ -277,7 +282,7 @@ function _preprocess(content: string, filename: string) {
   // clear lists until next call
   STYLESHEETS = [];
   CONDITIONS = [];
-  // // console.log(finalContent.toString());
+  // console.log(finalContent.toString());
   return finalContent.toString();
 
   // ##### OLD
