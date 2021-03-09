@@ -31,6 +31,7 @@
     "magic-string": "^0.25.7",
     "prettier": "^2.2.1",
     "prettier-plugin-svelte": "^2.2.0",
+    "svelte": "^3.35.0",
     "windicss": "^2.3.0"
   },
   "devDependencies": {

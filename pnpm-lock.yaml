@@ -2,7 +2,8 @@ dependencies:
   chalk: 4.1.0
   magic-string: 0.25.7
   prettier: 2.2.1
-  prettier-plugin-svelte: 2.2.0_prettier@2.2.1
+  prettier-plugin-svelte: 2.2.0_prettier@2.2.1+svelte@3.35.0
+  svelte: 3.35.0
   windicss: 2.3.0
 devDependencies:
   '@rollup/plugin-node-resolve': 11.2.0_rollup@2.40.0
@@ -3437,9 +3438,10 @@ packages:
       node: '>= 0.8.0'
     resolution:
       integrity: sha1-IZMqVJ9eUv/ZqCf1cOBL5iqX2lQ=
-  /prettier-plugin-svelte/2.2.0_prettier@2.2.1:
+  /prettier-plugin-svelte/2.2.0_prettier@2.2.1+svelte@3.35.0:
     dependencies:
       prettier: 2.2.1
+      svelte: 3.35.0
     dev: false
     peerDependencies:
       prettier: ^1.16.4 || ^2.0.0
@@ -4099,6 +4101,12 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-zoE5/e+dnEijk6ASB6/qrK+oYdm2do1hjoLWrqUC/8WEIW1gbxFcKuBof7sW8ArN6e+AYvsE8HBGiVRWL/F5CA==
+  /svelte/3.35.0:
+    dev: false
+    engines:
+      node: '>= 8'
+    resolution:
+      integrity: sha512-gknlZkR2sXheu/X+B7dDImwANVvK1R0QGQLd8CNIfxxGPeXBmePnxfzb6fWwTQRsYQG7lYkZXvpXJvxvpsoB7g==
   /symbol-tree/3.2.4:
     dev: true
     resolution:
@@ -4608,6 +4616,7 @@ specifiers:
   rollup: ^2.40.0
   rollup-plugin-terser: ^7.0.2
   sucrase: ^3.17.1
+  svelte: ^3.35.0
   ts-jest: ^26.5.3
   tslib: ^2.1.0
   typescript: ^4.2.3
