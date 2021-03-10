@@ -42,19 +42,23 @@ Add `svelte-windicss-preprocess` to your `rollup.config.js`.
 
 ```js
 // rollup.config.js
+import sveltePreprocess from "svelte-preprocess";
 // ...
 export default {
   // ...
   plugins: [
     svelte({
       // svelte-windicss-preprocess
-      preprocess: require('svelte-windicss-preprocess').preprocess({
-        config: 'tailwind.config.js', // tailwind config file path (optional)
-        compile: true, // false: interpretation mode; true: compilation mode
-        prefix: 'windi-', // set compilation mode style prefix
-        globalPreflight: true, // set preflight style is global or scoped
-        globalUtility: true, // set utility style is global or scoped
-      }),
+      preprocess: [
+        sveltePreprocess.typescript(), // to support typscript (optional)
+        require('svelte-windicss-preprocess').preprocess({
+          config: 'tailwind.config.js', // tailwind config file path (optional)
+          compile: true, // false: interpretation mode; true: compilation mode
+          prefix: 'windi-', // set compilation mode style prefix
+          globalPreflight: true, // set preflight style is global or scoped
+          globalUtility: true, // set utility style is global or scoped
+        })
+      ],
       // ...
     }),
   ],
