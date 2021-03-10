@@ -40,6 +40,7 @@ npm install svelte-windicss-preprocess --save-dev
 
 Add `svelte-windicss-preprocess` to your `rollup.config.js`.
 
+**Note:** `typescript` is **optional**. Include `sveltePreprocess.typescript()` if you are using typescript in your Svelte component.
 ```js
 // rollup.config.js
 import sveltePreprocess from "svelte-preprocess";
@@ -50,7 +51,7 @@ export default {
     svelte({
       // svelte-windicss-preprocess
       preprocess: [
-        sveltePreprocess.typescript(), // to support typscript (optional)
+        sveltePreprocess.typescript(), // to support typescript (optional)
         require('svelte-windicss-preprocess').preprocess({
           config: 'tailwind.config.js', // tailwind config file path (optional)
           compile: true, // false: interpretation mode; true: compilation mode
