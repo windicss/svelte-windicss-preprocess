@@ -40,7 +40,7 @@ npm install svelte-windicss-preprocess --save-dev
 
 Add `svelte-windicss-preprocess` to your `rollup.config.js`.
 
-**Note:** `typescript` is **optional**. Include `sveltePreprocess.typescript()` if you are using typescript in your Svelte component.
+> Typescript is **optional**. Include `sveltePreprocess.typescript()` into `preprocess` if you are using typescript in your Svelte component.
 ```js
 // rollup.config.js
 import sveltePreprocess from "svelte-preprocess";
