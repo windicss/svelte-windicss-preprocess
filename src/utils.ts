@@ -73,7 +73,11 @@ export function logging(options: Options) {
   );
   process.stdout.write(
     `${chalk.blueBold('│')} ${chalk.blackBold('-')} windicss running mode: ${
-      process.env.NODE_ENV === 'development' ? chalk.yellowBold('dev') : chalk.green('prod')
+      process.env.NODE_ENV === 'development'
+        ? chalk.yellowBold('dev')
+        : process.env.NODE_ENV === 'production'
+        ? chalk.green('prod')
+        : chalk.yellowBold('process.env.NODE_ENV check failed (check setup)')
     }\n`
   );
   process.stdout.write(

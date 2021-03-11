@@ -377,13 +377,12 @@ export function optimize(path: string) {
 
 export function preprocess(options: typeof OPTIONS = {}) {
   OPTIONS = { ...OPTIONS, ...options }; // change global settings here;
-  if (process.env.NODE_ENV == undefined) {
-    if (OPTIONS.mode == undefined) process.env.NODE_ENV = 'production';
-    if (OPTIONS.mode === 'dev' || OPTIONS.mode === 'development') process.env.NODE_ENV = 'development';
-    if (OPTIONS.mode === 'prod' || OPTIONS.mode === 'production') process.env.NODE_ENV = 'production';
-    process.env.NODE_ENV = 'production';
-  }
   DEV = process.env.NODE_ENV === 'development';
+  if (process.env.NODE_ENV == undefined || process.env.NODE_ENV == 'test') {
+    if (OPTIONS.mode == undefined) DEV = false;
+    if (OPTIONS.mode === 'dev' || OPTIONS.mode === 'development') DEV = true;
+    if (OPTIONS.mode === 'prod' || OPTIONS.mode === 'production') DEV = false;
+  }
   if (!process.env.BROWSER && options?.silent === false) logging(OPTIONS);
   PROCESSOR = new Processor(loadConfig(OPTIONS.config));
   VARIANTS = [...Object.keys(PROCESSOR.resolveVariants()), ...Object.keys(MODIFIED)].filter(

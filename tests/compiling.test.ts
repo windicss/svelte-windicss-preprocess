@@ -170,7 +170,7 @@ let expectedOutputUncompiled = `
 `;
 test('uncompiled', async () => {
   let resultUncompiled = (
-    await preprocess({ ...testConfig, compile: false }).markup({ content, filename: 'preflightsTest.svelte' })
+    await preprocess({ ...testConfig, compile: false }).markup({ content, filename: 'uncompiledTest.svelte' })
   ).code;
   expect(
     format(resultUncompiled, {
@@ -192,7 +192,10 @@ test('uncompiled', async () => {
 });
 test('compiled', async () => {
   let resultCompiled = (
-    await preprocess({ ...testConfig, compile: true }).markup({ content, filename: 'preflightsTest.svelte' })
+    await preprocess({ ...testConfig, compile: true }).markup({
+      content,
+      filename: 'compiledTest.svelte',
+    })
   ).code;
   expect(
     format(resultCompiled, {
