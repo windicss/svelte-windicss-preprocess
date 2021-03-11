@@ -35,6 +35,7 @@ export interface Tag {
 }
 
 export interface Options {
+  mode?: string;
   debug?: boolean;
   silent?: boolean;
   config?: string;
