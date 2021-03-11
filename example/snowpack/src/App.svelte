@@ -1,5 +1,5 @@
 <script>
-  import { windi } from 'windicss/helpers';
+  import Widget from './components/Widget.svelte';
   let num = 200;
   function updateMe() {
     console.log(num);
@@ -45,6 +45,7 @@
 <div class={myClass ? `${myClass ? 'red' : 'bg-amber-100'}` : 'bg-red-10'}>Should be red!</div>
 <!-- Let's spice things up... -->
 <div class={['px-1.5', myClass ? 'red' : '', ''].join(' ')}>Should be red!</div>
+<Widget />
 
 <!-- Let's spice things up...
 <div class={['px-1.5', myClass ? 'red' : '', ''].join(' ')}>Should be red!</div>
