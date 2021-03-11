@@ -35,6 +35,7 @@ export interface Tag {
 }
 
 export interface Options {
+  safeList?: string[];
   mode?: string;
   debug?: boolean;
   silent?: boolean;
@@ -42,6 +43,4 @@ export interface Options {
   compile?: boolean;
   prefix?: string;
   bundle?: string;
-  globalPreflight?: boolean;
-  globalUtility?: boolean;
 }
