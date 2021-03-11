@@ -370,15 +370,15 @@ Hit `ctrl-shift-p` or `cmd-shift-p` on mac, type svelte restart, and select `Sve
 
 - States attribute: such as `sm md lg xl xxl focus hover dark ...` after applid media rules then also will be merged into the `class` attribute. (Attributes like `sm:hover` are not available because they may be rarely used and slow down the parsing speed.)
 
-- [Customize](https://github.com/voorjaar/svelte-windicss-preprocess/blob/main/docs/using-tailwind-configuration.md): support `tailwind.config.js`.
+- [Customize](https://github.com/windicss/svelte-windicss-preprocess/blob/main/docs/using-tailwind-configuration.md): support `tailwind.config.js`.
 
-- For more details, please refer to [windicss](https://github.com/voorjaar/windicss).
+- For more details, please refer to [windicss](https://github.com/windicss/windicss).
 
 ## Resources
 
 - [Roadmap](https://github.com/windicss/windicss/projects/1)
 
-- [Documents](https://windicss.netlify.app/)
+- [Documents](https://windicss.org)
 
 - [Discussions](https://github.com/windicss/windicss/discussions)
 
