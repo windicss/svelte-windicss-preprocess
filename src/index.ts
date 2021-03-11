@@ -239,6 +239,11 @@ function _preprocess(content: string, filename: string) {
   // clear lists until next call
   STYLESHEETS = [];
   CONDITIONS = [];
+  if (OPTIONS?.debug) {
+    console.log('[DEBUG] mainfile:', IS_MAIN);
+    console.log('[DEBUG] filename:', filename);
+  }
+  IS_MAIN = false;
   // console.log(finalContent.toString());
   return finalContent.toString();
 
@@ -349,6 +354,9 @@ export function preprocess(options: typeof OPTIONS = {}) {
   return {
     markup: ({ content, filename }) => {
       return new Promise((resolve, _) => {
+        if (OPTIONS?.debug) {
+          console.log('[DEBUG] called preprocessor');
+        }
         resolve({
           code: _preprocess(content, filename),
         });
