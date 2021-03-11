@@ -4,7 +4,7 @@
 
 ## v3.0.0 - experimental Parser
 
-first beta of experimental parser is released [v3.0.0](https://github.com/windicss/svelte-windicss-preprocess/releases/tag/v3.0.0-beta.1)
+first beta of experimental parser is released [v3.0.0](https://github.com/windicss/svelte-windicss-preprocess/releases)
 
 Feature compatibility:
 
