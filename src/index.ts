@@ -1,19 +1,19 @@
 // import MagicString from 'magic-string';
 import { Processor } from 'windicss/lib';
 import { CSSParser } from 'windicss/utils/parser';
+import { StyleSheet } from 'windicss/utils/style';
 import { loadConfig, writeFileSync, combineStyleList, globalStyleSheet, logging, convertTemplateSyntax } from './utils';
 // import { default as HTMLParser } from './parser';
 import type { Options } from './interfaces';
-import type { StyleSheet } from 'windicss/utils/style';
 
-const DEV = process.env.NODE_ENV === 'development';
-
+let DEV: boolean = false;
 let PROCESSOR: Processor;
 let VARIANTS: string[] = [];
 let BUNDLEFILE: string;
 let IGNORED_CLASSES: string[] = [];
 let STYLESHEETS: StyleSheet[] = [];
 let CONDITIONS: StyleSheet[] = [];
+let SAFELIST: StyleSheet[] = [];
 let FILES: (string | undefined)[] = [];
 let BUNDLES: { [key: string]: StyleSheet } = {};
 let IS_MAIN: boolean = true;
@@ -21,8 +21,6 @@ let IS_MAIN: boolean = true;
 let OPTIONS: Options = {
   compile: false,
   prefix: 'windi-',
-  globalPreflight: true,
-  globalUtility: false,
 };
 
 const REGEXP = {
@@ -192,11 +190,7 @@ function _preprocess(content: string, filename: string) {
         if (OPTIONS.compile) {
           const COMPILED_CLASSES = PROCESSOR.compile(extractedClasses, OPTIONS.prefix, false);
           IGNORED_CLASSES = [...IGNORED_CLASSES, ...COMPILED_CLASSES.ignored];
-          STYLESHEETS.push(
-            OPTIONS.globalUtility && !OPTIONS.bundle
-              ? globalStyleSheet(COMPILED_CLASSES.styleSheet)
-              : COMPILED_CLASSES.styleSheet
-          );
+          STYLESHEETS.push(COMPILED_CLASSES.styleSheet);
           let replacementValue = COMPILED_CLASSES.className
             ? [COMPILED_CLASSES.className, ...COMPILED_CLASSES.ignored].join(' ')
             : COMPILED_CLASSES.ignored.join(' ');
@@ -210,7 +204,7 @@ function _preprocess(content: string, filename: string) {
           // console.log(INTERPRETED_CLASSES);
           IGNORED_CLASSES = [...IGNORED_CLASSES, ...INTERPRETED_CLASSES.ignored];
           let styleSheet = INTERPRETED_CLASSES.styleSheet;
-          STYLESHEETS.push(OPTIONS.globalUtility && !OPTIONS.bundle ? globalStyleSheet(styleSheet) : styleSheet);
+          STYLESHEETS.push(styleSheet);
         }
       }
     }
@@ -218,16 +212,51 @@ function _preprocess(content: string, filename: string) {
 
   let finalContent = lines.join('\n');
 
-  // preflights might lost when refresh, so develop mode will always generate all preflights
-  const preflights = PROCESSOR.preflight(
-    finalContent,
-    true,
-    FILES.length === 0 || FILES.indexOf(filename) === 0,
-    true,
-    !DEV
-  );
+  // // preflights might lost when refresh, so develop mode will always generate all preflights
+  // const preflights = PROCESSOR.preflight(
+  //   finalContent,
+  //   true,
+  //   FILES.length === 0 || FILES.indexOf(filename) === 0,
+  //   true,
+  //   !DEV
+  // );
 
-  const styleSheet = (OPTIONS.globalPreflight && !OPTIONS.bundle ? globalStyleSheet(preflights) : preflights)
+  let preflights: StyleSheet = new StyleSheet();
+  if (!DEV && IS_MAIN) {
+    if (OPTIONS?.debug) {
+      console.log('[DEBUG] production, main file, all preflights');
+    }
+    preflights = PROCESSOR.preflight(
+      finalContent,
+      true,
+      FILES.length === 0 || FILES.indexOf(filename) === 0,
+      true,
+      false
+    );
+  } else if (!DEV) {
+    if (OPTIONS?.debug) {
+      console.log('[DEBUG] production, child file, no preflights');
+    }
+  } else {
+    if (OPTIONS?.debug) {
+      console.log('[DEBUG] development, all preflights');
+    }
+    preflights = PROCESSOR.preflight(
+      finalContent,
+      true,
+      FILES.length === 0 || FILES.indexOf(filename) === 0,
+      true,
+      false
+    );
+  }
+
+  if (OPTIONS?.safeList) {
+    const INTERPRETED_SAFELIST = PROCESSOR.interpret(OPTIONS.safeList.join(' '));
+    SAFELIST.push(globalStyleSheet(INTERPRETED_SAFELIST.styleSheet));
+  }
+
+  const styleSheet = globalStyleSheet(preflights)
+    .extend(combineStyleList(SAFELIST))
     .extend(combineStyleList(STYLESHEETS))
     .extend(combineStyleList(CONDITIONS));
 
@@ -245,6 +274,7 @@ function _preprocess(content: string, filename: string) {
     console.log('[DEBUG] mainfile:', IS_MAIN);
     console.log('[DEBUG] filename:', filename);
   }
+
   IS_MAIN = false;
   // console.log(finalContent.toString());
   return finalContent.toString();
@@ -353,6 +383,7 @@ export function preprocess(options: typeof OPTIONS = {}) {
     if (OPTIONS.mode === 'prod' || OPTIONS.mode === 'production') process.env.NODE_ENV = 'production';
     process.env.NODE_ENV = 'production';
   }
+  DEV = process.env.NODE_ENV === 'development';
   if (!process.env.BROWSER && options?.silent === false) logging(OPTIONS);
   PROCESSOR = new Processor(loadConfig(OPTIONS.config));
   VARIANTS = [...Object.keys(PROCESSOR.resolveVariants()), ...Object.keys(MODIFIED)].filter(
