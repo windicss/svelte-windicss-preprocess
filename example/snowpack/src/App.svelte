@@ -21,7 +21,7 @@
 
 <div
   on:click={updateMe}
-  class="bg-gray-800 animate-pulse text-gray-100 test"
+  class="divide-x bg-gray-800 animate-pulse text-gray-100 test"
   hover="bg-gray-500 text-blue-600 sm:bg-yellow-500 disabled:(bg-gray-300 text-gray-100)"
 >
   My background is dynamic

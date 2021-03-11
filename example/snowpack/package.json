@@ -6,12 +6,15 @@
   "devDependencies": {
     "@snowpack/plugin-svelte": "^3.5.2",
     "rollup": "^2.39.1",
+    "sirv-cli": "^1.0.11",
     "snowpack": "^3.0.13",
     "svelte-hmr": "^0.12.6"
   },
   "scripts": {
     "build": "snowpack build",
     "dev": "snowpack dev --open none",
+    "prod": "pnpm run build && pnpm run start",
+    "start": "sirv build --port 8080",
     "test": "echo \"This template does not include a test runner by default.\" && exit 1"
   }
 }
