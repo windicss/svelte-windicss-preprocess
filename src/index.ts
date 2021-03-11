@@ -129,7 +129,8 @@ function _preprocess(content: string, filename: string) {
     }
   });
   const VARIANTS_REGEX = modifiedVARIANTS.map(element => element.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')).join('|');
-  const CLASS_REGEX = 'class|className';
+  // const CLASS_REGEX = 'class|className';
+  const CLASS_REGEX = 'class';
   const COMBINED_REGEX = `(${CLASS_REGEX}|${VARIANTS_REGEX})`;
   const TEXT_REGEX_MATCHER = `(${COMBINED_REGEX}=["])([^"]*)(["])`;
   // FIXME: EXPRESSION REGEX
