@@ -92,16 +92,6 @@ export function logging(options: Options) {
       options?.prefix ? chalk.gray(options.prefix) : chalk.yellowBold('not set')
     }\n`
   );
-  process.stdout.write(
-    `${chalk.blueBold('│')}    ${chalk.blackBold('•')} global preflights: ${
-      options?.globalPreflight == true ? chalk.gray('enabled') : chalk.gray('disabled')
-    }\n`
-  );
-  process.stdout.write(
-    `${chalk.blueBold('│')}    ${chalk.blackBold('•')} global utilities: ${
-      options?.globalUtility == true ? chalk.gray('enabled') : chalk.gray('disabled')
-    }\n`
-  );
 
   process.stdout.write(`${chalk.blueBold('│')}\n`);
   process.stdout.write(`${chalk.blueBold('└──────────')}\n`);
