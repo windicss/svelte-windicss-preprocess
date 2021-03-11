@@ -16,6 +16,7 @@ let STYLESHEETS: StyleSheet[] = [];
 let CONDITIONS: StyleSheet[] = [];
 let FILES: (string | undefined)[] = [];
 let BUNDLES: { [key: string]: StyleSheet } = {};
+let IS_MAIN: boolean = true;
 
 let OPTIONS: Options = {
   compile: false,
@@ -99,17 +100,18 @@ function _preprocess(content: string, filename: string) {
   if (!process.env.BROWSER) {
     // console.log(convertedContent);
     const { format } = require('prettier');
-    checkedHtml = format(convertedContent, {
-      parser: 'svelte',
-      pluginSearchDirs: ['.'],
-      plugin: [require('prettier-plugin-svelte')],
-      printWidth: 9999,
-      tabWidth: 2,
-      svelteStrictMode: true,
-      svelteAllowShorthand: false,
-      svelteBracketNewLine: false,
-      svelteIndentScriptAndStyle: false,
-    });
+    // checkedHtml = format(convertedContent, {
+    //   parser: 'svelte',
+    //   pluginSearchDirs: ['.'],
+    //   plugin: [require('prettier-plugin-svelte')],
+    //   printWidth: 9999,
+    //   tabWidth: 2,
+    //   svelteStrictMode: true,
+    //   svelteAllowShorthand: false,
+    //   svelteBracketNewLine: false,
+    //   svelteIndentScriptAndStyle: false,
+    // });
+    checkedHtml = convertedContent;
   } else {
     checkedHtml = convertedContent;
   }
@@ -350,7 +352,6 @@ export function preprocess(options: typeof OPTIONS = {}) {
   VARIANTS = [...Object.keys(PROCESSOR.resolveVariants()), ...Object.keys(MODIFIED)].filter(
     i => !Object.values(MODIFIED).includes(i)
   ); // update variants to make svelte happy
-
   return {
     markup: ({ content, filename }) => {
       return new Promise((resolve, _) => {
