@@ -1,37 +1,37 @@
 export interface Node {
-  start: number,
-  end: number,
-  type: string,
-  value?: Text | Expression | (Text | Expression)[],
+  start: number;
+  end: number;
+  type: string;
+  value?: Text | Expression | (Text | Expression)[];
 }
 
 export interface Attribute extends Node {
-  type: 'Attribute',
-  name: string,
-  value: Text | Expression | (Text | Expression)[],
+  type: 'Attribute';
+  name: string;
+  value: Text | Expression | (Text | Expression)[];
 }
 
 export interface Directive extends Node {
-  type: 'Directive',
-  name: string,
-  value: Text | Expression | (Text | Expression)[],
+  type: 'Directive';
+  name: string;
+  value: Text | Expression | (Text | Expression)[];
 }
 
 export interface Expression extends Node {
-  type: 'Expression',
-  data: string
+  type: 'Expression';
+  data: string;
 }
 
 export interface Text extends Node {
-  type: 'Text',
-  data: string
+  type: 'Text';
+  data: string;
 }
 
 export interface Tag {
-  start: number,
-  end: number,
-  name: string,
-  value: (Attribute | Directive)[]
+  start: number;
+  end: number;
+  name: string;
+  value: (Attribute | Directive)[];
 }
 
 export interface Options {
