@@ -77,10 +77,16 @@ function _preprocess(content: string, filename: string) {
       .join(' ')
   );
   let style = content.match(REGEXP.matchStyle)?.[0];
+  if (OPTIONS?.debug) {
+    console.log('[DEBUG] matched style tag', style);
+  }
   if (style) {
     // handle tailwind directives ...
     var global = style.match(new RegExp('global', 'g'));
     style = style.replace(/<\/?style[^>]*>/g, '');
+    if (OPTIONS?.debug) {
+      console.log('[DEBUG] converted style tag', style);
+    }
     if (global) {
       STYLESHEETS.push(globalStyleSheet(new CSSParser(style, PROCESSOR).parse()));
     } else {
@@ -209,7 +215,9 @@ function _preprocess(content: string, filename: string) {
       }
     }
   }
-
+  if (OPTIONS?.debug) {
+    console.log('[DEBUG] returned line array', lines);
+  }
   let finalContent = lines.join('\n');
 
   // // preflights might lost when refresh, so develop mode will always generate all preflights
@@ -277,6 +285,9 @@ function _preprocess(content: string, filename: string) {
 
   IS_MAIN = false;
   // console.log(finalContent.toString());
+  if (OPTIONS?.debug) {
+    console.log('[DEBUG] returned final markup:', finalContent);
+  }
   return finalContent.toString();
 
   // ##### OLD
