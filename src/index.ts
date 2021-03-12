@@ -188,7 +188,9 @@ function _preprocess(content: string, filename: string) {
       if (FINAL_TEXT_MATCHES) {
         // console.log(FINAL_TEXT_MATCHES);
         let extractedClasses = FINAL_TEXT_MATCHES[3];
-        let INLINE_EXPRESSION = FINAL_TEXT_MATCHES[3].toString().match(/([\{].*?[\}])/gi);
+
+        // Find ternary operators and extract the classes
+        let INLINE_EXPRESSION = FINAL_TEXT_MATCHES[3].toString().match(/([\{].*[\?].*[\:].*[\}])/gi);
         if (INLINE_EXPRESSION) {
           // console.log(INLINE_EXPRESSION);
           extractedClasses = FINAL_TEXT_MATCHES[3].replace(/('|:|\}|[\{].*?\?)/gi, '');
