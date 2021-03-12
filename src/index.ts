@@ -188,11 +188,15 @@ function _preprocess(content: string, filename: string) {
       if (FINAL_TEXT_MATCHES) {
         // console.log(FINAL_TEXT_MATCHES);
         let extractedClasses = FINAL_TEXT_MATCHES[3];
-        let INLINE_EXPRESSION = FINAL_TEXT_MATCHES[3].toString().match(/([\{].*?[\}])/gi);
+
+        // Match isolated inline expressions
+        let INLINE_EXPRESSION = FINAL_TEXT_MATCHES[3].toString().match(/("|'|\s)[\{].*?[\}]/gi);
+
+        // Extract classes from inline expressions
         if (INLINE_EXPRESSION) {
-          // console.log(INLINE_EXPRESSION);
-          extractedClasses = FINAL_TEXT_MATCHES[3].replace(/('|:|\}|[\{].*?\?)/gi, '');
+          extractedClasses = FINAL_TEXT_MATCHES[3].replace(/'|\?|:|{(?=[^}]+?\?).+?\?|(?<=:[^{]+?)}/gi, '');
         }
+
         if (OPTIONS.compile) {
           const COMPILED_CLASSES = PROCESSOR.compile(extractedClasses, OPTIONS.prefix, false);
           IGNORED_CLASSES = [...IGNORED_CLASSES, ...COMPILED_CLASSES.ignored];
