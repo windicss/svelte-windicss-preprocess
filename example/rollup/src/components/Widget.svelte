@@ -54,16 +54,16 @@
     <pre>loading weather</pre>
   {:then data}
     <div
-      class="flex flex-col justify-between p-5 shadow-md rounded-3xl bg-gradient-to-br from-fuchsia-400 to-indigo-600 w-500px h-500px"
+      class="bg-gradient-to-br flex flex-col from-fuchsia-400 to-indigo-600 rounded-3xl h-500px shadow-md p-5 w-500px justify-between"
     >
-      <div class="flex flex-row items-center justify-between flex-grow-1">
+      <div class="flex flex-row flex-grow-1 items-center justify-between">
         <div>
           <input
             bind:value={city}
             on:change={update}
             type="text"
             placeholder="paris or berlin"
-            class="p-2 text-white placeholder-gray-100 bg-transparent border-2 border-white rounded"
+            class="bg-transparent border-white rounded border-2 text-white p-2 placeholder-gray-100"
           />
         </div>
         <div class="flex flex-col items-center select-none">
@@ -71,8 +71,8 @@
           <time class="text-2xl semibold-white">{date.toLocaleTimeString()}</time>
         </div>
       </div>
-      <div class="flex flex-row items-center justify-center font-extrabold text-white select-none text-8xl flex-grow-2">
-        <div class="flex flex-col items-center gap-5px">
+      <div class="flex flex-row font-extrabold flex-grow-2 text-white text-8xl items-center justify-center select-none">
+        <div class="flex flex-col gap-5px items-center">
           <span>
             {data.properties.timeseries[0].data.instant.details.air_temperature}
             {data.properties.meta.units.air_temperature == 'celsius' ? '°C' : '°F'}
@@ -81,33 +81,33 @@
         </div>
       </div>
       <div
-        class="grid grid-cols-2 col-auto grid-rows-2 row-auto text-4xl font-bold text-white select-none flex-grow-1 place-items-center h-200px"
+        class="font-bold flex-grow-1 h-200px text-white grid col-auto row-auto text-4xl grid-cols-2 grid-rows-2 select-none place-items-center"
       >
-        <div class="flex flex-col items-center gap-5px">
+        <div class="flex flex-col gap-5px items-center">
           <span>
             {data.properties.timeseries[0].data.instant.details.relative_humidity}
             {data.properties.meta.units.relative_humidity}
           </span>
           <span class="text-sm">realative Humidity</span>
         </div>
-        <div class="flex flex-col items-center gap-5px">
+        <div class="flex flex-col gap-5px items-center">
           <span>
             {data.properties.timeseries[0].data.instant.details.ultraviolet_index_clear_sky}
           </span>
           <span class="text-sm">UV Index</span>
         </div>
-        <div class="flex flex-col items-center gap-5px">
+        <div class="flex flex-col gap-5px items-center">
           <span>
             {convertDirection(data.properties.timeseries[0].data.instant.details.wind_from_direction)}
           </span>
           <span class="text-sm">wind direction</span>
         </div>
-        <div class="flex flex-col items-center gap-5px">
+        <div class="flex flex-col gap-5px items-center">
           <span>
             {data.properties.timeseries[0].data.instant.details.wind_speed}
             {data.properties.meta.units.wind_speed}
           </span>
-          <span class="text-sm">wind speed</span>
+          <span class="text-sm test">wind speed</span>
         </div>
       </div>
     </div>
@@ -117,5 +117,8 @@
 <style>
   .semibold-white {
     @apply text-white font-semibold;
+  }
+  .test {
+    @apply bg-red-200;
   }
 </style>

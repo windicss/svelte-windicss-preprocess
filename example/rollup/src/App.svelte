@@ -6,11 +6,11 @@
   <title>Svelte + Sveasy + Windicss</title>
 </svelte:head>
 
-<div class="flex flex-col items-center justify-center bg-indigo-900 min-w-100vw min-h-100vh">
+<div class="flex flex-col bg-indigo-900 min-w-100vw min-h-100vh p-5 test items-center justify-center">
   <Widget />
 </div>
 
-<style global>
+<style>
   .test {
     @apply bg-red-100;
   }

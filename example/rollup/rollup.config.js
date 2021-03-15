@@ -41,10 +41,10 @@ export default {
       preprocess: require('../../dist/index.js').preprocess({
         silent: false,
         debug: true,
-        compile: true,
-        config: 'tailwind.config.js',
+        verbosity: 3,
+        compile: false,
+        config: 'windi.config.js',
         prefix: 'windi-',
-        globalUtility: true,
       }),
       compilerOptions: {
         // enable run-time checks when not in production
