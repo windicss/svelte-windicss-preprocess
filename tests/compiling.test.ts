@@ -158,11 +158,11 @@ let expectedOutputUncompiled = `
   --tw-text-opacity: 1;
   color: rgba(239, 68, 68, var(--tw-text-opacity));
 }
-.bg-red-200 {
+:global(.bg-red-200) {
   --tw-bg-opacity: 1;
   background-color: rgba(254, 202, 202, var(--tw-bg-opacity));
 }
-.text-white {
+:global(.text-white) {
   --tw-text-opacity: 1;
   color: rgba(255, 255, 255, var(--tw-text-opacity));
 }

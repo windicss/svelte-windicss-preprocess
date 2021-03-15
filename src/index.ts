@@ -220,7 +220,7 @@ function _preprocess(content: string, filename: string) {
       }
     }
   }
-  if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity > 4) {
+  if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! > 4) {
     console.log('[DEBUG] returned line array', lines);
   }
   let finalContent = lines.join('\n');
