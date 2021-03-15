@@ -21,6 +21,7 @@ let IS_MAIN: boolean = true;
 let OPTIONS: Options = {
   compile: false,
   prefix: 'windi-',
+  verbosity: 1,
 };
 
 const REGEXP = {
@@ -77,14 +78,14 @@ function _preprocess(content: string, filename: string) {
       .join(' ')
   );
   let style = content.match(REGEXP.matchStyle)?.[0];
-  if (OPTIONS?.debug) {
+  if (!OPTIONS?.silent && OPTIONS?.debug) {
     console.log('[DEBUG] matched style tag', style);
   }
   if (style) {
     // handle tailwind directives ...
     var global = style.match(new RegExp('global', 'g'));
     style = style.replace(/<\/?style[^>]*>/g, '');
-    if (OPTIONS?.debug) {
+    if (!OPTIONS?.silent && OPTIONS?.debug) {
       console.log('[DEBUG] converted style tag', style);
     }
     if (global) {
@@ -208,18 +209,18 @@ function _preprocess(content: string, filename: string) {
           lines[i] = lines[i].replace(new RegExp(TEXT_REGEX_MATCHER, 'i'), `$1${replacementValue}$4`);
           // // console.log(lines[i]);
         } else {
-          // console.log(extractedClasses);
-
           const INTERPRETED_CLASSES = PROCESSOR.interpret(extractedClasses);
-          // console.log(INTERPRETED_CLASSES);
+          if (!OPTIONS?.silent && OPTIONS?.debug) {
+            console.log('[DEBUG] interpretation', INTERPRETED_CLASSES);
+          }
           IGNORED_CLASSES = [...IGNORED_CLASSES, ...INTERPRETED_CLASSES.ignored];
-          let styleSheet = INTERPRETED_CLASSES.styleSheet;
+          let styleSheet = globalStyleSheet(INTERPRETED_CLASSES.styleSheet);
           STYLESHEETS.push(styleSheet);
         }
       }
     }
   }
-  if (OPTIONS?.debug) {
+  if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity > 4) {
     console.log('[DEBUG] returned line array', lines);
   }
   let finalContent = lines.join('\n');
@@ -235,7 +236,7 @@ function _preprocess(content: string, filename: string) {
 
   let preflights: StyleSheet = new StyleSheet();
   if (!DEV && IS_MAIN) {
-    if (OPTIONS?.debug) {
+    if (!OPTIONS?.silent && OPTIONS?.debug) {
       console.log('[DEBUG] production, main file, all preflights');
     }
     preflights = PROCESSOR.preflight(
@@ -246,11 +247,11 @@ function _preprocess(content: string, filename: string) {
       false
     );
   } else if (!DEV) {
-    if (OPTIONS?.debug) {
+    if (!OPTIONS?.silent && OPTIONS?.debug) {
       console.log('[DEBUG] production, child file, no preflights');
     }
   } else {
-    if (OPTIONS?.debug) {
+    if (!OPTIONS?.silent && OPTIONS?.debug) {
       console.log('[DEBUG] development, all preflights');
     }
     preflights = PROCESSOR.preflight(
@@ -282,16 +283,12 @@ function _preprocess(content: string, filename: string) {
   // clear lists until next call
   STYLESHEETS = [];
   CONDITIONS = [];
-  if (OPTIONS?.debug) {
+  if (!OPTIONS?.silent && OPTIONS?.debug) {
     console.log('[DEBUG] mainfile:', IS_MAIN);
     console.log('[DEBUG] filename:', filename);
   }
 
   IS_MAIN = false;
-  // console.log(finalContent.toString());
-  if (OPTIONS?.debug) {
-    console.log('[DEBUG] returned final markup:', finalContent);
-  }
   return finalContent.toString();
 
   // ##### OLD
@@ -406,7 +403,7 @@ export function preprocess(options: typeof OPTIONS = {}) {
   return {
     markup: ({ content, filename }) => {
       return new Promise((resolve, _) => {
-        if (OPTIONS?.debug) {
+        if (!OPTIONS?.silent && OPTIONS?.debug) {
           console.log('[DEBUG] called preprocessor');
         }
         resolve({

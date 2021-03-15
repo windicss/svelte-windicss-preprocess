@@ -43,4 +43,5 @@ export interface Options {
   compile?: boolean;
   prefix?: string;
   bundle?: string;
+  verbosity: number;
 }
