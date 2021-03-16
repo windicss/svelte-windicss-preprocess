@@ -28,7 +28,6 @@
   "homepage": "https://github.com/voorjaar/svelte-windicss-preprocess",
   "dependencies": {
     "chalk": "^4.1.0",
-    "magic-string": "^0.25.7",
     "prettier": "^2.2.1",
     "prettier-plugin-svelte": "^2.2.0",
     "svelte": "^3.35.0",

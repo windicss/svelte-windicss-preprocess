@@ -1,6 +1,5 @@
 dependencies:
   chalk: 4.1.0
-  magic-string: 0.25.7
   prettier: 2.2.1
   prettier-plugin-svelte: 2.2.0_prettier@2.2.1+svelte@3.35.0
   svelte: 3.35.0
@@ -3003,6 +3002,7 @@ packages:
   /magic-string/0.25.7:
     dependencies:
       sourcemap-codec: 1.4.8
+    dev: true
     resolution:
       integrity: sha512-4CrMT5DOHTDk4HYDlzmwu4FVCcIYI8gauveasrdCu2IKIFOJ3f0v/8MDGJCDL9oD2ppz/Av1b0Nj345H9M+XIA==
   /make-dir/3.1.0:
@@ -3921,6 +3921,7 @@ packages:
     resolution:
       integrity: sha512-CkCj6giN3S+n9qrYiBTX5gystlENnRW5jZeNLHpe6aue+SrHcG5VYwujhW9s4dY31mEGsxBDrHR6oI69fTXsaQ==
   /sourcemap-codec/1.4.8:
+    dev: true
     resolution:
       integrity: sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==
   /spdx-correct/3.1.1:
@@ -4604,7 +4605,6 @@ specifiers:
   fs-extra: ^9.1.0
   jest: ^26.6.3
   js-yaml: ^4.0.0
-  magic-string: ^0.25.7
   prettier: ^2.2.1
   prettier-plugin-svelte: ^2.2.0
   rollup: ^2.41.3

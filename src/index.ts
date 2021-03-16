@@ -1,4 +1,3 @@
-// import MagicString from 'magic-string';
 import { Processor } from 'windicss/lib';
 import { CSSParser } from 'windicss/utils/parser';
 import { StyleSheet } from 'windicss/utils/style';
@@ -104,22 +103,23 @@ function _preprocess(content: string, filename: string) {
   let convertedContent = content;
   let checkedHtml;
   if (!process.env.BROWSER) {
+    const prettier = require('prettier');
+    checkedHtml = prettier.format(convertedContent, {
+      parser: 'svelte',
+      pluginSearchDirs: ['.'],
+      plugins: ['prettier-plugin-svelte'],
+      printWidth: 9999,
+      tabWidth: 2,
+      svelteSortOrder: 'options-styles-scripts-markup',
+      svelteStrictMode: true,
+      svelteBracketNewLine: false,
+      svelteAllowShorthand: false,
+      svelteIndentScriptAndStyle: false,
+    });
     if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 5) {
-      console.log('[DEBUG] input', convertedContent);
+      console.log('[DEBUG] input', checkedHtml);
     }
-    const { format } = require('prettier');
-    // checkedHtml = format(convertedContent, {
-    //   parser: 'svelte',
-    //   pluginSearchDirs: ['.'],
-    //   plugin: [require('prettier-plugin-svelte')],
-    //   printWidth: 9999,
-    //   tabWidth: 2,
-    //   svelteStrictMode: true,
-    //   svelteAllowShorthand: false,
-    //   svelteBracketNewLine: false,
-    //   svelteIndentScriptAndStyle: false,
-    // });
-    checkedHtml = convertedContent;
+    // checkedHtml = convertedContent;
   } else {
     checkedHtml = convertedContent;
   }
