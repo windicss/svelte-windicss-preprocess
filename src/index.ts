@@ -158,6 +158,21 @@ function _preprocess(content: string, filename: string) {
       let dynamicStylesheet = globalStyleSheet(INTERPRETED_WINDI_EXPRESSION.styleSheet);
       STYLESHEETS.push(dynamicStylesheet);
     }
+
+    // Match svelte directive css class
+    let DIRECTIVE_EXPRESSION = lines[i].toString().match(/\s(class):([^=]+)/gi);
+    if (DIRECTIVE_EXPRESSION) {
+      for (let k = 0; k < DIRECTIVE_EXPRESSION.length; k++) {
+        let DIRECTIVE_MATCH = DIRECTIVE_EXPRESSION[k].toString().match(/\s(class):([^=]+)/gi);
+        const INTERPRETED_DIRECTIVE = PROCESSOR.interpret(DIRECTIVE_MATCH[2]);
+        if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 3) {
+          console.log('[DEBUG] directive class', INTERPRETED_DIRECTIVE);
+        }
+        let dynamicStylesheet = globalStyleSheet(INTERPRETED_DIRECTIVE.styleSheet);
+        STYLESHEETS.push(dynamicStylesheet);
+      }
+    }
+
     const TEXT_MATCHES = lines[i].toString().match(new RegExp(TEXT_REGEX_MATCHER, 'gi'));
     //const EXPRESSION_MATCHES = lines[i].toString().match(new RegExp(EXPRESSION_REGEX_MATCHER, 'gi'));
 
