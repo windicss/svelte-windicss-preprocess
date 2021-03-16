@@ -72,58 +72,27 @@ export function logging(options: Options) {
     `${chalk.blueBold('│')} ${process.env.NODE_ENV == undefined ? chalk.redBold('NODE_ENV is undefined') : ''}\n`
   );
   process.stdout.write(
-    `${chalk.blueBold('│')} ${chalk.blackBold('-')} windicss running mode: ${
-      process.env.NODE_ENV === 'development'
-        ? chalk.yellowBold('dev')
-        : process.env.NODE_ENV === 'production'
+    `${chalk.blueBold('│')} ${chalk.blackBold('-')} windicss running mode: ${process.env.NODE_ENV === 'development'
+      ? chalk.yellowBold('dev')
+      : process.env.NODE_ENV === 'production'
         ? chalk.green('prod')
         : chalk.yellowBold('process.env.NODE_ENV check failed (check setup)')
     }\n`
   );
   process.stdout.write(
-    `${chalk.blueBold('│')} ${chalk.blackBold('-')} advanced debug logs: ${
-      options?.debug === true ? chalk.yellowBold('on') : chalk.green('off')
+    `${chalk.blueBold('│')} ${chalk.blackBold('-')} advanced debug logs: ${options?.debug === true ? chalk.yellowBold('on') : chalk.green('off')
     }\n`
   );
 
   process.stdout.write(
-    `${chalk.blueBold('│')}    ${chalk.blackBold('•')} compilation mode: ${
-      options?.compile == true ? chalk.gray('enabled') : chalk.gray('disabled')
+    `${chalk.blueBold('│')}    ${chalk.blackBold('•')} compilation mode: ${options?.compile == true ? chalk.gray('enabled') : chalk.gray('disabled')
     }\n`
   );
   process.stdout.write(
-    `${chalk.blueBold('│')}    ${chalk.blackBold('•')} class prefix: ${
-      options?.prefix ? chalk.gray(options.prefix) : chalk.yellowBold('not set')
+    `${chalk.blueBold('│')}    ${chalk.blackBold('•')} class prefix: ${options?.prefix ? chalk.gray(options.prefix) : chalk.yellowBold('not set')
     }\n`
   );
 
   process.stdout.write(`${chalk.blueBold('│')}\n`);
   process.stdout.write(`${chalk.blueBold('└──────────')}\n`);
-}
-
-export function convertTemplateSyntax(content: string): string {
-  // converts content temporarily from special svelte syntax to more generic syntax for parsing ...
-  // from : <div class={`green ${myClass ? 'red' : 'green'}`}>Should be red!</div>
-  // to : <div class="green {myClass ? 'red' : 'green'}">Should be red!</div>
-
-  // needs make sure length and position are the same, so replacing with spaces
-  // let splittedContent = content.split('\n');
-  // for (let line of splittedContent) {
-  //   let dynamicContent = line.match(/windi`(.*?)`/i);
-  //   if (dynamicContent) {
-  //     let shade = 40;
-  //     let splittedDynamicContent = dynamicContent[1]?.split(' ');
-  //     let convertedString = windi`${splittedDynamicContent}`;
-  //     console.log(convertedString);
-  //     line = line.replace(/(?<!windi`.*)\$/, windi`${splittedDynamicContent}`);
-  //     console.log(line);
-  //   }
-  // }
-  // let parsedContent = splittedContent.join('\n');
-  let parsedContent = content;
-  parsedContent = parsedContent.replace(/windi`.*`/g, '');
-  // parsedContent = parsedContent.replace(/\{`/g, '" ');
-  // parsedContent = parsedContent.replace(/`\}/g, ' "');
-  // parsedContent = parsedContent.replace(/(?<!windi`.*)\$/g, ' ');
-  return parsedContent;
 }

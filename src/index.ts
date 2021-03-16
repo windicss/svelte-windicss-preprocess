@@ -1,7 +1,7 @@
 import { Processor } from 'windicss/lib';
 import { CSSParser } from 'windicss/utils/parser';
 import { StyleSheet } from 'windicss/utils/style';
-import { loadConfig, writeFileSync, combineStyleList, globalStyleSheet, logging, convertTemplateSyntax } from './utils';
+import { loadConfig, writeFileSync, combineStyleList, globalStyleSheet, logging } from './utils';
 // import { default as HTMLParser } from './parser';
 import type { Options } from './interfaces';
 
@@ -99,7 +99,6 @@ function _preprocess(content: string, filename: string) {
   // uses new convertion, can be reverted quickly if this breaks to much bu changing to
   // old : const parser = new HTMLParser(content);
 
-  // let convertedContent = convertTemplateSyntax(content);
   let convertedContent = content;
   let checkedHtml;
   if (!process.env.BROWSER) {
