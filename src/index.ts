@@ -131,9 +131,7 @@ function _preprocess(content: string, filename: string) {
       value !== '@light' &&
       value !== '@dark' &&
       value !== '.light' &&
-      value !== '.dark' &&
-      value !== 'even' &&
-      value !== 'even-of-type'
+      value !== '.dark'
     ) {
       return value;
     }
