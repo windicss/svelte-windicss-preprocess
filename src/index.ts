@@ -83,7 +83,7 @@ function _preprocess(content: string, filename: string) {
   }
   if (style) {
     // handle tailwind directives ...
-    var global = style.match(new RegExp('global', 'g'));
+    var global = style.match(/\sglobal/gi);
     style = style.replace(/<\/?style[^>]*>/g, '');
     if (!OPTIONS?.silent && OPTIONS?.debug) {
       console.log('[DEBUG] converted style tag', style);
