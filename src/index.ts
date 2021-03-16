@@ -104,6 +104,10 @@ function _preprocess(content: string, filename: string) {
   let checkedHtml;
   if (!process.env.BROWSER) {
     const prettier = require('prettier');
+    convertedContent = convertedContent.replace(/\n/g, ' ')
+    if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 5) {
+      console.log('[DEBUG] raw input', convertedContent);
+    }
     checkedHtml = prettier.format(convertedContent, {
       parser: 'svelte',
       pluginSearchDirs: ['.'],
@@ -116,9 +120,6 @@ function _preprocess(content: string, filename: string) {
       svelteAllowShorthand: false,
       svelteIndentScriptAndStyle: false,
     });
-    if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 5) {
-      console.log('[DEBUG] input', checkedHtml);
-    }
     // checkedHtml = convertedContent;
   } else {
     checkedHtml = convertedContent;
