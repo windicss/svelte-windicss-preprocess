@@ -1,6 +1,6 @@
 {
   "name": "svelte-windicss-preprocess",
-  "version": "3.0.0-beta.15",
+  "version": "3.0.0-beta.16",
   "description": "A Svelte Preprocessor to compile tailwindcss at build time based on windicss compiler.",
   "main": "index.js",
   "types": "index.d.ts",
