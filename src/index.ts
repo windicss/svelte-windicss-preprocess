@@ -125,7 +125,7 @@ function _preprocess(content: string, filename: string) {
   }
   // console.log(checkedHtml);
   let lines = checkedHtml.split('\n');
-  const modifiedVARIANTS = VARIANTS.filter((value, index, arr) => {
+  const modifiedVARIANTS = VARIANTS.filter((value, _index, _arr) => {
     if (
       value !== 'target' &&
       value !== '@light' &&
