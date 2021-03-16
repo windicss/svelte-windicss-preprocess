@@ -143,7 +143,7 @@ function _preprocess(content: string, filename: string) {
   // const CLASS_REGEX = 'class|className';
   const CLASS_REGEX = 'class';
   const COMBINED_REGEX = `(${CLASS_REGEX}|${VARIANTS_REGEX})`;
-  const TEXT_REGEX_MATCHER = `(${COMBINED_REGEX}=["])([^"]*)(["])`;
+  const TEXT_REGEX_MATCHER = `(\s${COMBINED_REGEX}=["])([^"]*)(["])`;
   // FIXME: EXPRESSION REGEX
   //const EXPRESSION_REGEX_MATCHER = `(${COMBINED_REGEX}=[\{])(.*)([\}])`;
 
