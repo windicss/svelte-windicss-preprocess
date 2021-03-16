@@ -100,23 +100,26 @@ function _preprocess(content: string, filename: string) {
   // uses new convertion, can be reverted quickly if this breaks to much bu changing to
   // old : const parser = new HTMLParser(content);
 
-  let convertedContent = convertTemplateSyntax(content);
+  // let convertedContent = convertTemplateSyntax(content);
+  let convertedContent = content;
   let checkedHtml;
   if (!process.env.BROWSER) {
-    // console.log(convertedContent);
+    if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 5) {
+      console.log('[DEBUG] input', convertedContent);
+    }
     const { format } = require('prettier');
-    checkedHtml = format(convertedContent, {
-      parser: 'svelte',
-      pluginSearchDirs: ['.'],
-      plugin: [require('prettier-plugin-svelte')],
-      printWidth: 9999,
-      tabWidth: 2,
-      svelteStrictMode: true,
-      svelteAllowShorthand: false,
-      svelteBracketNewLine: false,
-      svelteIndentScriptAndStyle: false,
-    });
-    // checkedHtml = convertedContent;
+    // checkedHtml = format(convertedContent, {
+    //   parser: 'svelte',
+    //   pluginSearchDirs: ['.'],
+    //   plugin: [require('prettier-plugin-svelte')],
+    //   printWidth: 9999,
+    //   tabWidth: 2,
+    //   svelteStrictMode: true,
+    //   svelteAllowShorthand: false,
+    //   svelteBracketNewLine: false,
+    //   svelteIndentScriptAndStyle: false,
+    // });
+    checkedHtml = convertedContent;
   } else {
     checkedHtml = convertedContent;
   }
@@ -144,6 +147,16 @@ function _preprocess(content: string, filename: string) {
   //const EXPRESSION_REGEX_MATCHER = `(${COMBINED_REGEX}=[\{])(.*)([\}])`;
 
   for (let i = 0; i < lines.length; i++) {
+    // Match windi template syntax
+    let WINDI_EXPRESSION = lines[i].toString().match(/windi\`(.*?)\`/i);
+    if (WINDI_EXPRESSION) {
+      const INTERPRETED_WINDI_EXPRESSION = PROCESSOR.interpret(WINDI_EXPRESSION[1]);
+      if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 3) {
+        console.log('[DEBUG] windi expression', INTERPRETED_WINDI_EXPRESSION);
+      }
+      let dynamicStylesheet = globalStyleSheet(INTERPRETED_WINDI_EXPRESSION.styleSheet);
+      STYLESHEETS.push(dynamicStylesheet);
+    }
     const TEXT_MATCHES = lines[i].toString().match(new RegExp(TEXT_REGEX_MATCHER, 'gi'));
     //const EXPRESSION_MATCHES = lines[i].toString().match(new RegExp(EXPRESSION_REGEX_MATCHER, 'gi'));
 
@@ -210,7 +223,7 @@ function _preprocess(content: string, filename: string) {
           // // console.log(lines[i]);
         } else {
           const INTERPRETED_CLASSES = PROCESSOR.interpret(extractedClasses);
-          if (!OPTIONS?.silent && OPTIONS?.debug) {
+          if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 4) {
             console.log('[DEBUG] interpretation', INTERPRETED_CLASSES);
           }
           IGNORED_CLASSES = [...IGNORED_CLASSES, ...INTERPRETED_CLASSES.ignored];
@@ -220,19 +233,10 @@ function _preprocess(content: string, filename: string) {
       }
     }
   }
-  if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! > 4) {
+  if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 5) {
     console.log('[DEBUG] returned line array', lines);
   }
   let finalContent = lines.join('\n');
-
-  // // preflights might lost when refresh, so develop mode will always generate all preflights
-  // const preflights = PROCESSOR.preflight(
-  //   finalContent,
-  //   true,
-  //   FILES.length === 0 || FILES.indexOf(filename) === 0,
-  //   true,
-  //   !DEV
-  // );
 
   let preflights: StyleSheet = new StyleSheet();
   if (!DEV && IS_MAIN) {
