@@ -43,5 +43,5 @@ export interface Options {
   compile?: boolean;
   prefix?: string;
   bundle?: string;
-  verbosity?: number;
+  verbosity?: number; // TODO: add mapping in docs for people
 }
