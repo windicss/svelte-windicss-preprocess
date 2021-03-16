@@ -4,25 +4,25 @@ dependencies:
   prettier: 2.2.1
   prettier-plugin-svelte: 2.2.0_prettier@2.2.1+svelte@3.35.0
   svelte: 3.35.0
-  windicss: 2.4.0
+  windicss: 2.4.7
 devDependencies:
-  '@rollup/plugin-node-resolve': 11.2.0_rollup@2.41.1
-  '@rollup/plugin-replace': 2.4.1_rollup@2.41.1
-  '@rollup/plugin-sucrase': 3.1.0_rollup@2.41.1
-  '@rollup/plugin-typescript': 8.2.0_a5e4cb6515dcb57598bd55e173340192
+  '@rollup/plugin-node-resolve': 11.2.0_rollup@2.41.3
+  '@rollup/plugin-replace': 2.4.1_rollup@2.41.3
+  '@rollup/plugin-sucrase': 3.1.0_rollup@2.41.3
+  '@rollup/plugin-typescript': 8.2.0_0ceb14c1f047135811e848fc037005c6
   '@types/diff': 5.0.0
   '@types/fs-extra': 9.0.8
   '@types/jest': 26.0.20
   '@types/js-yaml': 4.0.0
-  '@types/node': 14.14.33
+  '@types/node': 14.14.35
   bumpp: 6.0.6
   cross-env: 7.0.3
   diff: 5.0.0
   fs-extra: 9.1.0
   jest: 26.6.3
   js-yaml: 4.0.0
-  rollup: 2.41.1
-  rollup-plugin-terser: 7.0.2_rollup@2.41.1
+  rollup: 2.41.3
+  rollup-plugin-terser: 7.0.2_rollup@2.41.3
   sucrase: 3.17.1
   ts-jest: 26.5.3_jest@26.6.3+typescript@4.2.3
   tslib: 2.1.0
@@ -571,15 +571,15 @@ packages:
       node: '>= 8'
     resolution:
       integrity: sha512-8Broas6vTtW4GIXTAHDoE32hnN2M5ykgCpWGbuXHQ15vEMqr23pB76e/GZcYsZCHALv50ktd24qhEyKr6wBtow==
-  /@rollup/plugin-node-resolve/11.2.0_rollup@2.41.1:
+  /@rollup/plugin-node-resolve/11.2.0_rollup@2.41.3:
     dependencies:
-      '@rollup/pluginutils': 3.1.0_rollup@2.41.1
+      '@rollup/pluginutils': 3.1.0_rollup@2.41.3
       '@types/resolve': 1.17.1
       builtin-modules: 3.2.0
       deepmerge: 4.2.2
       is-module: 1.0.0
       resolve: 1.20.0
-      rollup: 2.41.1
+      rollup: 2.41.3
     dev: true
     engines:
       node: '>= 10.0.0'
@@ -587,20 +587,20 @@ packages:
       rollup: ^1.20.0||^2.0.0
     resolution:
       integrity: sha512-qHjNIKYt5pCcn+5RUBQxK8krhRvf1HnyVgUCcFFcweDS7fhkOLZeYh0mhHK6Ery8/bb9tvN/ubPzmfF0qjDCTA==
-  /@rollup/plugin-replace/2.4.1_rollup@2.41.1:
+  /@rollup/plugin-replace/2.4.1_rollup@2.41.3:
     dependencies:
-      '@rollup/pluginutils': 3.1.0_rollup@2.41.1
+      '@rollup/pluginutils': 3.1.0_rollup@2.41.3
       magic-string: 0.25.7
-      rollup: 2.41.1
+      rollup: 2.41.3
     dev: true
     peerDependencies:
       rollup: ^1.20.0 || ^2.0.0
     resolution:
       integrity: sha512-XwC1oK5rrtRJ0tn1ioLHS6OV5JTluJF7QE1J/q1hN3bquwjnVxjtMyY9iCnoyH9DQbf92CxajB3o98wZbP3oAQ==
-  /@rollup/plugin-sucrase/3.1.0_rollup@2.41.1:
+  /@rollup/plugin-sucrase/3.1.0_rollup@2.41.3:
     dependencies:
-      '@rollup/pluginutils': 3.1.0_rollup@2.41.1
-      rollup: 2.41.1
+      '@rollup/pluginutils': 3.1.0_rollup@2.41.3
+      rollup: 2.41.3
       sucrase: 3.17.1
     dev: true
     engines:
@@ -609,11 +609,11 @@ packages:
       rollup: ^1.20.0 || ^2.0.0
     resolution:
       integrity: sha512-PZ70LDNgIj8rL+3pKwKwTBOQ2c9JofXeLbWz+2V4/nCt4LqwYTNqxJJf1riTJsVARVzJdA0woIzUzjKZvL8TfA==
-  /@rollup/plugin-typescript/8.2.0_a5e4cb6515dcb57598bd55e173340192:
+  /@rollup/plugin-typescript/8.2.0_0ceb14c1f047135811e848fc037005c6:
     dependencies:
-      '@rollup/pluginutils': 3.1.0_rollup@2.41.1
+      '@rollup/pluginutils': 3.1.0_rollup@2.41.3
       resolve: 1.20.0
-      rollup: 2.41.1
+      rollup: 2.41.3
       tslib: 2.1.0
       typescript: 4.2.3
     dev: true
@@ -625,12 +625,12 @@ packages:
       typescript: '>=3.4.0'
     resolution:
       integrity: sha512-5DyVsb7L+ehLfNPu/nat8Gq3uJGzku4bMFPt90XahtgiSBf7z9YKPLqFUJKMT41W/mJ98SVGDPOhzikGrr/Lhg==
-  /@rollup/pluginutils/3.1.0_rollup@2.41.1:
+  /@rollup/pluginutils/3.1.0_rollup@2.41.3:
     dependencies:
       '@types/estree': 0.0.39
       estree-walker: 1.0.1
       picomatch: 2.2.2
-      rollup: 2.41.1
+      rollup: 2.41.3
     dev: true
     engines:
       node: '>= 8.0.0'
@@ -730,10 +730,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-vFHy/ezP5qI0rFgJ7aQnjDXwAMrG0KqqIH7tQG5PPv3BWBayOPIQNBjVc/P6hhdZfMx51REc6tfDNXHUio893g==
-  /@types/node/14.14.33:
+  /@types/node/14.14.35:
     dev: true
     resolution:
-      integrity: sha512-oJqcTrgPUF29oUP8AsUqbXGJNuPutsetaa9kTQAQce5Lx5dTYWV02ScBiT/k1BX/Z7pKeqedmvp39Wu4zR7N7g==
+      integrity: sha512-Lt+wj8NVPx0zUmUwumiVXapmaLUcAk3yPuHCFVXras9k5VT9TdhJqKqGVUQCD60OTMCl0qxJ57OiTL0Mic3Iag==
   /@types/normalize-package-data/2.4.0:
     dev: true
     resolution:
@@ -3671,11 +3671,11 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-JZkJMZkAGFFPP2YqXZXPbMlMBgsxzE8ILs4lMIX/2o0L9UBw9O/Y3o6wFw/i9YLapcUJWwqbi3kdxIPdC62TIA==
-  /rollup-plugin-terser/7.0.2_rollup@2.41.1:
+  /rollup-plugin-terser/7.0.2_rollup@2.41.3:
     dependencies:
       '@babel/code-frame': 7.12.13
       jest-worker: 26.6.2
-      rollup: 2.41.1
+      rollup: 2.41.3
       serialize-javascript: 4.0.0
       terser: 5.6.0
     dev: true
@@ -3683,7 +3683,7 @@ packages:
       rollup: ^2.0.0
     resolution:
       integrity: sha512-w3iIaU4OxcF52UUXiZNsNeuXIMDvFrr+ZXK6bFZ0Q60qyVfq4uLptoS4bbq3paG3x216eQllFZX7zt6TIImguQ==
-  /rollup/2.41.1:
+  /rollup/2.41.3:
     dev: true
     engines:
       node: '>=10.0.0'
@@ -3691,7 +3691,7 @@ packages:
     optionalDependencies:
       fsevents: 2.3.2
     resolution:
-      integrity: sha512-nepLFAW5W71/MWpS2Yr7r31eS7HRfYg2RXnxb6ehqN9zY42yACxKtEfb4xq8SmNfUohAzGMcyl6jkwdLOAiUbg==
+      integrity: sha512-swrSUfX3UK7LGd5exBJNUC7kykdxemUTRuyO9hUFJsmQUsUovHcki9vl5MAWFbB6oI47HpeZHtbmuzdm1SRUZw==
   /rsvp/4.8.5:
     dev: true
     engines:
@@ -4488,13 +4488,13 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==
-  /windicss/2.4.0:
+  /windicss/2.4.7:
     dev: false
     engines:
       node: '>= 12'
     hasBin: true
     resolution:
-      integrity: sha512-EcGkGnZpuoH0r/hNuj4GLheb9Lg3P+s5KOHUZU63zkl6yoMQNAwTvNXai7OjylbXLFDEWii7SAJbwQIFxE56qQ==
+      integrity: sha512-7CuHMxa4r/sUHVqF1v+glcxWVetbG2j5V+JXRk/C//+CN8Sn8yoWHl8KcDqaDtX6nLF8WQRl0q56GUshgWgxwQ==
   /word-wrap/1.2.3:
     dev: true
     engines:
@@ -4596,7 +4596,7 @@ specifiers:
   '@types/fs-extra': ^9.0.8
   '@types/jest': ^26.0.20
   '@types/js-yaml': ^4.0.0
-  '@types/node': ^14.14.33
+  '@types/node': ^14.14.35
   bumpp: ^6.0.6
   chalk: ^4.1.0
   cross-env: ^7.0.3
@@ -4607,11 +4607,11 @@ specifiers:
   magic-string: ^0.25.7
   prettier: ^2.2.1
   prettier-plugin-svelte: ^2.2.0
-  rollup: ^2.41.1
+  rollup: ^2.41.3
   rollup-plugin-terser: ^7.0.2
   sucrase: ^3.17.1
   svelte: ^3.35.0
   ts-jest: ^26.5.3
   tslib: ^2.1.0
   typescript: ^4.2.3
-  windicss: ^2.4.0
+  windicss: ^2.4.7
