@@ -103,9 +103,9 @@ function _preprocess(content: string, filename: string) {
   let checkedHtml;
   if (!process.env.BROWSER) {
     const prettier = require('prettier');
-    convertedContent = convertedContent.replace(/.*(\s[\/]{2}.*)\n/gmi, "######## $1 ########")
-    convertedContent = convertedContent.replace(/\n/gi, " ")
-    convertedContent = convertedContent.replace(/[\#]{8}/gi, "\n")
+    // convertedContent = convertedContent.replace(/.*(\s[\/]{2}.*)\n/gmi, "######## $1 ########")
+    // convertedContent = convertedContent.replace(/\n/gi, " ")
+    // convertedContent = convertedContent.replace(/[\#]{8}/gi, "\n")
     if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 5) {
       console.log('[DEBUG] raw input', convertedContent);
     }
