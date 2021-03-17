@@ -1,5 +1,6 @@
 <script>
   import Widget from './components/Widget.svelte';
+  // let comment = false;
 </script>
 
 <svelte:head>
