@@ -15,7 +15,7 @@ If you are already familiar with [Tailwind CSS](https://tailwindcss.com/docs), t
 npm i -D svelte-windicss-preprocess
 ```
 
-### [integrations guides](https://next.windicss.org/guide/integrations/svelte-preprocessor.html) can be found in windicss docs
+<!-- ### [integrations guides](https://next.windicss.org/guide/integrations/svelte-preprocessor.html) can be found in windicss docs -->
 
 ---
 
