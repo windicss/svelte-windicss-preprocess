@@ -36,34 +36,6 @@ const MODIFIED: { [key: string]: string } = {
   'tw-checked': 'checked',
 };
 
-// function compilation(classNames: string) {
-//   const utility = PROCESSOR.compile(classNames, OPTIONS.prefix, false);
-//   IGNORED_CLASSES = [...IGNORED_CLASSES, ...utility.ignored];
-//   STYLESHEETS.push(
-//     OPTIONS.globalUtility && !OPTIONS.bundle ? globalStyleSheet(utility.styleSheet) : utility.styleSheet
-//   );
-//   return utility.className ? [utility.className, ...utility.ignored].join(' ') : utility.ignored.join(' '); // return new className
-// }
-
-// function interpretation(classNames: string) {
-//   const utility = PROCESSOR.interpret(classNames);
-//   IGNORED_CLASSES = [...IGNORED_CLASSES, ...utility.ignored];
-//   let styleSheet = utility.styleSheet;
-//   STYLESHEETS.push(OPTIONS.globalUtility && !OPTIONS.bundle ? globalStyleSheet(styleSheet) : styleSheet);
-// }
-
-// function addVariant(classNames: string, variant: string) {
-//   // prepend variant before each className
-//   if (variant in MODIFIED) variant = MODIFIED[variant];
-//   const groupRegex = /[\S]+:\([\s\S]*?\)/g;
-//   const groups = [...(classNames.match(groupRegex) ?? [])];
-//   const utilities = classNames
-//     .replace(groupRegex, '')
-//     .split(/\s+/)
-//     .filter(i => i);
-//   return [...utilities, ...groups].map(i => `${variant}:${i}`).join(' ');
-// }
-
 function _preprocess(content: string, filename: string) {
   // FIXME: needs to be refactored. shouldn't remove comments completly, just for parsing
   // TODO: move to utils
@@ -94,10 +66,6 @@ function _preprocess(content: string, filename: string) {
     }
     content = content.replace(REGEXP.matchStyle, '');
   }
-
-  //const code = new MagicString(content);
-  // uses new convertion, can be reverted quickly if this breaks to much bu changing to
-  // old : const parser = new HTMLParser(content);
 
   let convertedContent = content;
   let checkedHtml;
@@ -307,91 +275,6 @@ function _preprocess(content: string, filename: string) {
 
   IS_MAIN = false;
   return finalContent.toString();
-
-  // ##### OLD
-  // const parser = new HTMLParser(convertTemplateSyntax(content));
-  // parser.parse().forEach(tag => {
-  //   let classes: string[] = [];
-  //   let conditionClasses: string[] = [];
-  //   let expressions: string[] = [];
-  //   let classStart: number | undefined;
-  //   tag.value.forEach(node => {
-  //     if (node.type === 'Attribute') {
-  //       if (node.name === 'class' || node.name === 'tw') {
-  //         classStart = node.start;
-  //         code.overwrite(node.start, node.end, '');
-  //         if (!Array.isArray(node.value)) node.value = [node.value];
-  //         classes = [...classes, ...node.value.filter(i => i.type === 'Text').map(i => i.data)];
-  //         node.value
-  //           .filter(i => i.type === 'Expression')
-  //           .forEach(i => {
-  //             expressions.push(`{${i.data}}`);
-  //             const classes = i.data.match(REGEXP.matchClasses);
-  //             if (classes) conditionClasses = [...conditionClasses, ...classes.map(i => i.slice(1, -1))];
-  //           });
-  //       } else if (VARIANTS.includes(node.name)) {
-  //         // handle variants attribute
-  //         classStart = node.start;
-  //         code.overwrite(node.start, node.end, '');
-  //         if (!Array.isArray(node.value)) node.value = [node.value];
-  //         classes = [...classes, ...node.value.filter(i => i.type === 'Text').map(i => addVariant(i.data, node.name))];
-  //         node.value
-  //           .filter(i => i.type === 'Expression')
-  //           .forEach(i => {
-  //             expressions.push(`{${i.data}}`);
-  //             const classes = i.data.match(REGEXP.matchClasses);
-  //             if (classes)
-  //               conditionClasses = [...conditionClasses, ...classes.map(i => addVariant(i.slice(1, -1), node.name))];
-  //           });
-  //       }
-  //     } else if (node.type === 'Directive') {
-  //       conditionClasses.push(node.name);
-  //     }
-  //   });
-
-  //   if (classStart) {
-  //     if (OPTIONS.compile) {
-  //       code.prependLeft(
-  //         classStart,
-  //         `class="${compilation(classes.join(' '))}${expressions.length > 0 ? ' ' + expressions.join(' ') : ''}"`
-  //       );
-  //     } else {
-  //       interpretation(classes.join(' '));
-  //       code.prependLeft(
-  //         classStart,
-  //         `class="${classes.join(' ')}${expressions.length > 0 ? ' ' + expressions.join(' ') : ''}"`
-  //       );
-  //     }
-  //   }
-
-  //   if (conditionClasses.length > 0) {
-  //     const utility = PROCESSOR.interpret(conditionClasses.join(' '));
-  //     IGNORED_CLASSES = [...IGNORED_CLASSES, ...utility.ignored];
-  //     CONDITIONS.push(globalStyleSheet(utility.styleSheet));
-  //   }
-  // });
-
-  // // preflights might lost when refresh, so develop mode will always generate all preflights
-  // const preflights = PROCESSOR.preflight(
-  //   content,
-  //   true,
-  //   FILES.length === 0 || FILES.indexOf(filename) === 0,
-  //   true,
-  //   !DEV
-  // );
-
-  // const styleSheet = (OPTIONS.globalPreflight && !OPTIONS.bundle ? globalStyleSheet(preflights) : preflights)
-  //   .extend(combineStyleList(STYLESHEETS))
-  //   .extend(combineStyleList(CONDITIONS));
-
-  // if (OPTIONS.bundle) {
-  //   if (filename) BUNDLES[filename] = styleSheet;
-  //   writeFileSync(OPTIONS.bundle, combineStyleList(Object.values(BUNDLES)).build(true));
-  // } else {
-  //   code.trimEnd().append(`\n\n<style>\n${styleSheet.build()}\n</style>`);
-  // }
-
-  // if (!FILES.includes(filename)) FILES.push(filename);
 }
 
 function _optimize(types: string, typeNodes: { [key: string]: string }) {
