@@ -151,17 +151,6 @@ function _preprocess(content: string, filename: string) {
 
         if (GROUPED_MATCH) {
           if (VARIANTS.includes(GROUPED_MATCH[2])) {
-            // // console.log(GROUPED_MATCH);
-
-            // prepend variant before each className
-            // if (variant in MODIFIED) variant = MODIFIED[variant];
-            // const groupRegex = /[\S]+:\([\s\S]*?\)/g;
-            // const groups = [...(classNames.match(groupRegex) ?? [])];
-            // const utilities = classNames
-            //   .replace(groupRegex, '')
-            //   .split(/\s+/)
-            //   .filter(i => i);
-            // return [...utilities, ...groups].map(i => `${variant}:${i}`).join(' ');
             lines[i] = lines[i].replace(new RegExp(new RegExp(GROUPED_MATCH[0]), 'i'), '');
             let prefix = GROUPED_MATCH[2];
             if (prefix in MODIFIED) prefix = MODIFIED[prefix];
@@ -169,13 +158,10 @@ function _preprocess(content: string, filename: string) {
             let convertedVariants = splittedVariants.map(variant => {
               return `${prefix}:${variant}`;
             });
-            // // console.log(convertedVariants);
-            // // console.log(convertedVariants);
             lines[i] = lines[i].replace(
               new RegExp(new RegExp(TEXT_REGEX_MATCHER), 'i'),
               `$1$3 ${convertedVariants.join(' ')} $4`
             );
-            // // console.log('new Line', lines[i]);
           }
         }
       }
@@ -208,8 +194,8 @@ function _preprocess(content: string, filename: string) {
             console.log('[DEBUG] interpretation', INTERPRETED_CLASSES);
           }
           IGNORED_CLASSES = [...IGNORED_CLASSES, ...INTERPRETED_CLASSES.ignored];
-          let styleSheet = globalStyleSheet(INTERPRETED_CLASSES.styleSheet);
-          STYLESHEETS.push(styleSheet);
+          let styleSheet2 = globalStyleSheet(INTERPRETED_CLASSES.styleSheet);
+          STYLESHEETS.push(styleSheet2);
         }
       }
     }
