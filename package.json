@@ -9,8 +9,8 @@
     "dev": "rollup -cw",
     "tsd": "tsc -p ./src --emitDeclarationOnly",
     "test": "jest",
-    "build": "rollup -c && npm tsd",
-    "build:prod": "cross-env PUBLISH=true rollup -c && npm tsd",
+    "build": "rollup -c && npm run tsd",
+    "build:prod": "cross-env PUBLISH=true rollup -c && npm run tsd",
     "release": "bumpp --tag --commit --push"
   },
   "repository": {
