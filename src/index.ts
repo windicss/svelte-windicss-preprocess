@@ -103,7 +103,8 @@ function _preprocess(content: string, filename: string) {
   const VARIANTS_REGEX = modifiedVARIANTS.map(element => element.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')).join('|');
   const CLASS_REGEX = 'class';
   const COMBINED_REGEX = `(${CLASS_REGEX}|${VARIANTS_REGEX})`;
-  const TEXT_REGEX_MATCHER = `(\s${COMBINED_REGEX}=["])([^"]*)(["])`;
+  const TEXT_REGEX_MATCHER = "(\s" + COMBINED_REGEX + '=["])([^"]*)(["])';
+  // const TEXT_REGEX_MATCHER = `(\s${COMBINED_REGEX}=["])([^"]*)(["])`;
 
   for (let i = 0; i < lines.length; i++) {
     // Match windi template syntax
@@ -123,7 +124,7 @@ function _preprocess(content: string, filename: string) {
       for (let k = 0; k < DIRECTIVE_EXPRESSION.length; k++) {
         let DIRECTIVE_MATCH = DIRECTIVE_EXPRESSION[k].toString().match(/\s(class):([^=]+)/gi);
         const INTERPRETED_DIRECTIVE = PROCESSOR.interpret(DIRECTIVE_MATCH[2]);
-        if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 3) {
+        if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 4) {
           console.log('[DEBUG] directive class', INTERPRETED_DIRECTIVE);
         }
         let dynamicStylesheet = globalStyleSheet(INTERPRETED_DIRECTIVE.styleSheet);
@@ -156,7 +157,9 @@ function _preprocess(content: string, filename: string) {
       const FINAL_TEXT_MATCHES = lines[i].toString().match(new RegExp(TEXT_REGEX_MATCHER, 'i'));
       if (FINAL_TEXT_MATCHES) {
         let extractedClasses = FINAL_TEXT_MATCHES[3];
-
+        if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 3) {
+          console.log('[DEBUG] found class', extractedClasses);
+        }
         // Match isolated inline expressions
         let INLINE_EXPRESSION = FINAL_TEXT_MATCHES[3].toString().match(/("|'|\s)[\{].*?[\}]/gi);
 
@@ -176,7 +179,7 @@ function _preprocess(content: string, filename: string) {
           lines[i] = lines[i].replace(new RegExp(TEXT_REGEX_MATCHER, 'i'), `$1${replacementValue}$4`);
         } else {
           const INTERPRETED_CLASSES = PROCESSOR.interpret(extractedClasses);
-          if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 4) {
+          if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 3) {
             console.log('[DEBUG] interpretation', INTERPRETED_CLASSES);
           }
           IGNORED_CLASSES = [...IGNORED_CLASSES, ...INTERPRETED_CLASSES.ignored];
