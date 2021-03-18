@@ -2,7 +2,6 @@ import { Processor } from 'windicss/lib';
 import { CSSParser } from 'windicss/utils/parser';
 import { StyleSheet } from 'windicss/utils/style';
 import { loadConfig, writeFileSync, combineStyleList, globalStyleSheet, logging } from './utils';
-// import { default as HTMLParser } from './parser';
 import type { Options } from './interfaces';
 
 let DEV: boolean = false;
