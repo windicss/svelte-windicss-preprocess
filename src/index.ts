@@ -86,11 +86,9 @@ function _preprocess(content: string, filename: string) {
       svelteAllowShorthand: false,
       svelteIndentScriptAndStyle: false,
     });
-    // checkedHtml = convertedContent;
   } else {
     checkedHtml = convertedContent;
   }
-  // console.log(checkedHtml);
   let lines = checkedHtml.split('\n');
   const modifiedVARIANTS = VARIANTS.filter((value, _index, _arr) => {
     if (
@@ -104,12 +102,9 @@ function _preprocess(content: string, filename: string) {
     }
   });
   const VARIANTS_REGEX = modifiedVARIANTS.map(element => element.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')).join('|');
-  // const CLASS_REGEX = 'class|className';
   const CLASS_REGEX = 'class';
   const COMBINED_REGEX = `(${CLASS_REGEX}|${VARIANTS_REGEX})`;
   const TEXT_REGEX_MATCHER = `(\s${COMBINED_REGEX}=["])([^"]*)(["])`;
-  // FIXME: EXPRESSION REGEX
-  //const EXPRESSION_REGEX_MATCHER = `(${COMBINED_REGEX}=[\{])(.*)([\}])`;
 
   for (let i = 0; i < lines.length; i++) {
     // Match windi template syntax
@@ -138,15 +133,10 @@ function _preprocess(content: string, filename: string) {
     }
 
     const TEXT_MATCHES = lines[i].toString().match(new RegExp(TEXT_REGEX_MATCHER, 'gi'));
-    //const EXPRESSION_MATCHES = lines[i].toString().match(new RegExp(EXPRESSION_REGEX_MATCHER, 'gi'));
 
     if (TEXT_MATCHES) {
-      // console.log(TEXT_MATCHES);
       for (let j = 0; j < TEXT_MATCHES.length; j++) {
-        // // console.log('line', lines[i]);
-        // // console.log('handling Match', TEXT_MATCHES[j]);
         let GROUPED_MATCH = TEXT_MATCHES[j].toString().match(new RegExp(TEXT_REGEX_MATCHER, 'i'));
-        // // console.log(GROUPED_MATCH);
 
         if (GROUPED_MATCH) {
           if (VARIANTS.includes(GROUPED_MATCH[2])) {
@@ -166,7 +156,6 @@ function _preprocess(content: string, filename: string) {
       }
       const FINAL_TEXT_MATCHES = lines[i].toString().match(new RegExp(TEXT_REGEX_MATCHER, 'i'));
       if (FINAL_TEXT_MATCHES) {
-        // console.log(FINAL_TEXT_MATCHES);
         let extractedClasses = FINAL_TEXT_MATCHES[3];
 
         // Match isolated inline expressions
@@ -186,7 +175,6 @@ function _preprocess(content: string, filename: string) {
             : COMPILED_CLASSES.ignored.join(' ');
 
           lines[i] = lines[i].replace(new RegExp(TEXT_REGEX_MATCHER, 'i'), `$1${replacementValue}$4`);
-          // // console.log(lines[i]);
         } else {
           const INTERPRETED_CLASSES = PROCESSOR.interpret(extractedClasses);
           if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 4) {
@@ -262,15 +250,15 @@ function _preprocess(content: string, filename: string) {
   return finalContent.toString();
 }
 
-function _optimize(types: string, typeNodes: { [key: string]: string }) {
-  const parser = new CSSParser(types);
-  writeFileSync(BUNDLEFILE, parser.parse().build(true));
-}
+// function _optimize(types: string, typeNodes: { [key: string]: string }) {
+//   const parser = new CSSParser(types);
+//   writeFileSync(BUNDLEFILE, parser.parse().build(true));
+// }
 
-export function optimize(path: string) {
-  BUNDLEFILE = path;
-  return _optimize;
-}
+// export function optimize(path: string) {
+//   BUNDLEFILE = path;
+//   return _optimize;
+// }
 
 export function preprocess(options: typeof OPTIONS = {}) {
   OPTIONS = { ...OPTIONS, ...options }; // change global settings here;
