@@ -1,0 +1,21 @@
+version: 2
+updates:
+  # Enable version updates for npm
+  - package-ecosystem: "npm"
+    # Look for `package.json` and `lock` files in the `root` directory
+    directory: "/"
+    # Check the npm registry for updates every day (weekdays)
+    schedule:
+      interval: "daily"
+      time: "08:30"
+      # Use Japan Standard Time (UTC +09:00)
+      timezone: "Europe/Berlin"
+    versioning-strategy: auto
+    assignees:
+      - "alexanderniebuhr"
+    # Add reviewers
+    reviewers:
+      - "alexanderniebuhr"
+    labels:
+      - "npm"
+      - "dependencies"
