@@ -70,7 +70,7 @@ function _preprocess(content: string, filename: string) {
   let checkedHtml;
   if (!process.env.BROWSER) {
     const prettier = require('prettier');
-    convertedContent = convertedContent.replace(/(?<=[\<]{1}[^\>]+)\n/gmi, " ")
+    convertedContent = convertedContent.replace(/(?<=[\<]{1}\w[^\>]+)\n/gmi, " ")
     if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 5) {
       console.log('[DEBUG] raw input', convertedContent);
     }
