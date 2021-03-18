@@ -15,8 +15,6 @@ If you are already familiar with [Tailwind CSS](https://tailwindcss.com/docs), t
 npm i -D svelte-windicss-preprocess
 ```
 
-<!-- ### [integrations guides](https://next.windicss.org/guide/integrations/svelte-preprocessor.html) can be found in windicss docs -->
-
 ---
 
 ## Configuration
@@ -39,6 +37,92 @@ module.exports = {
 | prefix | class prefix if preprocessor is running in compilation mode |
 | silent | boolean of logging
 
+## Integrations
+<!-- ### [see guides](https://next.windicss.org/guide/integrations/svelte-preprocessor.html) can be found in windicss docs -->
+
+### Vanilla Svelte
+
+```js
+// rollup.config.js
+export default {
+  // ...
+  plugins: [
+    svelte({
+      // ...
+      preprocess: [
+        require('svelte-windicss-preprocess').preprocess({
+          config: 'windi.config.js', // windi config file path (optional)
+          compile: true, // false: interpretation mode; true: compilation mode (optional)
+          prefix: 'windi-', // set compilation mode style prefix
+          safeList: ["bg-gray-600", "text-white"] // (optional)
+        })
+      ],
+    }),
+  ],
+  // ...
+};
+```
+
+### Snowpack Svelte
+
+```js
+// svelte.config.js
+module.exports = {
+  preprocess: [
+    require('svelte-windicss-preprocess').preprocess({
+      config: 'windi.config.js', // windi config file path (optional)
+      compile: true, // false: interpretation mode; true: compilation mode (optional)
+      prefix: 'windi-', // set compilation mode style prefix
+      safeList: ["bg-gray-600", "text-white"] // (optional)
+    })
+  ],
+};
+```
+
+### Rollup Sapper (prefer [SvelteKit](https://next.windicss.org/guide/integrations/svelte-kit.html) once released)
+
+```js
+// rollup.config.js
+export default {
+  client: {
+    // ...
+    plugins: [
+      // ...
+      svelte({
+        // ...
+        preprocess: [
+          require('svelte-windicss-preprocess').preprocess({
+            config: 'windi.config.js', // windi config file path (optional)
+            compile: true, // false: interpretation mode; true: compilation mode (optional)
+            prefix: 'windi-', // set compilation mode style prefix
+            safeList: ["bg-gray-600", "text-white"] // (optional)
+          })
+        ],
+      }),
+      // ...
+    ],
+  },
+
+  server: {
+    // ...
+    plugins: [
+      // ...
+      svelte({
+        // ...
+        preprocess: [
+          require('svelte-windicss-preprocess').preprocess({
+            config: 'windi.config.js', // windi config file path (optional)
+            compile: true, // false: interpretation mode; true: compilation mode (optional)
+            prefix: 'windi-', // set compilation mode style prefix
+            safeList: ["bg-gray-600", "text-white"] // (optional)
+          })
+        ],
+      }),
+      // ...
+    ],
+  },
+};
+```
 
 ## Resources
 
