@@ -14,10 +14,9 @@ jobs:
         with:
           node-version: 12
           registry-url: https://registry.npmjs.org/
-      - run: npm install -g pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build:prod
-      - run: pnpm test
+      - run: npm install --frozen-lockfile
+      - run: npm build:prod
+      - run: npm test
       - run: cd dist && npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_SECRET}}
