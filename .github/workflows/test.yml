@@ -25,11 +25,9 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Install pnpm
-      run: npm install -g pnpm
     - name: Install dependencies
-      run: pnpm install --frozen-lockfile
+      run: npm install --frozen-lockfile
     - name: Build package
-      run: pnpm build
+      run: npm build
     - name: Run tests
-      run: pnpm test
+      run: npm test
