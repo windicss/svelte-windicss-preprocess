@@ -35,13 +35,13 @@ export interface Tag {
 }
 
 export interface Options {
-  safeList?: string[];
+  safeList?: string[]; // in readme
   mode?: string;
   debug?: boolean;
-  silent?: boolean;
-  config?: string;
-  compile?: boolean;
-  prefix?: string;
+  silent?: boolean; // in readme
+  config?: string; // in readme
+  compile?: boolean; // in readme
+  prefix?: string; // in readme
   bundle?: string;
   verbosity?: number; // TODO: add mapping in docs for people
 }
