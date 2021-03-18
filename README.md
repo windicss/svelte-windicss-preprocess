@@ -79,7 +79,7 @@ module.exports = {
 };
 ```
 
-### Rollup Sapper (prefer [SvelteKit](https://next.windicss.org/guide/integrations/svelte-kit.html) once released)
+### Rollup Sapper
 
 ```js
 // rollup.config.js
