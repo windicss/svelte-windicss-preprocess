@@ -22,7 +22,7 @@ npm i -D svelte-windicss-preprocess
 ```js
 // svelte.config.js
 module.exports = {
-  preprocess: require("svelte-windicss-preprocess-exp").preprocess({
+  preprocess: require("svelte-windicss-preprocess").preprocess({
     compile: false,
     prefix: 'windi-',
   }),
