@@ -10,12 +10,11 @@ updates:
       time: "08:30"
       # Use Japan Standard Time (UTC +09:00)
       timezone: "Europe/Berlin"
-    versioning-strategy: auto
+    versioning-strategy: "increase"
     assignees:
       - "alexanderniebuhr"
     # Add reviewers
     reviewers:
       - "alexanderniebuhr"
     labels:
-      - "npm"
       - "dependencies"
