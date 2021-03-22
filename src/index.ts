@@ -124,7 +124,7 @@ function _preprocess(content: string, filename: string) {
     let DIRECTIVE_EXPRESSION = lines[i].toString().match(/\s(class):([^=]+)/gi);
     if (DIRECTIVE_EXPRESSION) {
       for (let k = 0; k < DIRECTIVE_EXPRESSION.length; k++) {
-        let DIRECTIVE_MATCH = DIRECTIVE_EXPRESSION[k].toString().match(/\s(class):([^=]+)/gi);
+        let DIRECTIVE_MATCH = DIRECTIVE_EXPRESSION[k].toString().match(/\s(class):([^=]+)/i);
         const INTERPRETED_DIRECTIVE = PROCESSOR.interpret(DIRECTIVE_MATCH[2]);
         if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 4) {
           console.log('[DEBUG] directive class', INTERPRETED_DIRECTIVE);
@@ -134,8 +134,8 @@ function _preprocess(content: string, filename: string) {
       }
     }
 
-    const TEXT_MATCHES = lines[i].toString().match(new RegExp(TEXT_REGEX_MATCHER, 'gi'));
 
+    const TEXT_MATCHES = lines[i].toString().match(new RegExp(TEXT_REGEX_MATCHER, 'gi'));
     if (TEXT_MATCHES) {
       for (let j = 0; j < TEXT_MATCHES.length; j++) {
         let GROUPED_MATCH = TEXT_MATCHES[j].toString().match(new RegExp(TEXT_REGEX_MATCHER, 'i'));
