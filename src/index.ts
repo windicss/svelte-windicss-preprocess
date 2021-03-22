@@ -22,7 +22,7 @@ let OPTIONS: Options = {
   prefix: 'windi-',
   verbosity: 1,
   debug: false,
-  devTools: {completions: false}
+  devTools: {completions: false, injections: false}
 };
 
 const REGEXP = {
@@ -235,13 +235,69 @@ function _preprocess(content: string, filename: string) {
         ...completions.static,
       ].map((name)=> {return `.${PROCESSOR.e(name)}{}`}).join('')
       let injectScript = `
-        if (!document.getElementById("windicss-devtools")) {
+        if (!document.getElementById("windicss-devtools-completions")) {
           const style = document.createElement('style');
-          style.id = "windicss-devtools";
-
+          style.id = "windicss-devtools-completions";
+          style.title = "windicss-devtools-completions";
           style.setAttribute('type', 'text/css');
           style.innerHTML = ${JSON.stringify(comment + mockClasses)};
           document.head.prepend(style);
+        }
+      `;
+      let script = finalContent.match(/<script[^>]*?(\/|(>([\s\S]*?)<\/script))>/)?.[0]
+      if (script) {
+        finalContent = finalContent.replace(/\<script\>/, `<script>\n${injectScript}`)
+      } else {
+        finalContent += `\n\n<script>${injectScript}</script>\n\n`;
+      }
+    }
+
+    if (OPTIONS?.devTools?.injections) {
+      if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 3) {
+        console.log('[DEBUG] generate mutation observer for dev-in-devTools');
+      }
+      let injectScript = `
+        if (!document.getElementById("windicss-devtools-injections")) {
+          const script = document.createElement("script");
+          script.id = "windicss-devtools-injections";
+          script.setAttribute("type", "text/javascript");
+          script.innerHTML = \`
+            console.log('%c[windicss] devtools support enabled %c read more at https://windicss.org','background:#0ea5e9; color:white; padding: 1px 4px; border-radius: 3px;', '');
+            var windiObserver = new MutationObserver(function(mutations) {
+              mutations.forEach(function(mutation) {
+                if (mutation.attributeName === 'class') {
+                  console.log(mutation)
+                  const CSSSelectors = [...document.styleSheets]
+                    .map(styleSheet => {
+                      if (styleSheet.title !== "windicss-devtools-completions") {
+                        try {
+                          return [...styleSheet.cssRules]
+                            .map(rule => rule.selectorText)
+                        } catch (e) {
+                          console.log('Access to stylesheet %s is denied. Ignoring...', styleSheet.href);
+                        }
+                      } else {
+                        return []
+                      }
+                    })
+                  var mergedCSSSelectors = [].concat.apply([], CSSSelectors);
+                  var classesToCheck = mutation.target.className.split(" ");
+                  var classesToInterpret = ""
+                  classesToCheck.forEach(function(element) {
+                    if (mergedCSSSelectors.includes("."+element)) {
+
+                    } else {
+                      classesToInterpret += element + " ";
+                    }
+                  })
+                  //
+                  console.log("interpret this", classesToInterpret);
+                }
+              });
+            });
+            windiObserver.observe(document.documentElement, {attributes: true,subtree:true});
+          \`
+          document.head.append(script);
         }
       `;
       let script = finalContent.match(/<script[^>]*?(\/|(>([\s\S]*?)<\/script))>/)?.[0]
