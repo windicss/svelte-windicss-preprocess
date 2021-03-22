@@ -44,4 +44,7 @@ export interface Options {
   prefix?: string; // in readme
   bundle?: string;
   verbosity?: number; // TODO: add mapping in docs for people
+  devTools?: {
+    completions?: boolean;
+  }
 }

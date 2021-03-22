@@ -45,6 +45,9 @@ export default {
         compile: false,
         config: 'windi.config.js',
         prefix: 'windi-',
+        devTools: {
+          completions: true,
+        }
       }),
       compilerOptions: {
         // enable run-time checks when not in production

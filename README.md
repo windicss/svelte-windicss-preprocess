@@ -9,6 +9,7 @@ If you are already familiar with [Tailwind CSS](https://tailwindcss.com/docs), t
 ## Installation
 
 <!-- gets replaced with https://next.windicss.org/play.html if public -->
+
 > Now we have a great playground, you can [try it online](https://windicss.github.io/svelte-windicss-preprocess/) before installing it.
 
 ```sh
@@ -19,25 +20,35 @@ npm i -D svelte-windicss-preprocess
 
 ## Configuration
 
+> Default Options shown below
+
 ```js
 // svelte.config.js
 module.exports = {
-  preprocess: require("svelte-windicss-preprocess").preprocess({
+  preprocess: require('svelte-windicss-preprocess').preprocess({
     compile: false,
     prefix: 'windi-',
+    verbosity: 1,
+    debug: false,
+    devTools: {
+      completions: false,
+    },
   }),
 };
 ```
 
-| option | description |
-|---|---|
-| config | string that represent the location of [windicss configuration](https://windicss.org) |
-| safeList | array of classes windicss should include even if not used in markup |
-| compile | boolean wether windicss runs in [compilation or interpretion mode](https://windicss.org) |
-| prefix | class prefix if preprocessor is running in compilation mode |
-| silent | boolean of logging
+| option               | description                                                                              |
+| -------------------- | ---------------------------------------------------------------------------------------- |
+| config               | string that represent the location of [windicss configuration](https://windicss.org)     |
+| safeList             | array of classes windicss should include even if not used in markup                      |
+| compile              | boolean wether windicss runs in [compilation or interpretion mode](https://windicss.org) |
+| prefix               | class prefix if preprocessor is running in compilation mode                              |
+| silent               | boolean of logging                                                                       |
+| devTools             | object to configure optional windicss devTools                                           |
+| devTools.completions | boolean to activate css class auto-completion in devTools                                |
 
 ## Integrations
+
 <!-- ### [see guides](https://next.windicss.org/guide/integrations/svelte-preprocessor.html) can be found in windicss docs -->
 
 ### Vanilla Svelte
@@ -54,8 +65,8 @@ export default {
           config: 'windi.config.js', // windi config file path (optional)
           compile: true, // false: interpretation mode; true: compilation mode (optional)
           prefix: 'windi-', // set compilation mode style prefix
-          safeList: ["bg-gray-600", "text-white"] // (optional)
-        })
+          safeList: ['bg-gray-600', 'text-white'], // (optional)
+        }),
       ],
     }),
   ],
@@ -73,8 +84,8 @@ module.exports = {
       config: 'windi.config.js', // windi config file path (optional)
       compile: true, // false: interpretation mode; true: compilation mode (optional)
       prefix: 'windi-', // set compilation mode style prefix
-      safeList: ["bg-gray-600", "text-white"] // (optional)
-    })
+      safeList: ['bg-gray-600', 'text-white'], // (optional)
+    }),
   ],
 };
 ```
@@ -95,8 +106,8 @@ export default {
             config: 'windi.config.js', // windi config file path (optional)
             compile: true, // false: interpretation mode; true: compilation mode (optional)
             prefix: 'windi-', // set compilation mode style prefix
-            safeList: ["bg-gray-600", "text-white"] // (optional)
-          })
+            safeList: ['bg-gray-600', 'text-white'], // (optional)
+          }),
         ],
       }),
       // ...
@@ -114,8 +125,8 @@ export default {
             config: 'windi.config.js', // windi config file path (optional)
             compile: true, // false: interpretation mode; true: compilation mode (optional)
             prefix: 'windi-', // set compilation mode style prefix
-            safeList: ["bg-gray-600", "text-white"] // (optional)
-          })
+            safeList: ['bg-gray-600', 'text-white'], // (optional)
+          }),
         ],
       }),
       // ...

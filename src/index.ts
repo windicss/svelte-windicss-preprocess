@@ -1,4 +1,5 @@
 import { Processor } from 'windicss/lib';
+import { generateCompletions } from "windicss/utils";
 import { CSSParser } from 'windicss/utils/parser';
 import { StyleSheet } from 'windicss/utils/style';
 import { loadConfig, writeFileSync, combineStyleList, globalStyleSheet, logging } from './utils';
@@ -20,6 +21,8 @@ let OPTIONS: Options = {
   compile: false,
   prefix: 'windi-',
   verbosity: 1,
+  debug: false,
+  devTools: {completions: false}
 };
 
 const REGEXP = {
@@ -48,13 +51,13 @@ function _preprocess(content: string, filename: string) {
       .join(' ')
   );
   let style = content.match(REGEXP.matchStyle)?.[0];
-  if (!OPTIONS?.silent && OPTIONS?.debug) {
+  if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 2) {
     console.log('[DEBUG] matched style tag', style);
   }
   if (style) {
     var global = style.match(/\<style global\>/gi);
     style = style.replace(/<\/?style[^>]*>/g, '');
-    if (!OPTIONS?.silent && OPTIONS?.debug) {
+    if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 2) {
       console.log('[DEBUG] converted style tag', style);
     }
     if (global) {
@@ -220,6 +223,34 @@ function _preprocess(content: string, filename: string) {
       true,
       false
     );
+
+    if (OPTIONS?.devTools?.completions) {
+      if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 3) {
+        console.log('[DEBUG] generate mock classes for auto completion');
+      }
+      let comment = '/* Windi CSS mock class names for devtools auto-completion */ '
+      let completions = generateCompletions(PROCESSOR)
+      let mockClasses = [
+        ...completions.color,
+        ...completions.static,
+      ].map((name)=> {return `.${PROCESSOR.e(name)}{}`}).join('')
+      let injectScript = `
+        if (!document.getElementById("windicss-devtools")) {
+          const style = document.createElement('style');
+          style.id = "windicss-devtools";
+
+          style.setAttribute('type', 'text/css');
+          style.innerHTML = ${JSON.stringify(comment + mockClasses)};
+          document.head.prepend(style);
+        }
+      `;
+      let script = finalContent.match(/<script[^>]*?(\/|(>([\s\S]*?)<\/script))>/)?.[0]
+      if (script) {
+        finalContent = finalContent.replace(/\<script\>/, `<script>\n${injectScript}`)
+      } else {
+        finalContent += `\n\n<script>${injectScript}</script>\n\n`;
+      }
+    }
   }
 
   if (OPTIONS?.safeList) {
