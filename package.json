@@ -31,7 +31,8 @@
     "prettier": "^2.2.1",
     "prettier-plugin-svelte": "^2.2.0",
     "svelte": "^3.35.0",
-    "windicss": "^2.5.0"
+    "windicss": "^2.5.0",
+    "windicss-runtime-dom": "^0.0.1"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^11.2.0",
