@@ -262,40 +262,14 @@ function _preprocess(content: string, filename: string) {
           script.id = "windicss-devtools-injections";
           script.setAttribute("type", "text/javascript");
           script.innerHTML = \`
-            console.log('%c[windicss] devtools support enabled %c read more at https://windicss.org','background:#0ea5e9; color:white; padding: 1px 4px; border-radius: 3px;', '');
-            var windiObserver = new MutationObserver(function(mutations) {
-              mutations.forEach(function(mutation) {
-                if (mutation.attributeName === 'class') {
-                  console.log(mutation)
-                  const CSSSelectors = [...document.styleSheets]
-                    .map(styleSheet => {
-                      if (styleSheet.title !== "windicss-devtools-completions") {
-                        try {
-                          return [...styleSheet.cssRules]
-                            .map(rule => rule.selectorText)
-                        } catch (e) {
-                          console.log('Access to stylesheet %s is denied. Ignoring...', styleSheet.href);
-                        }
-                      } else {
-                        return []
-                      }
-                    })
-                  var mergedCSSSelectors = [].concat.apply([], CSSSelectors);
-                  var classesToCheck = mutation.target.className.split(" ");
-                  var classesToInterpret = ""
-                  classesToCheck.forEach(function(element) {
-                    if (mergedCSSSelectors.includes("."+element)) {
-
-                    } else {
-                      classesToInterpret += element + " ";
-                    }
-                  })
-                  //
-                  console.log("interpret this", classesToInterpret);
-                }
-              });
-            });
-            windiObserver.observe(document.documentElement, {attributes: true,subtree:true});
+            window.windicssRuntimeOptions = {
+              extractInitial: false,
+              preflight: false
+            }
+            const windiScript = document.createElement("script");
+            windiScript.id = "windicss-runtime-dom";
+            windiScript.setAttribute("src","https://unpkg.com/windicss-runtime-dom");
+            document.head.append(windiScript);
           \`
           document.head.append(script);
         }

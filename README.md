@@ -46,6 +46,7 @@ module.exports = {
 | silent               | boolean of logging                                                                       |
 | devTools             | object to configure optional windicss devTools                                           |
 | devTools.completions | boolean to activate css class auto-completion in devTools                                |
+| devTools.injections  | boolean to activate style injection for dev-in-devtools                                  |
 
 ## Integrations
 
