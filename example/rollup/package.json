@@ -16,7 +16,7 @@
   "name": "svelte-app",
   "scripts": {
     "build": "rollup -c",
-    "dev": "cross-env NODE_ENV=development rollup -c -w",
+    "dev": "cross-env NODE_ENV=development PORT=8080 rollup -c -w",
     "start": "sirv public"
   },
   "version": "1.0.0"

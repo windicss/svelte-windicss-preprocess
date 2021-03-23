@@ -47,6 +47,7 @@ export default {
         prefix: 'windi-',
         devTools: {
           completions: true,
+          injections: true,
         }
       }),
       compilerOptions: {
