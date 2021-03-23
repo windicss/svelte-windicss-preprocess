@@ -1,5 +1,4 @@
 import { Processor } from 'windicss/lib';
-import { generateCompletions } from "windicss/utils";
 import { CSSParser } from 'windicss/utils/parser';
 import { StyleSheet } from 'windicss/utils/style';
 import { loadConfig, writeFileSync, combineStyleList, globalStyleSheet, logging } from './utils';
@@ -24,7 +23,7 @@ let OPTIONS: Options = {
   prefix: 'windi-',
   verbosity: 1,
   debug: false,
-  devTools: { completions: false, injections: false }
+  devTools: undefined
 };
 
 const REGEXP = {
@@ -200,7 +199,7 @@ function _preprocess(content: string, filename: string) {
 
   let preflights: StyleSheet = new StyleSheet();
   if (!DEV && IS_MAIN) {
-    if (!OPTIONS?.silent && OPTIONS?.debug) {
+    if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! >= 1) {
       console.log('[DEBUG] production, main file, all preflights');
     }
     preflights = PROCESSOR.preflight(
@@ -211,11 +210,11 @@ function _preprocess(content: string, filename: string) {
       false
     );
   } else if (!DEV) {
-    if (!OPTIONS?.silent && OPTIONS?.debug) {
+    if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! >= 1) {
       console.log('[DEBUG] production, child file, no preflights');
     }
   } else {
-    if (!OPTIONS?.silent && OPTIONS?.debug) {
+    if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! >= 1) {
       console.log('[DEBUG] development, all preflights');
     }
     preflights = PROCESSOR.preflight(
@@ -226,52 +225,28 @@ function _preprocess(content: string, filename: string) {
       false
     );
 
-    if (OPTIONS?.devTools?.completions) {
-      if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 3) {
-        console.log('[DEBUG] generate mock classes for auto completion');
-      }
-      let comment = '/* Windi CSS mock class names for devtools auto-completion */ '
-      let completions = generateCompletions(PROCESSOR)
-      let mockClasses = [
-        ...completions.color,
-        ...completions.static,
-      ].map((name) => { return `.${PROCESSOR.e(name)}{}` }).join('')
-      let injectScript = `
-        if (!document.getElementById("windicss-devtools-completions")) {
-          const style = document.createElement('style');
-          style.id = "windicss-devtools-completions";
-          style.title = "windicss-devtools-completions";
-          style.setAttribute('type', 'text/css');
-          style.innerHTML = ${JSON.stringify(comment + mockClasses)};
-          document.head.prepend(style);
-        }
-      `;
-      let script = finalContent.match(/<script[^>]*?(\/|(>([\s\S]*?)<\/script))>/)?.[0]
-      if (script) {
-        finalContent = finalContent.replace(/\<script\>/, `<script>\n${injectScript}`)
-      } else {
-        finalContent += `\n\n<script>${injectScript}</script>\n\n`;
-      }
-    }
-
-    if (OPTIONS?.devTools?.injections) {
-      if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 3) {
-        console.log('[DEBUG] generate mutation observer for dev-in-devTools');
-      }
+    if (OPTIONS?.devTools?.enabled) {
       const path = require.resolve("windicss-runtime-dom");
-      let windiRuntimeDom = readFileSync(path, "utf-8");
-      let windiRuntimeConfig = `
-      window.windicssRuntimeOptions = {
-        extractInitial: false,
-        preflight: false
+      let windiProjectConfig = undefined;
+      if (OPTIONS.config) {
+        windiProjectConfig = loadConfig(OPTIONS.config)
       }
+      let windiRuntimeDom = readFileSync(path, "utf-8");
+      let windiRuntimeDomConfig = `
+        window.windicssRuntimeOptions = {
+          extractInitial: false,
+          preflight: false,
+          mockClasses: ${OPTIONS?.devTools?.completions ? true : false},
+          config: ${windiProjectConfig ? JSON.stringify(windiProjectConfig) : undefined}
+        }
       `
+      console.log(windiRuntimeDomConfig)
       let injectScript = `
-        if (!document.getElementById("windicss-devtools-injections")) {
+        if (!document.getElementById("windicss-devtools")) {
           const script = document.createElement("script");
-          script.id = "windicss-devtools-injections";
+          script.id = "windicss-devtools";
           script.setAttribute("type", "text/javascript");
-          script.innerHTML = ${JSON.stringify(windiRuntimeConfig + windiRuntimeDom)};
+          script.innerHTML = ${JSON.stringify(windiRuntimeDomConfig + windiRuntimeDom)};
           document.head.append(script);
         }
       `;
@@ -282,6 +257,7 @@ function _preprocess(content: string, filename: string) {
         finalContent += `\n\n<script>${injectScript}</script>\n\n`;
       }
     }
+
   }
 
   if (OPTIONS?.safeList) {

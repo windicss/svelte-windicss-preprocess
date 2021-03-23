@@ -46,6 +46,6 @@ export interface Options {
   verbosity?: number; // TODO: add mapping in docs for people
   devTools?: {
     completions?: boolean;
-    injections?: boolean;
+    enabled?: boolean;
   }
 }
