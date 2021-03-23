@@ -39,6 +39,7 @@ export default {
   plugins: [
     svelte({
       preprocess: require('../../dist/index.js').preprocess({
+        mode: !production ? "dev": "prod",
         silent: false,
         debug: true,
         verbosity: 3,
@@ -47,7 +48,7 @@ export default {
         prefix: 'windi-',
         devTools: {
           completions: true,
-          injections: true,
+          enabled: true,
         }
       }),
       compilerOptions: {
