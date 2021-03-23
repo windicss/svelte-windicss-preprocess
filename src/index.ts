@@ -4,6 +4,8 @@ import { CSSParser } from 'windicss/utils/parser';
 import { StyleSheet } from 'windicss/utils/style';
 import { loadConfig, writeFileSync, combineStyleList, globalStyleSheet, logging } from './utils';
 import type { Options } from './interfaces';
+import { readFileSync } from "fs";
+
 
 let DEV: boolean = false;
 let PROCESSOR: Processor;
@@ -22,7 +24,7 @@ let OPTIONS: Options = {
   prefix: 'windi-',
   verbosity: 1,
   debug: false,
-  devTools: {completions: false, injections: false}
+  devTools: { completions: false, injections: false }
 };
 
 const REGEXP = {
@@ -233,7 +235,7 @@ function _preprocess(content: string, filename: string) {
       let mockClasses = [
         ...completions.color,
         ...completions.static,
-      ].map((name)=> {return `.${PROCESSOR.e(name)}{}`}).join('')
+      ].map((name) => { return `.${PROCESSOR.e(name)}{}` }).join('')
       let injectScript = `
         if (!document.getElementById("windicss-devtools-completions")) {
           const style = document.createElement('style');
@@ -256,21 +258,20 @@ function _preprocess(content: string, filename: string) {
       if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 3) {
         console.log('[DEBUG] generate mutation observer for dev-in-devTools');
       }
+      const path = require.resolve("windicss-runtime-dom");
+      let windiRuntimeDom = readFileSync(path, "utf-8");
+      let windiRuntimeConfig = `
+      window.windicssRuntimeOptions = {
+        extractInitial: false,
+        preflight: false
+      }
+      `
       let injectScript = `
         if (!document.getElementById("windicss-devtools-injections")) {
           const script = document.createElement("script");
           script.id = "windicss-devtools-injections";
           script.setAttribute("type", "text/javascript");
-          script.innerHTML = \`
-            window.windicssRuntimeOptions = {
-              extractInitial: false,
-              preflight: false
-            }
-            const windiScript = document.createElement("script");
-            windiScript.id = "windicss-runtime-dom";
-            windiScript.setAttribute("src","https://unpkg.com/windicss-runtime-dom");
-            document.head.append(windiScript);
-          \`
+          script.innerHTML = ${JSON.stringify(windiRuntimeConfig + windiRuntimeDom)};
           document.head.append(script);
         }
       `;
