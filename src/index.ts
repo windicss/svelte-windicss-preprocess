@@ -250,7 +250,7 @@ function _preprocess(content: string, filename: string) {
           document.head.append(script);
         }
       `;
-      let script = finalContent.match(/<script[^>]*?(\/|(>([\s\S]*?)<\/script))>/)?.[0]
+      let script = finalContent.match(REGEXP.matchScript)?.[0]
       if (script) {
         finalContent = finalContent.replace(/\<script\>/, `<script>\n${injectScript}`)
       } else {
