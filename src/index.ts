@@ -231,6 +231,7 @@ function _preprocess(content: string, filename: string) {
       if (OPTIONS.config) {
         windiProjectConfig = loadConfig(OPTIONS.config)
       }
+      windiProjectConfig = undefined;
       let windiRuntimeDom = readFileSync(path, "utf-8");
       let windiRuntimeDomConfig = `
         window.windicssRuntimeOptions = {
@@ -240,7 +241,6 @@ function _preprocess(content: string, filename: string) {
           config: ${windiProjectConfig ? JSON.stringify(windiProjectConfig) : undefined}
         }
       `
-      console.log(windiRuntimeDomConfig)
       let injectScript = `
         if (!document.getElementById("windicss-devtools")) {
           const script = document.createElement("script");
