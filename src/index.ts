@@ -165,10 +165,9 @@ function _preprocess(content: string, filename: string) {
         }
         // Match isolated inline expressions
         let INLINE_EXPRESSION = FINAL_TEXT_MATCHES[3].toString().match(/("|'|\s)[\{].*?[\}]/gi);
-
         // Extract classes from inline expressions
         if (INLINE_EXPRESSION) {
-          extractedClasses = FINAL_TEXT_MATCHES[3].replace(/'|\?|:|{(?=[^}]+?\?).+?\?|(?<=:[^{]+?)}/gi, '');
+          extractedClasses = FINAL_TEXT_MATCHES[3].replace(/{(?=[^{]+? [\w|']+})|(?<={\w+ [^{]+?)}|(?<={\w+ [^{]*?)['|:|\?]/gi, '');
         }
 
         if (OPTIONS.compile) {
