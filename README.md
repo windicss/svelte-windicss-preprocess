@@ -4,6 +4,10 @@ A svelte preprocessor for [windicss](https://github.com/windicss/windicss). Wind
 
 If you are already familiar with [Tailwind CSS](https://tailwindcss.com/docs), think about Windi CSS as an on-demanded alternative to Tailwind, which provides faster load times, fully compatible with Tailwind v2.0 and with a bunch of additional cool features.
 
+## ⚠️⚠️⚠️ SVELTE KIT ⚠️⚠️⚠️
+
+For svelte-kit with vite please try to use our [vite-plugin](https://github.com/windicss/vite-plugin-windicss) first. This repo is meant for special use cases or bundler solution without SSR.
+
 ---
 
 ## Installation
