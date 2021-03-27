@@ -32,12 +32,12 @@ const REGEXP = {
   matchClasses: /('[\s\S]+?')|("[\s\S]+?")|(`[\s\S]+?`)/g,
 };
 
-const MODIFIED: { [key: string]: string } = {
-  xxl: '2xl',
-  'tw-disabled': 'disabled',
-  'tw-required': 'required',
-  'tw-checked': 'checked',
-};
+// const MODIFIED: { [key: string]: string } = {
+//   xxl: '2xl',
+//   'tw-disabled': 'disabled',
+//   'tw-required': 'required',
+//   'tw-checked': 'checked',
+// };
 
 function _preprocess(content: string, filename: string) {
   // FIXME: needs to be refactored. shouldn't remove comments completly, just for parsing
@@ -95,20 +95,37 @@ function _preprocess(content: string, filename: string) {
   let lines = checkedHtml.split('\n');
   const modifiedVARIANTS = VARIANTS.filter((value, _index, _arr) => {
     if (
-      value !== 'target' &&
-      value !== '@light' &&
-      value !== '@dark' &&
-      value !== '.light' &&
-      value !== '.dark'
+      value === 'sm' ||
+      value === '-sm' ||
+      value === '+sm' ||
+      value === 'md' ||
+      value === '-md' ||
+      value === '+md' ||
+      value === 'lg' ||
+      value === '-lg' ||
+      value === '+lg' ||
+      value === 'xl' ||
+      value === '-xl' ||
+      value === '+xl' ||
+      value === 'light' ||
+      value === 'dark' ||
+      value === 'checked' ||
+      value === 'hover' ||
+      value === 'visited' ||
+      value === 'focus'
     ) {
-      return value;
+      return true
+    } else {
+      return false
     }
-  });
-  const VARIANTS_REGEX = modifiedVARIANTS.map(element => element.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')).join('|');
+  }).map(value => `w:${value.toString()}`);
+  const VARIANTS_REGEX = modifiedVARIANTS.map(element => element).join('|');
   const CLASS_REGEX = 'class';
   const COMBINED_REGEX = `(${CLASS_REGEX}|${VARIANTS_REGEX})`;
   const TEXT_REGEX_MATCHER = `( ${COMBINED_REGEX}=["])([^"]*)(["])`;
-
+  if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! >= 3) {
+    console.log('[DEBUG] regex parse matcher', TEXT_REGEX_MATCHER);
+  }
   for (let i = 0; i < lines.length; i++) {
     // Match windi template syntax
     let WINDI_EXPRESSION = lines[i].toString().match(/windi\`(.*?)\`/i);
@@ -142,10 +159,9 @@ function _preprocess(content: string, filename: string) {
         let GROUPED_MATCH = TEXT_MATCHES[j].toString().match(new RegExp(TEXT_REGEX_MATCHER, 'i'));
 
         if (GROUPED_MATCH) {
-          if (VARIANTS.includes(GROUPED_MATCH[2])) {
+          if (modifiedVARIANTS.includes(GROUPED_MATCH[2])) {
             lines[i] = lines[i].replace(new RegExp(new RegExp(GROUPED_MATCH[0]), 'i'), '');
-            let prefix = GROUPED_MATCH[2];
-            if (prefix in MODIFIED) prefix = MODIFIED[prefix];
+            let prefix = GROUPED_MATCH[2].replace("w:", "");
             let splittedVariants: string[] = GROUPED_MATCH[3].split(' ');
             let convertedVariants = splittedVariants.map(variant => {
               return `${prefix}:${variant}`;
@@ -308,9 +324,7 @@ export function preprocess(options: typeof OPTIONS = {}) {
   }
   if (!process.env.BROWSER && options?.silent === false) logging(OPTIONS);
   PROCESSOR = new Processor(loadConfig(OPTIONS.config));
-  VARIANTS = [...Object.keys(PROCESSOR.resolveVariants()), ...Object.keys(MODIFIED)].filter(
-    i => !Object.values(MODIFIED).includes(i)
-  ); // update variants to make svelte happy
+  VARIANTS = [...Object.keys(PROCESSOR.resolveVariants())];
   return {
     markup: ({ content, filename }) => {
       return new Promise((resolve, _) => {
