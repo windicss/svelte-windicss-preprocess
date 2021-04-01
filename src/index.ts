@@ -72,6 +72,8 @@ function _preprocess(content: string, filename: string) {
   let convertedContent = content;
   let checkedHtml;
   if (!process.env.BROWSER) {
+    // TODO: better formatting.. no upstream fix of prettier-plugin expected soon
+    // https://github.com/sveltejs/prettier-plugin-svelte/issues/214
     const prettier = require('prettier');
     convertedContent = convertedContent.replace(/(?<=[\<]{1}\w[^\>]+)\n/gmi, " ")
     if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 5) {
