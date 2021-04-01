@@ -17,9 +17,9 @@ jobs:
       - run: npm install --frozen-lockfile
       - run: npm run build:prod
       - run: npm run test
-      - run: cd dist && npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_SECRET}}
       - run: npx conventional-github-releaser -p angular
         env:
           CONVENTIONAL_GITHUB_RELEASER_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - run: cd dist && npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_SECRET}}
