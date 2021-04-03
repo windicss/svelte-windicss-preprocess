@@ -8,6 +8,7 @@ If you are already familiar with [Tailwind CSS](https://tailwindcss.com/docs), t
 
 For svelte-kit with vite please try to use our [vite-plugin](https://github.com/windicss/vite-plugin-windicss) first. This repo is meant for special use cases or bundler solution without SSR.
 
+> we do have an experimental option flag `kit: true` on svelte-windicss-preprocess
 ---
 
 ## Installation
