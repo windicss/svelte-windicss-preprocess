@@ -21,9 +21,9 @@ export function writeFileSync(path: string, data: string) {
   if (!process.env.BROWSER) return require('fs').writeFileSync(path, data);
 }
 
-export function loadConfig(config?: string) {
+export async function loadConfig(config?: string) {
   if (process.env.BROWSER) return config;
-  return config ? require(require('path').resolve(config)) : undefined;
+  return config ? await import(require('path').resolve(config)) : undefined;
 }
 
 export function chalkColor() {
