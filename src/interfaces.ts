@@ -47,5 +47,6 @@ export interface Options {
   devTools?: {
     completions?: boolean;
     enabled?: boolean;
-  }
+  },
+  kit?: boolean
 }

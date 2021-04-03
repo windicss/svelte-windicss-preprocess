@@ -203,7 +203,12 @@ function _preprocess(content: string, filename: string) {
             console.log('[DEBUG] interpretation', INTERPRETED_CLASSES);
           }
           IGNORED_CLASSES = [...IGNORED_CLASSES, ...INTERPRETED_CLASSES.ignored];
-          let styleSheet2 = globalStyleSheet(INTERPRETED_CLASSES.styleSheet);
+          let styleSheet2
+          if (OPTIONS.kit) {
+            styleSheet2 = INTERPRETED_CLASSES.styleSheet;
+          } else {
+            styleSheet2 = globalStyleSheet(INTERPRETED_CLASSES.styleSheet);
+          }
           STYLESHEETS.push(styleSheet2);
         }
       }
