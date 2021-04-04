@@ -10,7 +10,7 @@ export function combineStyleList(stylesheets: StyleSheet[]) {
 export function globalStyleSheet(styleSheet: StyleSheet) {
   // turn all styles in stylesheet to global style
   styleSheet.children.forEach(style => {
-    if (!style.rule.includes(':global')) {
+    if (!style.rule.includes(':global') && style.meta.group!=='keyframes') {
       style.wrapRule((rule: string) => `:global(${rule})`);
     }
   });
