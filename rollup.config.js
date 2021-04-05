@@ -12,15 +12,15 @@ const is_publish = !!process.env.PUBLISH;
 
 const ts_plugin = is_publish
   ? typescript({
-      target: 'es5',
-      include: 'src/**',
-      outDir: output_dir,
-      typescript: require('typescript'),
-    })
+    target: 'es5',
+    include: 'src/**',
+    outDir: output_dir,
+    typescript: require('typescript'),
+  })
   : sucrase({
-      exclude: ['node_modules/**'],
-      transforms: ['typescript'],
-    });
+    exclude: ['node_modules/**'],
+    transforms: ['typescript'],
+  });
 
 const dump = file => path.join(output_dir, file);
 
@@ -63,13 +63,13 @@ const main = {
   plugins: [
     ts_plugin,
     resolve(),
-    replace({ 'process.env.BROWSER': false }),
+    replace({ 'process.env.BROWSER': false, "preventAssignment": true }),
     rmdir(output_dir),
     mkdir(output_dir),
     copy(['package.json', 'README.md', 'LICENSE']),
     types('index.d.ts', './types/index', '*'),
   ],
-  external: ['prettier', 'chalk', 'windicss/lib', 'windicss/utils/parser', 'windicss/utils/style'],
+  external: ['prettier', "@windicss/plugin-utils", 'windicss/lib', 'windicss/utils/parser', 'windicss/utils/style'],
 };
 
 const browser = {
@@ -88,8 +88,10 @@ const browser = {
     replace({
       'process.env.BROWSER': true,
       'process.env.NODE_ENV': `"publish"`,
+      "preventAssignment": true
     }),
   ],
 };
 
-export default is_publish ? [main, browser] : main;
+// export default is_publish ? [main, browser] : main;
+export default is_publish ? [main] : main;
