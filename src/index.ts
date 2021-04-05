@@ -1,7 +1,8 @@
 import { Processor } from 'windicss/lib';
 import { CSSParser } from 'windicss/utils/parser';
 import { StyleSheet } from 'windicss/utils/style';
-import { loadConfig, writeFileSync, combineStyleList, globalStyleSheet, logging } from './utils';
+import { writeFileSync, combineStyleList, globalStyleSheet, logging } from './utils';
+import { loadConfiguration } from "@windicss/plugin-utils";
 import type { Options } from './interfaces';
 import { readFileSync } from "fs";
 
@@ -250,10 +251,9 @@ function _preprocess(content: string, filename: string) {
     if (OPTIONS?.devTools?.enabled) {
       const path = require.resolve("windicss-runtime-dom");
       let windiProjectConfig = undefined;
-      if (OPTIONS.config) {
-        windiProjectConfig = loadConfig(OPTIONS.config)
-      }
-      windiProjectConfig = undefined;
+      // if (OPTIONS.config) {
+      //   windiProjectConfig = loadConfig(OPTIONS.config)
+      // }
       let windiRuntimeDom = readFileSync(path, "utf-8");
       let windiRuntimeDomConfig = `
         window.windicssRuntimeOptions = {
@@ -330,7 +330,8 @@ export function preprocess(options: typeof OPTIONS = {}) {
     if (OPTIONS.mode === 'prod' || OPTIONS.mode === 'production') DEV = false;
   }
   if (!process.env.BROWSER && options?.silent === false) logging(OPTIONS);
-  PROCESSOR = new Processor(loadConfig(OPTIONS.config));
+  const loadedConfig = loadConfiguration({ config: OPTIONS.config })
+  PROCESSOR = new Processor(loadedConfig.resolved);
   VARIANTS = [...Object.keys(PROCESSOR.resolveVariants())];
   return {
     markup: ({ content, filename }) => {
