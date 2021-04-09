@@ -137,7 +137,12 @@ function _preprocess(content: string, filename: string) {
       if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 3) {
         console.log('[DEBUG] windi expression', INTERPRETED_WINDI_EXPRESSION);
       }
-      let dynamicStylesheet = globalStyleSheet(INTERPRETED_WINDI_EXPRESSION.styleSheet);
+      let dynamicStylesheet
+      if (OPTIONS.kit) {
+        dynamicStylesheet = INTERPRETED_WINDI_EXPRESSION.styleSheet;
+      } else {
+        dynamicStylesheet = globalStyleSheet(INTERPRETED_WINDI_EXPRESSION.styleSheet);
+      }
       STYLESHEETS.push(dynamicStylesheet);
     }
 
@@ -150,7 +155,12 @@ function _preprocess(content: string, filename: string) {
         if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 4) {
           console.log('[DEBUG] directive class', INTERPRETED_DIRECTIVE);
         }
-        let dynamicStylesheet = globalStyleSheet(INTERPRETED_DIRECTIVE.styleSheet);
+        let dynamicStylesheet
+        if (OPTIONS.kit) {
+          dynamicStylesheet = INTERPRETED_DIRECTIVE.styleSheet;
+        } else {
+          dynamicStylesheet = globalStyleSheet(INTERPRETED_DIRECTIVE.styleSheet);
+        }
         STYLESHEETS.push(dynamicStylesheet);
       }
     }
@@ -287,10 +297,18 @@ function _preprocess(content: string, filename: string) {
     SAFELIST.push(globalStyleSheet(INTERPRETED_SAFELIST.styleSheet));
   }
 
-  const styleSheet = globalStyleSheet(preflights)
-    .extend(combineStyleList(SAFELIST))
-    .extend(combineStyleList(STYLESHEETS))
-    .extend(combineStyleList(CONDITIONS));
+  let styleSheet
+  if (OPTIONS.kit) {
+    styleSheet = preflights
+      .extend(combineStyleList(SAFELIST))
+      .extend(combineStyleList(STYLESHEETS))
+      .extend(combineStyleList(CONDITIONS));
+  } else {
+    styleSheet = globalStyleSheet(preflights)
+      .extend(combineStyleList(SAFELIST))
+      .extend(combineStyleList(STYLESHEETS))
+      .extend(combineStyleList(CONDITIONS));
+  }
 
   if (OPTIONS.bundle) {
     if (filename) BUNDLES[filename] = styleSheet;
