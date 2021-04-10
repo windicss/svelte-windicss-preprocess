@@ -348,7 +348,7 @@ let isInit = false
 export function preprocess(options: typeof OPTIONS = {}) {
   OPTIONS = { ...OPTIONS, ...options }; // change global settings here;
   DEV = process.env.NODE_ENV === 'development';
-  if (process.env.NODE_ENV == undefined || process.env.NODE_ENV == 'test') {
+  if (OPTIONS.mode) {
     if (OPTIONS.mode == undefined) DEV = false;
     if (OPTIONS.mode === 'dev' || OPTIONS.mode === 'development') DEV = true;
     if (OPTIONS.mode === 'prod' || OPTIONS.mode === 'production') DEV = false;
