@@ -344,7 +344,7 @@ function _preprocess(content: string, filename: string) {
 // But since markup etc can be async you can easily work around that by waiting on common initialisation logic before doing the actual work
 // If the initialisation is synchronous, you can do it outside the functions. If it is asynchronous, you can just await the init promise, that logic will only run once
 
-let isDone = false
+let isInit = false
 export function preprocess(options: typeof OPTIONS = {}) {
   OPTIONS = { ...OPTIONS, ...options }; // change global settings here;
   DEV = process.env.NODE_ENV === 'development';
@@ -353,21 +353,24 @@ export function preprocess(options: typeof OPTIONS = {}) {
     if (OPTIONS.mode === 'dev' || OPTIONS.mode === 'development') DEV = true;
     if (OPTIONS.mode === 'prod' || OPTIONS.mode === 'production') DEV = false;
   }
-  if (!process.env.BROWSER && options?.silent === false) logging(OPTIONS);
-  const loadedConfig = loadConfiguration({ config: OPTIONS.config })
-  PROCESSOR = new Processor(loadedConfig.resolved);
-  VARIANTS = [...Object.keys(PROCESSOR.resolveVariants())];
+  if (options?.silent === false) logging(OPTIONS);
   return {
     markup: ({ content, filename }) => {
-      return new Promise((resolve, _) => {
-        if (isDone == false) {
-          isDone = true
-          console.log("firstFile")
-        } else {
-          console.log("alreadyDone")
-        }
+      return new Promise(async (resolve, _) => {
         if (!OPTIONS?.silent && OPTIONS?.debug) {
           console.log('[DEBUG] called preprocessor');
+        }
+        if (isInit == false) {
+          console.log("[DEBUG] initialisationPending")
+          const loadedConfig = await loadConfiguration({ config: OPTIONS.config })
+          if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! > 3) {
+            console.log("[DEBUG] loaded config data", loadedConfig)
+          }
+          PROCESSOR = new Processor(loadedConfig.resolved);
+          VARIANTS = [...Object.keys(PROCESSOR.resolveVariants())];
+          isInit = true
+        } else {
+          console.log("[DEBUG] initialisationDone")
         }
         resolve({
           code: _preprocess(content, filename),
