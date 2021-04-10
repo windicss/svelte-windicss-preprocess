@@ -69,7 +69,15 @@ const main = {
     copy(['package.json', 'README.md', 'LICENSE']),
     types('index.d.ts', './types/index', '*'),
   ],
-  external: ['prettier', "@windicss/plugin-utils", 'windicss/lib', 'windicss/utils/parser', 'windicss/utils/style'],
+  external: [
+    'prettier',
+    "chalk",
+    "svelte",
+    "@windicss/plugin-utils",
+    'windicss/lib',
+    'windicss/utils/parser',
+    'windicss/utils/style'
+  ],
 };
 
 const browser = {
