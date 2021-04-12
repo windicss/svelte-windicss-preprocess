@@ -27,12 +27,12 @@
   "license": "MIT",
   "homepage": "https://github.com/voorjaar/svelte-windicss-preprocess",
   "dependencies": {
-    "@windicss/plugin-utils": "^0.13.2",
+    "@windicss/plugin-utils": "^0.14.0",
     "chalk": "^4.1.0",
     "prettier": "^2.2.1",
     "prettier-plugin-svelte": "^2.2.0",
     "svelte": "^3.37.0",
-    "windicss": "^2.5.13",
+    "windicss": "^2.5.14",
     "windicss-runtime-dom": "^0.1.1"
   },
   "devDependencies": {
@@ -41,7 +41,7 @@
     "@rollup/plugin-sucrase": "^3.1.0",
     "@rollup/plugin-typescript": "^8.2.1",
     "@types/diff": "^5.0.0",
-    "@types/fs-extra": "^9.0.10",
+    "@types/fs-extra": "^9.0.11",
     "@types/jest": "^26.0.22",
     "@types/js-yaml": "^4.0.0",
     "@types/node": "^14.14.37",
@@ -51,11 +51,11 @@
     "fs-extra": "^9.1.0",
     "jest": "^26.6.3",
     "js-yaml": "^4.0.0",
-    "rollup": "^2.44.0",
+    "rollup": "^2.45.1",
     "rollup-plugin-terser": "^7.0.2",
-    "sucrase": "^3.17.1",
+    "sucrase": "^3.18.1",
     "ts-jest": "^26.5.4",
-    "tslib": "^2.1.0",
-    "typescript": "^4.2.3"
+    "tslib": "^2.2.0",
+    "typescript": "^4.2.4"
   }
 }
