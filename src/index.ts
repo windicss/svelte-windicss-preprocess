@@ -361,7 +361,9 @@ export function preprocess(options: typeof OPTIONS = {}) {
           console.log('[DEBUG] called preprocessor');
         }
         if (isInit == false) {
-          console.log("[DEBUG] initialisationPending")
+          if (!OPTIONS?.silent && OPTIONS?.debug) {
+            console.log("[DEBUG] initialisationPending")
+          }
           const loadedConfig = await loadConfiguration({ config: OPTIONS.config })
           if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! > 3) {
             console.log("[DEBUG] loaded config data", loadedConfig)
@@ -369,7 +371,7 @@ export function preprocess(options: typeof OPTIONS = {}) {
           PROCESSOR = new Processor(loadedConfig.resolved);
           VARIANTS = [...Object.keys(PROCESSOR.resolveVariants())];
           isInit = true
-        } else {
+        } else if (!OPTIONS?.silent && OPTIONS?.debug) {
           console.log("[DEBUG] initialisationDone")
         }
         resolve({
