@@ -328,7 +328,7 @@ function _preprocess(content: string, filename: string) {
     if (filename) BUNDLES[filename] = styleSheet;
     writeFileSync(OPTIONS.bundle, combineStyleList(Object.values(BUNDLES)).build(true));
   } else {
-    finalContent += `\n\n<style>\n${styleSheet.build()}\n</style>`;
+    finalContent += `\n\n<style>\n${styleSheet.build()}\n</style>\n`;
   }
 
   // clear lists until next call
