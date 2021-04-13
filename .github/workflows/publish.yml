@@ -4,10 +4,9 @@ on:
   push:
     tags:
       - v*
-    tags-ignore:
-      - v*-beta*
-      - v*-alpha*
-      - v*-next*
+      - !v*-beta*
+      - !v*-alpha*
+      - !v*-next*
 
 jobs:
   publish-npm:
@@ -19,11 +18,11 @@ jobs:
           node-version: 12
           registry-url: https://registry.npmjs.org/
       - run: npm install --frozen-lockfile
-      - run: npm run build:prod
+      - run: npm run build:clean
       - run: npm run test
       - run: npx conventional-github-releaser -p angular
         env:
           CONVENTIONAL_GITHUB_RELEASER_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      - run: cd dist && npm publish
+      - run: cd dist && npm publish --tag latest
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_SECRET}}
