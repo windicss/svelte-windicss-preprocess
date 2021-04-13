@@ -92,6 +92,9 @@ function _preprocess(content: string, filename: string) {
       svelteAllowShorthand: false,
       svelteIndentScriptAndStyle: false,
     });
+    if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! >= 4) {
+      console.log(checkedHtml);
+    }
   } else {
     checkedHtml = convertedContent;
   }
@@ -168,6 +171,9 @@ function _preprocess(content: string, filename: string) {
 
     const TEXT_MATCHES = lines[i].toString().match(new RegExp(TEXT_REGEX_MATCHER, 'gi'));
     if (TEXT_MATCHES) {
+      if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! >= 3) {
+        console.log('[DEBUG] TEXT_MATCHES', TEXT_MATCHES);
+      }
       for (let j = 0; j < TEXT_MATCHES.length; j++) {
         let GROUPED_MATCH = TEXT_MATCHES[j].toString().match(new RegExp(TEXT_REGEX_MATCHER, 'i'));
 
@@ -188,12 +194,15 @@ function _preprocess(content: string, filename: string) {
       }
       const FINAL_TEXT_MATCHES = lines[i].toString().match(new RegExp(TEXT_REGEX_MATCHER, 'i'));
       if (FINAL_TEXT_MATCHES) {
+        if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! >= 3) {
+          console.log('[DEBUG] FINAL_TEXT_MATCHES', FINAL_TEXT_MATCHES);
+        }
         let extractedClasses = FINAL_TEXT_MATCHES[3];
-        if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 3) {
-          console.log('[DEBUG] found class', extractedClasses);
+        if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! >= 3) {
+          console.log('[DEBUG] extractedClasses', extractedClasses);
         }
         // Match isolated inline expressions
-        let INLINE_EXPRESSION = FINAL_TEXT_MATCHES[3].toString().match(/("|'|\s)[\{].*?[\}]/gi);
+        let INLINE_EXPRESSION = FINAL_TEXT_MATCHES[3].toString().match(/("|'|\s)?[\{].*?[\}]/gi);
         // Extract classes from inline expressions
         if (INLINE_EXPRESSION) {
           extractedClasses = FINAL_TEXT_MATCHES[3].replace(/{(?=[^{]+? [\w|']+})|(?<={\w+ [^{]+?)}|(?<={\w+ [^{]*?)['|:|\?]/gi, '');
