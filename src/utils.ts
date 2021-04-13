@@ -81,7 +81,6 @@ export class Magician {
     this.filename = filename
   }
 
-
   clean() {
 
     return this
@@ -121,15 +120,14 @@ export class Magician {
     this.content = formatedContent
     return this
   }
+  processStyle(clean: boolean = true) {
 
+    return this
+  }
   split() {
     // TODO: ERROR HANDLING
     let tmpContent = this.content
     this.lines = tmpContent.split('\n');
-    return this
-  }
-  processStyle() {
-
     return this
   }
 

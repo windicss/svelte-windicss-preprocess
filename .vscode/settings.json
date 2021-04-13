@@ -1,0 +1,8 @@
+{
+  "standard.enable": false,
+  "typescript.format.enable": true,
+  "conventionalCommits.scopes": [
+    "magician"
+  ],
+  "svelte.plugin.svelte.format.enable": false
+}
