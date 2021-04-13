@@ -71,7 +71,6 @@ const main = {
   ],
   external: [
     'prettier',
-    "chalk",
     "svelte",
     "@windicss/plugin-utils",
     'windicss/lib',
