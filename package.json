@@ -4,6 +4,9 @@
   "description": "A Svelte Preprocessor to compile tailwindcss at build time based on windicss compiler.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
   "scripts": {
     "dev": "npm run build -- --watch",
     "test": "uvu -r sucrase/register tests",
