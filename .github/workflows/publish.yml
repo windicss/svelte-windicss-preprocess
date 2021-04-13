@@ -4,6 +4,10 @@ on:
   push:
     tags:
       - v*
+    tags-ignore:
+      - v*-beta*
+      - v*-alpha*
+      - v*-next*
 
 jobs:
   publish-npm:
