@@ -1,3 +1,4 @@
+import Processor from 'windicss';
 import { StyleSheet } from 'windicss/utils/style';
 import type { Options } from './interfaces';
 
@@ -10,7 +11,7 @@ export function combineStyleList(stylesheets: StyleSheet[]) {
 export function globalStyleSheet(styleSheet: StyleSheet) {
   // turn all styles in stylesheet to global style
   styleSheet.children.forEach(style => {
-    if (!style.rule.includes(':global') && style.meta.group!=='keyframes') {
+    if (!style.rule.includes(':global') && style.meta.group !== 'keyframes') {
       style.wrapRule((rule: string) => `:global(${rule})`);
     }
   });
@@ -19,11 +20,6 @@ export function globalStyleSheet(styleSheet: StyleSheet) {
 
 export function writeFileSync(path: string, data: string) {
   if (!process.env.BROWSER) return require('fs').writeFileSync(path, data);
-}
-
-export async function loadConfig(config?: string) {
-  if (process.env.BROWSER) return config;
-  return config ? await import(require('path').resolve(config)) : undefined;
 }
 
 export function chalkColor() {
@@ -70,3 +66,99 @@ export function logging(options: Options) {
   process.stdout.write(`${chalk.blueBold('│')}\n`);
   process.stdout.write(`${chalk.blueBold('└──────────')}\n`);
 }
+
+
+export class Magician {
+  processor: Processor
+  content: string
+  filename: string
+  isBundled: boolean = false
+  isCompiled: boolean = false
+  constructor(processor: Processor, content: string, filename: string) {
+    this.processor = processor
+    this.content = content
+    this.filename = filename
+  }
+
+
+  clean() {
+
+    return this
+  }
+
+  format() {
+
+    return this
+  }
+
+  processStyle() {
+
+    return this
+  }
+
+  generatePreflight() {
+
+    return this
+  }
+
+  processSafelist() {
+
+    return this
+  }
+
+  processWindiExpression() {
+
+    return this
+  }
+
+  processDirectiveClass() {
+
+    return this
+  }
+
+  processWindiAttribute() {
+
+    return this
+  }
+
+  processClassAttribute() {
+    // handle expression
+    return this
+  }
+
+  compile() {
+
+    return this
+  }
+
+  bundle() {
+
+    return this
+  }
+
+  useDevTools() {
+
+    return this
+  }
+
+  useKit() {
+
+    return this
+  }
+
+  getCode() {
+    return this.content
+  }
+}
+
+// class Greeter {
+//   greeting: string;
+
+//   constructor(message: string) {
+//     this.greeting = message;
+//   }
+
+//   greet() {
+//     return "Hello, " + this.greeting;
+//   }
+// }

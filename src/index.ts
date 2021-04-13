@@ -1,11 +1,10 @@
+import { loadConfiguration } from "@windicss/plugin-utils";
+import { readFileSync } from "fs";
 import { Processor } from 'windicss/lib';
 import { CSSParser } from 'windicss/utils/parser';
 import { StyleSheet } from 'windicss/utils/style';
-import { writeFileSync, combineStyleList, globalStyleSheet, logging } from './utils';
-import { loadConfiguration } from "@windicss/plugin-utils";
 import type { Options } from './interfaces';
-import { readFileSync } from "fs";
-
+import { combineStyleList, globalStyleSheet, logging, writeFileSync } from './utils';
 
 let DEV: boolean = false;
 let PROCESSOR: Processor;
@@ -354,11 +353,6 @@ function _preprocess(content: string, filename: string) {
 //   return _optimize;
 // }
 
-
-//It doesn't work because that signature is not supported. markup etc can be async, but the function creating that object cannot, if you want to pass it to the preprocess property of the rollup plugin or svelte.config.js
-// But since markup etc can be async you can easily work around that by waiting on common initialisation logic before doing the actual work
-// If the initialisation is synchronous, you can do it outside the functions. If it is asynchronous, you can just await the init promise, that logic will only run once
-
 let isInit = false
 export function preprocess(options: typeof OPTIONS = {}) {
   OPTIONS = { ...OPTIONS, ...options }; // change global settings here;
@@ -397,6 +391,7 @@ export function preprocess(options: typeof OPTIONS = {}) {
 
     style: ({ content }) => {
       return new Promise((resolve, _) => {
+        // potential not needed
         resolve({ code: content.replace(/@apply[\s\S]+?;/g, '') });
       });
     },
