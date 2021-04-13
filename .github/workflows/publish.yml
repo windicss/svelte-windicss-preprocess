@@ -3,11 +3,10 @@ name: Publish Package
 on:
   push:
     tags:
-      - v*
-    tags-ignore:
-      - v*-beta*
-      - v*-alpha*
-      - v*-next*
+      - "v*"
+      - "!v*-beta*"
+      - "!v*-alpha*"
+      - "!v*-next*"
 
 jobs:
   publish-npm:
