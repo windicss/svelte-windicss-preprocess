@@ -313,7 +313,7 @@ function _preprocess(content: string, filename: string) {
 
   let styleSheet
   if (OPTIONS.kit) {
-    styleSheet = preflights
+    styleSheet = globalStyleSheet(preflights)
       .extend(combineStyleList(SAFELIST))
       .extend(combineStyleList(STYLESHEETS))
       .extend(combineStyleList(CONDITIONS));
