@@ -202,7 +202,7 @@ function _preprocess(content: string, filename: string) {
           console.log('[DEBUG] extractedClasses', extractedClasses);
         }
         // Match isolated inline expressions
-        let INLINE_EXPRESSION = FINAL_TEXT_MATCHES[3].toString().match(/("|'|\s)?[\{].*?[\}]/gi);
+        let INLINE_EXPRESSION = FINAL_TEXT_MATCHES[3].toString().match(/("|'|\s)[\{].*?[\}]/gi);
         // Extract classes from inline expressions
         if (INLINE_EXPRESSION) {
           if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! >= 3) {
