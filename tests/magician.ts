@@ -51,3 +51,27 @@ formatT("seperate each block", () => {
   )
 })
 formatT.run()
+
+const splitT = suite("SPLIT")
+splitT("split content to lines", () => {
+  let input = `<ul class="bg-red-500">
+  {#each items as item}
+    <li>{item}
+    </li>
+  {/each}
+</ul>`
+
+  let expected = JSON.stringify([
+    '<ul class="bg-red-500">',
+    '  {#each items as item}',
+    '    <li>{item}</li>',
+    '  {/each}',
+    '</ul>',
+    ''
+  ])
+
+
+  let output = JSON.stringify(new Magician(new Processor(), input, "src/App.svelte").format().split().lines)
+  is(output, expected)
+})
+splitT.run()

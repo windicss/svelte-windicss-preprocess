@@ -74,6 +74,7 @@ export class Magician {
   filename: string
   isBundled: boolean = false
   isCompiled: boolean = false
+  lines: string[] = []
   constructor(processor: Processor, content: string, filename: string) {
     this.processor = processor
     this.content = content
@@ -121,6 +122,12 @@ export class Magician {
     return this
   }
 
+  split() {
+    // TODO: ERROR HANDLING
+    let tmpContent = this.content
+    this.lines = tmpContent.split('\n');
+    return this
+  }
   processStyle() {
 
     return this
@@ -176,6 +183,10 @@ export class Magician {
     return this
   }
 
+  useGlobal() {
+
+  }
+
   getCode() {
     return this.content
   }
@@ -184,15 +195,3 @@ export class Magician {
     return this.filename
   }
 }
-
-// class Greeter {
-//   greeting: string;
-
-//   constructor(message: string) {
-//     this.greeting = message;
-//   }
-
-//   greet() {
-//     return "Hello, " + this.greeting;
-//   }
-// }
