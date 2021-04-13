@@ -205,7 +205,13 @@ function _preprocess(content: string, filename: string) {
         let INLINE_EXPRESSION = FINAL_TEXT_MATCHES[3].toString().match(/("|'|\s)?[\{].*?[\}]/gi);
         // Extract classes from inline expressions
         if (INLINE_EXPRESSION) {
+          if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! >= 3) {
+            console.log('[DEBUG] INLINE_EXPRESSION', INLINE_EXPRESSION, " -> ", FINAL_TEXT_MATCHES[3]);
+          }
           extractedClasses = FINAL_TEXT_MATCHES[3].replace(/{(?=[^{]+? [\w|']+})|(?<={\w+ [^{]+?)}|(?<={\w+ [^{]*?)['|:|\?]/gi, '');
+          if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! >= 3) {
+            console.log('[DEBUG] INLINE_EXPRESSION CLEAN', extractedClasses);
+          }
         }
 
         if (OPTIONS.compile) {
