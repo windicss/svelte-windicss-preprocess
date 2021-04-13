@@ -87,7 +87,37 @@ export class Magician {
   }
 
   format() {
+    // TODO: ERROR HANDLING
+    // TODO: better formatting.. no upstream fix of prettier-plugin expected soon
+    // https://github.com/sveltejs/prettier-plugin-svelte/issues/214
 
+    let tmpContent = this.content
+
+    // Tags on one line
+    tmpContent = tmpContent.replace(/(?<=[\<]{1}\w[^\>]+)\n/gmi, " ")
+
+    // FIXME: Debug utils lib
+    // if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 5) {
+    //   console.log('[DEBUG] raw input', convertedContent);
+    // }
+    const prettier = require('prettier');
+    let formatedContent = prettier.format(tmpContent, {
+      parser: 'svelte',
+      pluginSearchDirs: ['.'],
+      plugins: ['prettier-plugin-svelte'],
+      printWidth: 9999,
+      tabWidth: 2,
+      svelteSortOrder: 'options-styles-scripts-markup',
+      svelteStrictMode: true,
+      svelteBracketNewLine: false,
+      svelteAllowShorthand: false,
+      svelteIndentScriptAndStyle: false,
+    });
+    // FIXME: Debug utils lib
+    // if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! >= 4) {
+    //   console.log(checkedHtml);
+    // }
+    this.content = formatedContent
     return this
   }
 
@@ -148,6 +178,10 @@ export class Magician {
 
   getCode() {
     return this.content
+  }
+
+  getFilename() {
+    return this.filename
   }
 }
 
