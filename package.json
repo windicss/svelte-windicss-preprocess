@@ -26,7 +26,7 @@
   "license": "MIT",
   "homepage": "https://github.com/voorjaar/svelte-windicss-preprocess",
   "dependencies": {
-    "@windicss/plugin-utils": "^0.14.0",
+    "@windicss/plugin-utils": "^0.14.6",
     "chalk": "^4.1.0",
     "prettier": "^2.2.1",
     "prettier-plugin-svelte": "^2.2.0",
