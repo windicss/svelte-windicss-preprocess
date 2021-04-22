@@ -4,7 +4,7 @@ import { Processor } from 'windicss/lib';
 import { CSSParser } from 'windicss/utils/parser';
 import { StyleSheet } from 'windicss/utils/style';
 import type { Options } from './interfaces';
-import { combineStyleList, globalStyleSheet, logging, writeFileSync } from './utils';
+import { combineStyleList, globalStyleSheet, logging, Magician, writeFileSync } from './utils';
 
 let DEV: boolean = false;
 let PROCESSOR: Processor;
@@ -40,10 +40,33 @@ const REGEXP = {
 // };
 
 function _preprocess(content: string, filename: string) {
+  // // TODO: add magician logic
+  let run = "old"
+  if (run == "new") {
+    let mag = new Magician(PROCESSOR, content, filename).clean()
+    if (!OPTIONS?.disableFormat) mag = mag.format()
+    mag = mag.format()
+      .processStyle()
+      .each(line => {
+        return line
+          .processWindiExpression()
+          .processDirectiveClass()
+          .processWindiAttribute()
+          .processClassAttribute()
+          .compute()
+      })
+      .generatePreflight()
+
+    if (OPTIONS?.safeList) mag = mag.processSafelist()
+    if (OPTIONS?.devTools?.enabled) mag = mag.useDevTools()
+
+    return mag.getCode()
+  }
+
   // FIXME: needs to be refactored. shouldn't remove comments completly, just for parsing
-  // TODO: move to utils
+  // removes comments
   content = content.replace(/<!--[\s\S]*?-->/g, '');
-  // TODO: move to utils
+
   // transforms groups to multiple classes
   content = content.replace(/([!\w][\w:_/-]*?):\(([\w\s/-]*?)\)/gm, (_, groupOne: string, groupTwo: string) =>
     groupTwo
@@ -51,6 +74,7 @@ function _preprocess(content: string, filename: string) {
       .map(cssClass => `${groupOne}:${cssClass}`)
       .join(' ')
   );
+
   let style = content.match(REGEXP.matchStyle)?.[0];
   if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 2) {
     console.log('[DEBUG] matched style tag', style);
@@ -128,9 +152,9 @@ function _preprocess(content: string, filename: string) {
   const CLASS_REGEX = 'class';
   const COMBINED_REGEX = `(${CLASS_REGEX}|${VARIANTS_REGEX})`;
   const TEXT_REGEX_MATCHER = `( ${COMBINED_REGEX}=["])([^"]*)(["])`;
-  if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! >= 3) {
-    console.log('[DEBUG] regex parse matcher', TEXT_REGEX_MATCHER);
-  }
+  // if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! >= 3) {
+  //   console.log('[DEBUG] regex parse matcher', TEXT_REGEX_MATCHER);
+  // }
   for (let i = 0; i < lines.length; i++) {
     // Match windi template syntax
     let WINDI_EXPRESSION = lines[i].toString().match(/windi\`(.*?)\`/i);
@@ -170,9 +194,9 @@ function _preprocess(content: string, filename: string) {
 
     const TEXT_MATCHES = lines[i].toString().match(new RegExp(TEXT_REGEX_MATCHER, 'gi'));
     if (TEXT_MATCHES) {
-      if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! >= 3) {
-        console.log('[DEBUG] TEXT_MATCHES', TEXT_MATCHES);
-      }
+      // if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! >= 3) {
+      //   console.log('[DEBUG] TEXT_MATCHES', TEXT_MATCHES);
+      // }
       for (let j = 0; j < TEXT_MATCHES.length; j++) {
         let GROUPED_MATCH = TEXT_MATCHES[j].toString().match(new RegExp(TEXT_REGEX_MATCHER, 'i'));
 
@@ -193,9 +217,9 @@ function _preprocess(content: string, filename: string) {
       }
       const FINAL_TEXT_MATCHES = lines[i].toString().match(new RegExp(TEXT_REGEX_MATCHER, 'i'));
       if (FINAL_TEXT_MATCHES) {
-        if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! >= 3) {
-          console.log('[DEBUG] FINAL_TEXT_MATCHES', FINAL_TEXT_MATCHES);
-        }
+        // if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! >= 3) {
+        //   console.log('[DEBUG] FINAL_TEXT_MATCHES', FINAL_TEXT_MATCHES);
+        // }
         let extractedClasses = FINAL_TEXT_MATCHES[3];
         if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! >= 3) {
           console.log('[DEBUG] extractedClasses', extractedClasses);
@@ -239,9 +263,10 @@ function _preprocess(content: string, filename: string) {
       }
     }
   }
-  if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 5) {
-    console.log('[DEBUG] returned line array', lines);
-  }
+  // if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 5) {
+  //   console.log('[DEBUG] returned line array', lines);
+  // }
+
   let finalContent = lines.join('\n');
 
   let preflights: StyleSheet = new StyleSheet();
@@ -362,18 +387,29 @@ export function preprocess(options: typeof OPTIONS = {}) {
     if (OPTIONS.mode === 'dev' || OPTIONS.mode === 'development') DEV = true;
     if (OPTIONS.mode === 'prod' || OPTIONS.mode === 'production') DEV = false;
   }
+  // TODO: rework logging information block
+  // log if verbosity is 0
   if (options?.silent === false) logging(OPTIONS);
+  //TODO:
+  // useEnv.set("windi:verbosity", OPTIONS.verbosity || -1)
   return {
     markup: ({ content, filename }) => {
       return new Promise(async (resolve, _) => {
+        // useDebug.info("svelte preprocessor lifecycle called", 1)
         if (!OPTIONS?.silent && OPTIONS?.debug) {
           console.log('[DEBUG] called preprocessor');
         }
         if (isInit == false) {
+          //TODO:
+          // useDebug.warn("windicss compile init not complete yet", 1)
           if (!OPTIONS?.silent && OPTIONS?.debug) {
             console.log("[DEBUG] initialisationPending")
           }
           const loadedConfig = await loadConfiguration({ config: OPTIONS.config })
+          //TODO:
+          // if (error) useDebug.error()
+          // useDebug.info("windicss configuration file loaded", 1)
+          // useDebug.info("\n" +loadedConfig, 2)
           if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! > 3) {
             console.log("[DEBUG] loaded config data", loadedConfig)
           }
@@ -381,6 +417,8 @@ export function preprocess(options: typeof OPTIONS = {}) {
           VARIANTS = [...Object.keys(PROCESSOR.resolveVariants())];
           isInit = true
         } else if (!OPTIONS?.silent && OPTIONS?.debug) {
+          //TODO:
+          // useDebug.info("windicss compile init complete", 1)
           console.log("[DEBUG] initialisationDone")
         }
         resolve({
