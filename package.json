@@ -30,12 +30,12 @@
   "license": "MIT",
   "homepage": "https://windicss.org/",
   "dependencies": {
-    "@windicss/plugin-utils": "^0.14.0",
+    "@windicss/plugin-utils": "^0.16.0-beta.3",
     "chalk": "^4.1.0",
     "prettier": "^2.2.1",
     "prettier-plugin-svelte": "^2.2.0",
     "svelte": "^3.37.0",
-    "windicss": "^2.5.14",
+    "windicss": "^3.0.0-beta.1",
     "windicss-runtime-dom": "^0.1.1"
   },
   "devDependencies": {
