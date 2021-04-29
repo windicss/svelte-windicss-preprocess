@@ -7,5 +7,9 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "lib": [
+      "ES2020.String",
+      "ES2019.Object"
+    ]
   },
 }
