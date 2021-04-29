@@ -73,10 +73,10 @@ class Step {
   processor: Processor
   content: string
   filename: string
-  extraClassList: string = ""
-  mainClassList: string = ""
-  mainStyle: StyleSheet = new StyleSheet()
-  extraStyle: StyleSheet = new StyleSheet()
+  windiClassList: string[] = []
+  directiveClassList: string[] = []
+  attributifyClassList: Map<string, string[]> = new Map()
+  mainClassList: string[] = []
   constructor(processor: Processor, content: string, filename: string) {
     this.processor = processor
     this.content = content
@@ -99,73 +99,32 @@ class Step {
     // TODO: ERROR HANDLING
     // TODO: Debug utils lib
 
-    // let DIRECTIVE_EXPRESSION = lines[i].toString().match(/\s(class):([^=]+)/gi);
-    // if (DIRECTIVE_EXPRESSION) {
-    //   for (let k = 0; k < DIRECTIVE_EXPRESSION.length; k++) {
-    //     let DIRECTIVE_MATCH = DIRECTIVE_EXPRESSION[k].toString().match(/\s(class):([^=]+)/i);
-    //     const INTERPRETED_DIRECTIVE = PROCESSOR.interpret(DIRECTIVE_MATCH[2]);
-    //   }
-    // }
+    let tmpContent = this.content
+    const DIRECTIVE_CLASS_MATCHES = [...tmpContent.matchAll(/\s(class):([^=]+)(=)/gi)];
+    if (DIRECTIVE_CLASS_MATCHES.length < 1) return this
+    for (const match of DIRECTIVE_CLASS_MATCHES) {
+      this.directiveClassList.push(match[2])
+    }
 
+    this.content = tmpContent
     return this
   }
 
-  processWindiAttribute() {
+  processAttributify() {
     // TODO: ERROR HANDLING
     // TODO: Debug utils lib
 
-    // VARIANTS = [...Object.keys(PROCESSOR.resolveVariants())];
-    // const modifiedVARIANTS = VARIANTS.filter((value, _index, _arr) => {
-    //   if (
-    //     value === 'sm' ||
-    //     value === '-sm' ||
-    //     value === '+sm' ||
-    //     value === 'md' ||
-    //     value === '-md' ||
-    //     value === '+md' ||
-    //     value === 'lg' ||
-    //     value === '-lg' ||
-    //     value === '+lg' ||
-    //     value === 'xl' ||
-    //     value === '-xl' ||
-    //     value === '+xl' ||
-    //     value === 'light' ||
-    //     value === 'dark' ||
-    //     value === 'checked' ||
-    //     value === 'hover' ||
-    //     value === 'visited' ||
-    //     value === 'focus'
-    //   ) {
-    //     return true
-    //   } else {
-    //     return false
-    //   }
-    // }).map(value => `w:${value.toString()}`);
-    // const VARIANTS_REGEX = modifiedVARIANTS.map(element => element).join('|');
-    // const CLASS_REGEX = 'class';
-    // const COMBINED_REGEX = `(${CLASS_REGEX}|${VARIANTS_REGEX})`;
-    // const TEXT_REGEX_MATCHER = `( ${COMBINED_REGEX}=["])([^"]*)(["])`;
-    // FIXME: windiAttributeREGEX
-    // const TEXT_MATCHES = lines[i].toString().match(new RegExp(TEXT_REGEX_MATCHER, 'gi'));
-    // for (let j = 0; j < TEXT_MATCHES.length; j++) {
-    //   let GROUPED_MATCH = TEXT_MATCHES[j].toString().match(new RegExp(TEXT_REGEX_MATCHER, 'i'));
+    let tmpContent = this.content
+    const ATTRIBUTIFY_CLASS_MATCHES = [...tmpContent.matchAll(/([\w+:_/-]+)=(['"])([!\w\s\n~:/\\,%#\[\].$-]*?)\2/gi)];
+    // TODO: allow prefix with ::
+    // extract key & value as class array
+    if (ATTRIBUTIFY_CLASS_MATCHES.length < 1) return this
+    for (const match of ATTRIBUTIFY_CLASS_MATCHES) {
+      if (match[1] == "class") continue
+      this.attributifyClassList.set(match[1].toString(), match[3].split(' '))
+    }
 
-    //   if (GROUPED_MATCH) {
-    //     if (modifiedVARIANTS.includes(GROUPED_MATCH[2])) {
-    //       lines[i] = lines[i].replace(new RegExp(new RegExp(GROUPED_MATCH[0]), 'i'), '');
-    //       let prefix = GROUPED_MATCH[2].replace("w:", "");
-    //       let splittedVariants: string[] = GROUPED_MATCH[3].split(' ');
-    //       let convertedVariants = splittedVariants.map(variant => {
-    //         return `${prefix}:${variant}`;
-    //       });
-    //       lines[i] = lines[i].replace(
-    //         new RegExp(new RegExp(TEXT_REGEX_MATCHER), 'i'),
-    //         `$1$3 ${convertedVariants.join(' ')} $4`
-    //       );
-    //     }
-    //   }
-    // }
-
+    this.content = tmpContent
     return this
   }
 
@@ -173,6 +132,17 @@ class Step {
     // TODO: ERROR HANDLING
     // TODO: Debug utils lib
 
+    let tmpContent = this.content
+    const CLASS_MATCHES = [...tmpContent.matchAll(/(class)=(['"])([^\2]*?)\2/gi)];
+    if (CLASS_MATCHES.length < 1) return this
+    for (const match of CLASS_MATCHES) {
+      let cleanedMatch = match[3]
+        .replace(/windi[`].+?[`]|(?<![-])[$](?=[{])|(?<=([{][\w\s]+[^{]*?))['":]|([{][\w\s]+[^{]*?[\?])|^[{]|(?<=["'`)])[}]/gi, ' ')
+        .replace(/ {2,}/gi, ' ')
+      this.mainClassList = cleanedMatch.split(' ')
+    }
+
+    this.content = tmpContent
     // const CLASS_REGEX = 'class';
     // const COMBINED_REGEX = `(${CLASS_REGEX}|${VARIANTS_REGEX})`;
     // const TEXT_REGEX_MATCHER = `( ${COMBINED_REGEX}=["])([^"]*)(["])`;
@@ -231,14 +201,34 @@ class Step {
     // TODO: ERROR HANDLING
 
     // FIXME: interpret once
-    // dynamicStylesheet = INTERPRETED_DIRECTIVE.styleSheet;
-    this.extraStyle = this.processor.interpret("").styleSheet
-    this.mainStyle = this.processor.interpret("").styleSheet
+    // INTERPRET MAIN
+    // INTERPRET DIRECTIVE
+    // TODO: INTERPRET WINDI EXPRESSION
+    // ATTRIBUTIFY
+    // processor.attributify({
+    //   sm: ['bg-red-500', 'bg-opacity-50'],
+    //   'sm:hover': ['text-red-500', 'text-lg'],
+    //   'sm-hover': ['text-red-500', 'text-lg'],
+    // }).styleSheet.build()
+    // console.log(this.windiClassList)
+    // console.log(this.directiveClassList)
+    // console.log(this.attributifyClassList)
+    // console.log(this.mainClassList)
+
+    // let INTERPRETED_WINDI = this.processor.interpret(this.mainClassList.join(' ')).styleSheet
+    let INTERPRETED_DIRECTIVE = this.processor.interpret(this.directiveClassList.join(' ')).styleSheet
+    let INTERPRETED_ATTRIBUTIFY = this.processor.attributify(Object.fromEntries(this.attributifyClassList)).styleSheet
+    let INTERPRETED_MAIN = this.processor.interpret(this.mainClassList.join(' ')).styleSheet
+
+    let sheets: StyleSheet[] = []
+    // stylesheets.push(INTERPRETED_WINDI)
+    sheets.push(INTERPRETED_DIRECTIVE)
+    sheets.push(INTERPRETED_ATTRIBUTIFY)
+    sheets.push(INTERPRETED_MAIN)
 
     return {
       line: this.content,
-      stylesheet: this.mainStyle,
-      extraStylesheet: this.extraStyle
+      sheets
     }
   }
 }
@@ -326,28 +316,36 @@ export class Magician {
     return this
   }
 
-  each(callbackfn: (line: Step) => { line: string, stylesheet: StyleSheet, extraStylesheet: StyleSheet }) {
+  each(callbackfn: (line: Step) => { line: string, sheets: StyleSheet[] }) {
     // TODO: ERROR HANDLING
+    // TODO: Debug utils lib
 
     let tmpContent = this.content
 
     this.lines = tmpContent.split('\n');
     this.lines.forEach(el => {
       // let result
-      const { line, stylesheet, extraStylesheet } = callbackfn(new Step(this.processor, el, this.filename))
+      const { line, sheets } = callbackfn(new Step(this.processor, el, this.filename))
       el = line
-      this.stylesheets.push(extraStylesheet)
-      this.stylesheets.push(stylesheet)
+      this.stylesheets = this.stylesheets.concat(sheets)
     })
+
     tmpContent = this.lines.join('\n');
     this.content = tmpContent
 
     return this
   }
 
-  compile() {
+  compute() {
     // TODO: ERROR HANDLING
+    // TODO: Debug utils lib
 
+    let tmpContent = this.content
+    let finalStyleSheet = this.useGlobal(combineStyleList(this.stylesheets).sort())
+
+    tmpContent += `\n\n<style>\n${finalStyleSheet.build()}\n</style>\n`;
+
+    this.content = tmpContent
     return this
   }
 
@@ -359,13 +357,19 @@ export class Magician {
 
   generatePreflight() {
     // TODO: ERROR HANDLING
+    // TODO: Debug utils lib
 
+
+    let tmpContent = this.content
+    let GENERATED_PREFLIGHTS = this.processor.preflight(this.content, true, true, true, false)
+    this.stylesheets.push(GENERATED_PREFLIGHTS)
+    this.content = tmpContent
     return this
   }
 
   processSafelist() {
     // TODO: ERROR HANDLING
-
+    // TODO: Debug utils lib
 
     //   const INTERPRETED_SAFELIST = PROCESSOR.interpret(OPTIONS.safeList.join(' '));
     //   SAFELIST.push(globalStyleSheet(INTERPRETED_SAFELIST.styleSheet));
@@ -421,9 +425,13 @@ export class Magician {
   useGlobal(styleSheet: StyleSheet) {
     // TODO: ERROR HANDLING
     // turn all styles in stylesheet to global style
+    // add global keyframe
     styleSheet.children.forEach(style => {
       if (!style.rule.includes(':global') && style.meta.group !== 'keyframes') {
         style.wrapRule((rule: string) => `:global(${rule})`);
+      }
+      if (style.atRules && !style.atRules.includes('-global-') && style.meta.group == "keyframes") {
+        style.atRules[0] = style.atRules[0].replace(/(?<=keyframes )(?=\w)/gi, "-global-")
       }
     });
     return styleSheet;
