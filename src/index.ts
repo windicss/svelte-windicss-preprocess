@@ -1,11 +1,11 @@
-import type { FullConfig } from "windicss/types/interfaces";
+import { useConfig } from "@nbhr/utils";
 import { readFileSync } from "fs";
 import { Processor } from 'windicss/lib';
+import type { FullConfig } from "windicss/types/interfaces";
 import { CSSParser } from 'windicss/utils/parser';
 import { StyleSheet } from 'windicss/utils/style';
 import type { Options } from './interfaces';
 import { combineStyleList, globalStyleSheet, logging, Magician, writeFileSync } from './utils';
-import { useConfig } from "@nbhr/utils";
 
 let DEV: boolean = false;
 let PROCESSOR: Processor;
