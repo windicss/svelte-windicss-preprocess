@@ -1,10 +1,11 @@
-import { loadConfiguration } from "@windicss/plugin-utils";
+import type { FullConfig } from "windicss/types/interfaces";
 import { readFileSync } from "fs";
 import { Processor } from 'windicss/lib';
 import { CSSParser } from 'windicss/utils/parser';
 import { StyleSheet } from 'windicss/utils/style';
 import type { Options } from './interfaces';
 import { combineStyleList, globalStyleSheet, logging, Magician, writeFileSync } from './utils';
+import { useConfig } from "@nbhr/utils";
 
 let DEV: boolean = false;
 let PROCESSOR: Processor;
@@ -401,15 +402,23 @@ export function preprocess(options: typeof OPTIONS = {}) {
           if (!OPTIONS?.silent && OPTIONS?.debug) {
             console.log("[DEBUG] initialisationPending")
           }
-          const loadedConfig = await loadConfiguration({ config: OPTIONS.config })
-          //TODO:
-          // if (error) useDebug.error()
-          // useDebug.info("windicss configuration file loaded", 1)
-          // useDebug.info("\n" +loadedConfig, 2)
-          if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! > 3) {
-            console.log("[DEBUG] loaded config data", loadedConfig)
+          if (OPTIONS.config) {
+            const loadedConfig = await useConfig.load(OPTIONS.config)
+            let windiConfig: FullConfig = loadedConfig
+            //TODO:
+            // if (error) useDebug.error()
+            // useDebug.info("windicss configuration file loaded", 1)
+            // useDebug.info("\n" +loadedConfig, 2)
+            if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! > 3) {
+              console.log("[DEBUG] loaded config data", windiConfig)
+            }
+            console.log(windiConfig.preflight)
+            PROCESSOR = new Processor(windiConfig);
+          } else {
+            PROCESSOR = new Processor();
           }
-          PROCESSOR = new Processor(loadedConfig.resolved);
+          // const loadedConfig = await loadConfiguration({ config: OPTIONS.config })
+
           VARIANTS = [...Object.keys(PROCESSOR.resolveVariants())];
           isInit = true
         } else if (!OPTIONS?.silent && OPTIONS?.debug) {
