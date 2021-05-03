@@ -241,7 +241,7 @@ export class Magician {
   classes: string[] = []
   stylesheets: StyleSheet[] = []
   config: FullConfig = {}
-  constructor(processor: Processor, content: string, filename: string, config: FullConfig) {
+  constructor(processor: Processor, content: string, filename: string, config?: FullConfig = {}) {
     this.processor = processor
     this.content = content
     this.filename = filename
