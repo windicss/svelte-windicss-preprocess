@@ -66,12 +66,31 @@ function _preprocess(content: string, filename: string) {
   // // TODO: add magician logic
   let run = "new"
   if (run == "new") {
-    let mag = new Magician(PROCESSOR, content, filename).clean()
+    console.time("full");
+
+    console.time("windi-clean")
+    let mag = new Magician(PROCESSOR, content, filename, windiConfig).clean()
+    console.timeEnd("windi-clean")
+    console.time("prettier-formatSvelte")
     if (!(OPTIONS?.disableFormat)) mag = mag.format()
-    console.log(mag.content)
+    console.timeEnd("prettier-formatSvelte")
+    console.time("windi-preflight")
+    if (!DEV && IS_MAIN) {
+      mag = mag
+        .generatePreflight()
+      IS_MAIN = false
+    } else if (DEV) {
+      mag = mag
+        .generatePreflight()
+    }
+    console.timeEnd("windi-preflight")
+
+    console.time("windi-style")
     mag = mag
-      .generatePreflight()
       .processStyle()
+    console.timeEnd("windi-style")
+    console.time("windi-processLines")
+    mag = mag
       .each(line => {
         return line
           // .processWindiExpression()
@@ -80,12 +99,26 @@ function _preprocess(content: string, filename: string) {
           .processClassAttribute()
           .compute()
       })
+    console.timeEnd("windi-processLines")
 
+    console.time("windi-safelist")
     if (OPTIONS?.safeList) mag = mag.processSafelist()
-    if (OPTIONS?.devTools?.enabled) mag = mag.useDevTools()
+    console.timeEnd("windi-safelist")
+    console.time("windi-computeCSS")
     mag = mag
       .compute()
+    console.timeEnd("windi-computeCSS")
     // console.log(mag.getCode())
+
+    console.time("windi-devTools")
+    if (DEV && OPTIONS?.devTools?.enabled) mag = mag.useDevTools()
+    console.timeEnd("windi-devTools")
+
+    // Ends the timer and print the time
+    // taken by the piece of code
+    console.log("---")
+    console.timeEnd("full");
+
     return mag
       .getCode()
   } else {
@@ -432,7 +465,6 @@ export function preprocess(options: typeof OPTIONS = {}) {
             if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! > 3) {
               console.log("[DEBUG] loaded config data", windiConfig)
             }
-            console.log(windiConfig.preflight)
             PROCESSOR = new Processor(windiConfig);
           } else {
             PROCESSOR = new Processor();
