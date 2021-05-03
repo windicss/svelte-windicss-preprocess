@@ -5215,7 +5215,7 @@
 				packagesUrl = event.data.packagesUrl;
 				svelteUrl = event.data.svelteUrl;
 				importScripts(`${svelteUrl}/compiler.js`);
-				importScripts('https://unpkg.com/svelte-windicss-preprocess/browser.js');
+				importScripts('https://unpkg.com/svelte-windicss-preprocess@3.2.1/browser.js');
 				break;
 
 			case 'bundle':
