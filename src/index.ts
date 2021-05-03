@@ -4,8 +4,36 @@ import { Processor } from 'windicss/lib';
 import type { FullConfig } from "windicss/types/interfaces";
 import { CSSParser } from 'windicss/utils/parser';
 import { StyleSheet } from 'windicss/utils/style';
-import type { Options } from './interfaces';
 import { combineStyleList, globalStyleSheet, logging, Magician, writeFileSync } from './utils';
+
+export interface Options {
+  safeList?: string[];
+  bundle?: string;
+  mode?: string;
+  debug?: boolean;
+  silent?: boolean; // in readme
+  config?: string; // in readme
+  compile?: boolean; // in readme
+  prefix?: string; // in readme
+  verbosity?: number; // TODO: add mapping in docs for people
+  devTools?: {
+    completions?: boolean;
+    enabled?: boolean;
+  },
+  kit?: boolean,
+  disableFormat?: boolean
+}
+
+let OPTIONS: Options = {
+  safeList: undefined,
+  bundle: undefined,
+  compile: false,
+  prefix: 'windi-',
+  verbosity: 1,
+  debug: false,
+  devTools: undefined,
+  disableFormat: false
+};
 
 let DEV: boolean = false;
 let PROCESSOR: Processor;
@@ -19,15 +47,7 @@ let FILES: (string | undefined)[] = [];
 let BUNDLES: { [key: string]: StyleSheet } = {};
 let IS_MAIN: boolean = true;
 let isInit: boolean = false;
-
-let OPTIONS: Options = {
-  compile: false,
-  prefix: 'windi-',
-  verbosity: 1,
-  debug: false,
-  devTools: undefined,
-  disableFormat: false
-};
+let windiConfig: FullConfig = {}
 
 const REGEXP = {
   matchStyle: /<style[^>]*?(\/|(>([\s\S]*?)<\/style))>/,
@@ -404,7 +424,7 @@ export function preprocess(options: typeof OPTIONS = {}) {
           }
           if (OPTIONS.config) {
             const loadedConfig = await useConfig.load(OPTIONS.config)
-            let windiConfig: FullConfig = loadedConfig
+            windiConfig = loadedConfig
             //TODO:
             // if (error) useDebug.error()
             // useDebug.info("windicss configuration file loaded", 1)
