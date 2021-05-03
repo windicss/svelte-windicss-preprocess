@@ -1,7 +1,10 @@
 import Processor from 'windicss';
 import { CSSParser } from 'windicss/utils/parser';
 import { StyleSheet } from 'windicss/utils/style';
-import type { Options } from './interfaces';
+import { readFileSync } from "fs";
+import type { Options } from "./index";
+import type { FullConfig } from "windicss/types/interfaces";
+import { format } from "prettier"
 
 export function combineStyleList(stylesheets: StyleSheet[]) {
   return stylesheets
@@ -114,6 +117,7 @@ class Step {
     // TODO: ERROR HANDLING
     // TODO: Debug utils lib
 
+
     let tmpContent = this.content
     const ATTRIBUTIFY_CLASS_MATCHES = [...tmpContent.matchAll(/([\w+:_/-]+)=(['"])([!\w\s\n~:/\\,%#\[\].$-]*?)\2/gi)];
     // TODO: allow prefix with ::
@@ -199,36 +203,27 @@ class Step {
 
   compute(compile: boolean = false) {
     // TODO: ERROR HANDLING
-
-    // FIXME: interpret once
-    // INTERPRET MAIN
-    // INTERPRET DIRECTIVE
+    // TODO: debug utils
     // TODO: INTERPRET WINDI EXPRESSION
-    // ATTRIBUTIFY
-    // processor.attributify({
-    //   sm: ['bg-red-500', 'bg-opacity-50'],
-    //   'sm:hover': ['text-red-500', 'text-lg'],
-    //   'sm-hover': ['text-red-500', 'text-lg'],
-    // }).styleSheet.build()
-    // console.log(this.windiClassList)
-    // console.log(this.directiveClassList)
-    // console.log(this.attributifyClassList)
-    // console.log(this.mainClassList)
+
 
     // let INTERPRETED_WINDI = this.processor.interpret(this.mainClassList.join(' ')).styleSheet
-    let INTERPRETED_DIRECTIVE = this.processor.interpret(this.directiveClassList.join(' ')).styleSheet
-    let INTERPRETED_ATTRIBUTIFY = this.processor.attributify(Object.fromEntries(this.attributifyClassList)).styleSheet
-    let INTERPRETED_MAIN = this.processor.interpret(this.mainClassList.join(' ')).styleSheet
+    // let INTERPRETED_DIRECTIVE = this.processor.interpret(this.directiveClassList.join(' ')).styleSheet
+    // let INTERPRETED_ATTRIBUTIFY = this.processor.attributify(Object.fromEntries(this.attributifyClassList)).styleSheet
+    // let INTERPRETED_MAIN = this.processor.interpret(this.mainClassList.join(' ')).styleSheet
 
-    let sheets: StyleSheet[] = []
+    // let sheets: StyleSheet[] = []
     // stylesheets.push(INTERPRETED_WINDI)
-    sheets.push(INTERPRETED_DIRECTIVE)
-    sheets.push(INTERPRETED_ATTRIBUTIFY)
-    sheets.push(INTERPRETED_MAIN)
+    // sheets.push(INTERPRETED_DIRECTIVE)
+    // sheets.push(INTERPRETED_ATTRIBUTIFY)
+    // sheets.push(INTERPRETED_MAIN)
 
     return {
       line: this.content,
-      sheets
+      expressions: this.windiClassList,
+      directives: this.directiveClassList,
+      attributifies: this.attributifyClassList,
+      classes: this.mainClassList
     }
   }
 }
@@ -240,11 +235,17 @@ export class Magician {
   isBundled: boolean = false
   isCompiled: boolean = false
   lines: string[] = []
+  expressions: string[] = []
+  directives: string[] = []
+  attributifies: Map<string, string[]> = new Map()
+  classes: string[] = []
   stylesheets: StyleSheet[] = []
-  constructor(processor: Processor, content: string, filename: string) {
+  config: FullConfig = {}
+  constructor(processor: Processor, content: string, filename: string, config: FullConfig) {
     this.processor = processor
     this.content = content
     this.filename = filename
+    this.config = config
     // TODO: Debug utils lib
   }
 
@@ -275,21 +276,21 @@ export class Magician {
 
     let tmpContent = this.content
 
+
     tmpContent = tmpContent.replace(/(?<=[\<]{1}\w[^\>]+)\n/gmi, " ")
-    const prettier = require('prettier');
-    let formatedContent = prettier.format(tmpContent, {
+    // const prettier = require('prettier');
+    let formatedContent = format(tmpContent, {
       parser: 'svelte',
-      pluginSearchDirs: ['.'],
+      // pluginSearchDirs: ['.'],
       plugins: ['prettier-plugin-svelte'],
-      printWidth: 9999,
+      printWidth: 5000,
       tabWidth: 2,
-      svelteSortOrder: 'options-styles-scripts-markup',
+      svelteSortOrder: 'options-scripts-markup-styles',
       svelteStrictMode: true,
-      svelteBracketNewLine: false,
       svelteAllowShorthand: false,
+      svelteBracketNewLine: false,
       svelteIndentScriptAndStyle: false,
     });
-
     this.content = formatedContent
     return this
   }
@@ -316,7 +317,13 @@ export class Magician {
     return this
   }
 
-  each(callbackfn: (line: Step) => { line: string, sheets: StyleSheet[] }) {
+  each(callbackfn: (line: Step) => {
+    line: string,
+    expressions: string[],
+    directives: string[],
+    attributifies: Map<string, string[]>,
+    classes: string[]
+  }) {
     // TODO: ERROR HANDLING
     // TODO: Debug utils lib
 
@@ -325,11 +332,27 @@ export class Magician {
     this.lines = tmpContent.split('\n');
     this.lines.forEach(el => {
       // let result
-      const { line, sheets } = callbackfn(new Step(this.processor, el, this.filename))
+      const { line, expressions, directives, attributifies, classes } = callbackfn(new Step(this.processor, el, this.filename))
       el = line
-      this.stylesheets = this.stylesheets.concat(sheets)
+      this.expressions = this.expressions.concat(expressions)
+      this.directives = this.directives.concat(directives)
+      attributifies.forEach((v, k) => {
+        if (this.attributifies.has(k)) {
+          let oldValue = this.attributifies.get(k)
+          if (oldValue) {
+            this.attributifies.set(k, oldValue.concat(v))
+          }
+        } else {
+          this.attributifies.set(k, v)
+        }
+      })
+      this.classes = this.classes.concat(classes)
+      // this.stylesheets = this.stylesheets.concat(sheets)
     })
-
+    this.attributifies.forEach((v, k) => {
+      let unique = new Set(v)
+      this.attributifies.set(k, Array.from(unique))
+    })
     tmpContent = this.lines.join('\n');
     this.content = tmpContent
 
