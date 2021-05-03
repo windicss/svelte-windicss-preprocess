@@ -381,46 +381,46 @@ export class Magician {
   useDevTools() {
     // TODO: ERROR HANDLING
 
+    let tmpContent = this.content
+    const path = require.resolve("windicss-runtime-dom");
+    let runtimeConfig: FullConfig = {
+      theme: this.config.theme
+    }
+    let windiRuntimeDom = readFileSync(path, "utf-8");
+    let windiRuntimeDomConfig = `
+        window.windicssRuntimeOptions = {
+          extractInitial: false,
+          preflight: false,
+          mockClasses: true,
+          config: ${JSON.stringify(runtimeConfig)}
+        }
+      `
+    let injectScript = `
+        if (!document.getElementById("windicss-devtools")) {
+          const script = document.createElement("script");
+          script.id = "windicss-devtools";
+          script.setAttribute("type", "text/javascript");
+          script.innerHTML = ${JSON.stringify(windiRuntimeDomConfig + windiRuntimeDom)};
+          document.head.append(script);
+        }
+      `;
 
-    //   const path = require.resolve("windicss-runtime-dom");
-    //   let windiProjectConfig = undefined;
-    //   // if (OPTIONS.config) {
-    //   //   windiProjectConfig = loadConfig(OPTIONS.config)
-    //   // }
-    //   let windiRuntimeDom = readFileSync(path, "utf-8");
-    //   let windiRuntimeDomConfig = `
-    //     window.windicssRuntimeOptions = {
-    //       extractInitial: false,
-    //       preflight: false,
-    //       mockClasses: ${OPTIONS?.devTools?.completions ? true : false},
-    //       config: ${windiProjectConfig ? JSON.stringify(windiProjectConfig) : undefined}
-    //     }
-    //   `
-    //   let injectScript = `
-    //     if (!document.getElementById("windicss-devtools")) {
-    //       const script = document.createElement("script");
-    //       script.id = "windicss-devtools";
-    //       script.setAttribute("type", "text/javascript");
-    //       script.innerHTML = ${JSON.stringify(windiRuntimeDomConfig + windiRuntimeDom)};
-    //       document.head.append(script);
-    //     }
-    //   `;
-    //   let script = finalContent.match(REGEXP.matchScript)?.[0]
-    //   if (script) {
-    //     finalContent = finalContent.replace(/\<script\>/, `<script>\n${injectScript}`)
-    //   } else {
-    //     finalContent += `\n\n<script>${injectScript}</script>\n\n`;
-    //   }
+    let script = tmpContent.match(/<script[^>]*?(\/|(>([\s\S]*?)<\/script))>/)?.[0]
+    if (script) {
+      tmpContent = tmpContent.replace(/\<script\>/, `<script>\n${injectScript}`)
+    } else {
+      tmpContent += `\n\n<script>${injectScript}</script>\n\n`;
+    }
 
-
+    this.content = tmpContent
     return this
   }
 
-  useKit() {
-    // TODO: ERROR HANDLING
+  // useKit() {
+  //   // TODO: ERROR HANDLING
 
-    return this
-  }
+  //   return this
+  // }
 
   useGlobal(styleSheet: StyleSheet) {
     // TODO: ERROR HANDLING
@@ -439,12 +439,14 @@ export class Magician {
 
   getCode() {
     // TODO: ERROR HANDLING
+    // TODO: Debug utils lib
 
     return this.content
   }
 
   getFilename() {
     // TODO: ERROR HANDLING
+    // TODO: Debug utils lib
 
     return this.filename
   }
