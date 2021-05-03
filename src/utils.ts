@@ -341,9 +341,36 @@ export class Magician {
     // TODO: Debug utils lib
 
     let tmpContent = this.content
-    let finalStyleSheet = this.useGlobal(combineStyleList(this.stylesheets).sort())
+    // let INTERPRETED_WINDI = this.processor.interpret(this.mainClassList.join(' ')).styleSheet
+    console.time("windiv3-interpretDirective")
+    let directiveSet = new Set(this.directives)
+    console.log(directiveSet);
+    let INTERPRETED_DIRECTIVE = this.processor.interpret(Array.from(directiveSet).join(' ')).styleSheet
+    console.timeEnd("windiv3-interpretDirective")
+    console.time("windiv3-attributify")
+    console.log(this.attributifies);
+    let INTERPRETED_ATTRIBUTIFY = this.processor.attributify(Object.fromEntries(this.attributifies)).styleSheet
+    console.timeEnd("windiv3-attributify")
+    console.time("windiv3-interpretClass")
+    let classSet = new Set(this.classes)
+    console.log(classSet)
+    let INTERPRETED_MAIN = this.processor.interpret(Array.from(classSet).join(' ')).styleSheet
+    console.timeEnd("windiv3-interpretClass")
 
+    // windiexpression
+    this.stylesheets.push(INTERPRETED_DIRECTIVE)
+    this.stylesheets.push(INTERPRETED_ATTRIBUTIFY)
+    this.stylesheets.push(INTERPRETED_MAIN)
+    console.time("windiv3-combineANDsortStyleSheet")
+    let tmp = combineStyleList(this.stylesheets).sort()
+    console.timeEnd("windiv3-combineANDsortStyleSheet")
+    console.time("windiv3-wrapStylesheetWithGlobal")
+    let finalStyleSheet = this.useGlobal(tmp)
+    console.timeEnd("windiv3-wrapStylesheetWithGlobal")
+
+    console.time("windiv3-buildStylesheet")
     tmpContent += `\n\n<style>\n${finalStyleSheet.build()}\n</style>\n`;
+    console.timeEnd("windiv3-buildStylesheet")
 
     this.content = tmpContent
     return this
