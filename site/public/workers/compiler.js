@@ -12,7 +12,7 @@
 		switch (event.data.type) {
 			case 'init':
 				importScripts(`${event.data.svelteUrl}/compiler.js`);
-				importScripts('https://unpkg.com/svelte-windicss-preprocess/browser.js');
+				importScripts('https://unpkg.com/svelte-windicss-preprocess@3.2.1/browser.js');
 				fulfil_ready();
 				break;
 
