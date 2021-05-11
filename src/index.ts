@@ -1,4 +1,5 @@
-import { useConfig } from "@nbhr/utils";
+import { useConfig, createLog } from "@nbhr/utils";
+// import {   } from "nodeuse";
 import { readFileSync } from "fs";
 import { Processor } from 'windicss/lib';
 import type { FullConfig } from "windicss/types/interfaces";
@@ -54,6 +55,9 @@ const REGEXP = {
   matchScript: /<script[^>]*?(\/|(>([\s\S]*?)<\/script))>/,
   matchClasses: /('[\s\S]+?')|("[\s\S]+?")|(`[\s\S]+?`)/g,
 };
+let table: any = {}
+let size: any = 0
+let file: any = 0
 
 // const MODIFIED: { [key: string]: string } = {
 //   xxl: '2xl',
@@ -63,18 +67,12 @@ const REGEXP = {
 // };
 
 function _preprocess(content: string, filename: string) {
+
   // // TODO: add magician logic
   let run = "new"
   if (run == "new") {
-    console.time("full");
-
-    console.time("windi-clean")
     let mag = new Magician(PROCESSOR, content, filename, windiConfig).clean()
-    console.timeEnd("windi-clean")
-    console.time("prettier-formatSvelte")
     if (!(OPTIONS?.disableFormat)) mag = mag.format()
-    console.timeEnd("prettier-formatSvelte")
-    console.time("windi-preflight")
     if (!DEV && IS_MAIN) {
       mag = mag
         .generatePreflight()
@@ -83,13 +81,8 @@ function _preprocess(content: string, filename: string) {
       mag = mag
         .generatePreflight()
     }
-    console.timeEnd("windi-preflight")
-
-    console.time("windi-style")
     mag = mag
       .processStyle()
-    console.timeEnd("windi-style")
-    console.time("windi-processLines")
     mag = mag
       .each(line => {
         return line
@@ -99,26 +92,21 @@ function _preprocess(content: string, filename: string) {
           .processClassAttribute()
           .compute()
       })
-    console.timeEnd("windi-processLines")
-
-    console.time("windi-safelist")
     if (OPTIONS?.safeList) mag = mag.processSafelist()
-    console.timeEnd("windi-safelist")
-    console.time("windi-computeCSS")
     mag = mag
       .compute()
-    console.timeEnd("windi-computeCSS")
     // console.log(mag.getCode())
-
-    console.time("windi-devTools")
     if (DEV && OPTIONS?.devTools?.enabled) mag = mag.useDevTools()
-    console.timeEnd("windi-devTools")
-
     // Ends the timer and print the time
     // taken by the piece of code
-    console.log("---")
-    console.timeEnd("full");
 
+    table[filename] = mag.getStats()
+    size = (-4 * file) - Object.entries(table).length - (file)
+    console.log("\n")
+    process.stdout.moveCursor(0, size) // up one line
+    process.stdout.clearLine(1) // from cursor to end
+    console.table(table)
+    file = 1
     return mag
       .getCode()
   } else {
@@ -430,6 +418,7 @@ function _preprocess(content: string, filename: string) {
 }
 
 export function preprocess(options: typeof OPTIONS = {}) {
+  PROCESSOR = new Processor(windiConfig);
   OPTIONS = { ...OPTIONS, ...options }; // change global settings here;
   DEV = process.env.NODE_ENV === 'development';
   if (OPTIONS.mode) {
@@ -447,13 +436,13 @@ export function preprocess(options: typeof OPTIONS = {}) {
       return new Promise(async (resolve, _) => {
         // useDebug.info("svelte preprocessor lifecycle called", 1)
         if (!OPTIONS?.silent && OPTIONS?.debug) {
-          console.log('[DEBUG] called preprocessor');
+          // createLog('[DEBUG] called preprocessor')
         }
         if (isInit == false) {
           //TODO:
           // useDebug.warn("windicss compile init not complete yet", 1)
           if (!OPTIONS?.silent && OPTIONS?.debug) {
-            console.log("[DEBUG] initialisationPending")
+            // createLog("[DEBUG] initialisationPending")
           }
           if (OPTIONS.config) {
             const loadedConfig = await useConfig.load(OPTIONS.config)
@@ -465,7 +454,6 @@ export function preprocess(options: typeof OPTIONS = {}) {
             if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! > 3) {
               console.log("[DEBUG] loaded config data", windiConfig)
             }
-            PROCESSOR = new Processor(windiConfig);
           } else {
             PROCESSOR = new Processor();
           }
@@ -476,7 +464,7 @@ export function preprocess(options: typeof OPTIONS = {}) {
         } else if (!OPTIONS?.silent && OPTIONS?.debug) {
           //TODO:
           // useDebug.info("windicss compile init complete", 1)
-          console.log("[DEBUG] initialisationDone")
+          // createLog("[DEBUG] initialisationDone")
         }
         resolve({
           code: _preprocess(content, filename),

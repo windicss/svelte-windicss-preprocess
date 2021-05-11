@@ -5,7 +5,7 @@ import { readFileSync } from "fs";
 import type { Options } from "./index";
 import type { FullConfig } from "windicss/types/interfaces";
 import { format } from "prettier"
-
+import { performance } from "perf_hooks";
 export function combineStyleList(stylesheets: StyleSheet[]) {
   return stylesheets
     .reduce((previousValue, currentValue) => previousValue.extend(currentValue), new StyleSheet())
@@ -86,6 +86,7 @@ class Step {
     this.filename = filename
     // TODO: Debug utils lib
   }
+
   processWindiExpression() {
     // TODO: ERROR HANDLING
     // TODO: Debug utils lib
@@ -117,6 +118,8 @@ class Step {
     // TODO: ERROR HANDLING
     // TODO: Debug utils lib
 
+
+    // FIXME: not bulletprof yet
 
     let tmpContent = this.content
     const ATTRIBUTIFY_CLASS_MATCHES = [...tmpContent.matchAll(/([\w+:_/-]+)=(['"])([!\w\s\n~:/\\,%#\[\].$-]*?)\2/gi)];
@@ -241,6 +244,7 @@ export class Magician {
   classes: string[] = []
   stylesheets: StyleSheet[] = []
   config: FullConfig = {}
+  stats: Record<string, any> = {}
   constructor(processor: Processor, content: string, filename: string, config?: FullConfig = {}) {
     this.processor = processor
     this.content = content
@@ -249,12 +253,16 @@ export class Magician {
     // TODO: Debug utils lib
   }
 
+  getStats() {
+    return this.stats
+  }
+
   clean() {
     // TODO: ERROR HANDLING
     // TODO: Debug utils lib
 
     let tmpContent = this.content
-
+    let start = performance.now()
     // FIXME: needs to be refactored. shouldn't remove comments completly, just for parsing
     tmpContent = tmpContent.replace(/<!--[\s\S]*?-->/g, '');
     tmpContent = tmpContent.replace(/([!\w][\w:_/-]*?):\(([\w\s/-]*?)\)/gm, (_, groupOne: string, groupTwo: string) =>
@@ -265,6 +273,8 @@ export class Magician {
     );
 
     this.content = tmpContent
+    let end = performance.now()
+    this.stats.clean = (end - start).toFixed(2) + "ms"
     return this
   }
 
@@ -273,7 +283,7 @@ export class Magician {
     // TODO: better formatting.. no upstream fix of prettier-plugin expected soon
     // https://github.com/sveltejs/prettier-plugin-svelte/issues/214
     // TODO: Debug utils lib
-
+    let start = performance.now()
     let tmpContent = this.content
 
 
@@ -292,6 +302,8 @@ export class Magician {
       svelteIndentScriptAndStyle: false,
     });
     this.content = formatedContent
+    let end = performance.now()
+    this.stats.prettierFormat = (end - start).toFixed(2) + "ms"
     return this
   }
 
@@ -300,7 +312,7 @@ export class Magician {
     // TODO: Debug utils lib
 
     let tmpContent = this.content
-
+    let start = performance.now()
     let style = tmpContent.match(/<style[^>]*?(\/|(>([\s\S]*?)<\/style))>/)?.[0];
     if (style) {
       var global = style.match(/\<style global\>/gi);
@@ -314,6 +326,8 @@ export class Magician {
     }
 
     this.content = tmpContent
+    let end = performance.now()
+    this.stats.styleTag = (end - start).toFixed(2) + "ms"
     return this
   }
 
@@ -365,36 +379,27 @@ export class Magician {
 
     let tmpContent = this.content
     // let INTERPRETED_WINDI = this.processor.interpret(this.mainClassList.join(' ')).styleSheet
-    console.time("windiv3-interpretDirective")
     let directiveSet = new Set(this.directives)
-    console.log(directiveSet);
+    // console.log(directiveSet);
     let INTERPRETED_DIRECTIVE = this.processor.interpret(Array.from(directiveSet).join(' ')).styleSheet
-    console.timeEnd("windiv3-interpretDirective")
-    console.time("windiv3-attributify")
-    console.log(this.attributifies);
+    let startA = performance.now()
+    // console.log(this.attributifies);
     let INTERPRETED_ATTRIBUTIFY = this.processor.attributify(Object.fromEntries(this.attributifies)).styleSheet
-    console.timeEnd("windiv3-attributify")
-    console.time("windiv3-interpretClass")
+    let endA = performance.now()
+    this.stats.computeAttributify = (endA - startA).toFixed(2) + "ms"
     let classSet = new Set(this.classes)
-    console.log(classSet)
+    // console.log(classSet)
     let INTERPRETED_MAIN = this.processor.interpret(Array.from(classSet).join(' ')).styleSheet
-    console.timeEnd("windiv3-interpretClass")
-
     // windiexpression
     this.stylesheets.push(INTERPRETED_DIRECTIVE)
     this.stylesheets.push(INTERPRETED_ATTRIBUTIFY)
     this.stylesheets.push(INTERPRETED_MAIN)
-    console.time("windiv3-combineANDsortStyleSheet")
     let tmp = combineStyleList(this.stylesheets).sort()
-    console.timeEnd("windiv3-combineANDsortStyleSheet")
-    console.time("windiv3-wrapStylesheetWithGlobal")
     let finalStyleSheet = this.useGlobal(tmp)
-    console.timeEnd("windiv3-wrapStylesheetWithGlobal")
-
-    console.time("windiv3-buildStylesheet")
+    let startB = performance.now()
     tmpContent += `\n\n<style>\n${finalStyleSheet.build()}\n</style>\n`;
-    console.timeEnd("windiv3-buildStylesheet")
-
+    let endB = performance.now()
+    this.stats.buildStyleSheet = (endB - startB).toFixed(2) + "ms"
     this.content = tmpContent
     return this
   }
@@ -409,10 +414,10 @@ export class Magician {
     // TODO: ERROR HANDLING
     // TODO: Debug utils lib
 
-
     let tmpContent = this.content
     let GENERATED_PREFLIGHTS = this.processor.preflight(this.content, true, true, true, false)
     this.stylesheets.push(GENERATED_PREFLIGHTS)
+
     this.content = tmpContent
     return this
   }
