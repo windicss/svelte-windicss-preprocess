@@ -101,9 +101,8 @@ function _preprocess(content: string, filename: string) {
     // taken by the piece of code
 
     table[filename] = mag.getStats()
-    size = (-4 * file) - Object.entries(table).length - (file)
-    console.log("\n")
-    process.stdout.moveCursor(0, size) // up one line
+    size = (4 * file) + Object.entries(table).length - 1
+    process.stdout.moveCursor(0, -size) // up one line
     process.stdout.clearLine(1) // from cursor to end
     console.table(table)
     file = 1
@@ -452,7 +451,7 @@ export function preprocess(options: typeof OPTIONS = {}) {
             // useDebug.info("windicss configuration file loaded", 1)
             // useDebug.info("\n" +loadedConfig, 2)
             if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! > 3) {
-              console.log("[DEBUG] loaded config data", windiConfig)
+              // console.log("[DEBUG] loaded config data", windiConfig)
             }
           } else {
             PROCESSOR = new Processor();

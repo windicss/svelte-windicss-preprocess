@@ -40,7 +40,7 @@ export function chalkColor() {
 
 export function logging(options: Options) {
   const chalk = chalkColor();
-  process.stdout.write(`${chalk.blueBold('│')}\n`);
+  process.stdout.write(`${chalk.blueBold('')}\n`);
   process.stdout.write(`${chalk.blueBold('│')} ${chalk.blueBold('svelte-windicss-preprocess')}\n`);
   process.stdout.write(
     `${chalk.blueBold('│')} ${process.env.NODE_ENV == undefined ? chalk.redBold('NODE_ENV is undefined') : ''}\n`
