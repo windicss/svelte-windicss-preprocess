@@ -410,7 +410,7 @@ function _preprocess(content: string, filename: string) {
 
     if (OPTIONS.bundle) {
       if (filename) BUNDLES[filename] = styleSheet;
-      writeFileSync(OPTIONS.bundle, combineStyleList(Object.values(BUNDLES)).build(true));
+      // writeFileSync(OPTIONS.bundle, combineStyleList(Object.values(BUNDLES)).build(true));
     } else {
       finalContent += `\n\n<style>\n${styleSheet.build()}\n</style>\n`;
     }

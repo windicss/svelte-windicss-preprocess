@@ -192,7 +192,7 @@ export class Magician {
   computedStyleSheet: StyleSheet = new StyleSheet()
   css: string = ""
 
-  constructor(processor: Processor, content: string, filename: string, config?: FullConfig = {}) {
+  constructor(processor: Processor, content: string, filename: string, config: FullConfig = {}) {
     this.processor = processor
     this.content = content
     this.filename = filename
