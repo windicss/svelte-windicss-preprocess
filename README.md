@@ -16,16 +16,12 @@ npm i -D svelte-windicss-preprocess
 
 ---
 
-## Configuration
+## Integrations & Configuration
 
-> tba
-
-## Integrations
-
-### [see guides](https://windicss.org/integrations/svelte.html) can be found in windicss docs
+### see our [guides](https://windicss.org/integrations/svelte.html) in our windi css docs
 
 ## Resources
 
-- [Documents](https://windicss.org)
+- [Documentation](https://windicss.org)
 
 - [MIT License](https://github.com/windicss/svelte-windicss-preprocess/blob/main/LICENSE)
