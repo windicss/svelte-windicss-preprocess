@@ -510,10 +510,13 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
 
         // TODO: MARK: SAFELIST
         if (attributes["windi:safelist"] || attributes["windi:safelist:global"]) {
-          if (attributes["windi:safelist:global"]) {
-
-          } else {
-
+          if (OPTIONS.safeList) {
+            const SAFELIST = PROCESSOR.interpret(OPTIONS.safeList.join(' ')).styleSheet;
+            if (attributes["windi:safelist:global"]) {
+              SAFELIST_STYLE = globalStyleSheet(SAFELIST).build()
+            } else {
+              SAFELIST_STYLE = SAFELIST.build()
+            }
           }
         }
 
