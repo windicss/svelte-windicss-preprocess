@@ -262,7 +262,6 @@ export class Magician {
     // TODO: Debug utils lib
 
     let tmpContent = this.content
-    let start = performance.now()
     // FIXME: needs to be refactored. shouldn't remove comments completly, just for parsing
     tmpContent = tmpContent.replace(/<!--[\s\S]*?-->/g, '');
     tmpContent = tmpContent.replace(/([!\w][\w:_/-]*?):\(([\w\s/-]*?)\)/gm, (_, groupOne: string, groupTwo: string) =>
@@ -273,8 +272,6 @@ export class Magician {
     );
 
     this.content = tmpContent
-    let end = performance.now()
-    this.stats.clean = (end - start).toFixed(2) + "ms"
     return this
   }
 
@@ -382,24 +379,39 @@ export class Magician {
     let directiveSet = new Set(this.directives)
     // console.log(directiveSet);
     let INTERPRETED_DIRECTIVE = this.processor.interpret(Array.from(directiveSet).join(' ')).styleSheet
-    let startA = performance.now()
+
     // console.log(this.attributifies);
+    let startA = performance.now()
     let INTERPRETED_ATTRIBUTIFY = this.processor.attributify(Object.fromEntries(this.attributifies)).styleSheet
     let endA = performance.now()
     this.stats.computeAttributify = (endA - startA).toFixed(2) + "ms"
+
     let classSet = new Set(this.classes)
     // console.log(classSet)
+    let startC = performance.now()
     let INTERPRETED_MAIN = this.processor.interpret(Array.from(classSet).join(' ')).styleSheet
+    let endC = performance.now()
+    this.stats.computeClasslist = (endC - startC).toFixed(2) + "ms"
+
     // windiexpression
     this.stylesheets.push(INTERPRETED_DIRECTIVE)
     this.stylesheets.push(INTERPRETED_ATTRIBUTIFY)
     this.stylesheets.push(INTERPRETED_MAIN)
     let tmp = combineStyleList(this.stylesheets).sort()
-    let finalStyleSheet = this.useGlobal(tmp)
+    // let finalStyleSheet = this.useGlobal(tmp)
+    let finalStyleSheet = tmp
+
     let startB = performance.now()
     tmpContent += `\n\n<style>\n${finalStyleSheet.build()}\n</style>\n`;
     let endB = performance.now()
     this.stats.buildStyleSheet = (endB - startB).toFixed(2) + "ms"
+
+    let startD = performance.now()
+    const end = Date.now() + 25
+    while (Date.now() < end) continue
+    let endD = performance.now()
+    this.stats.v = (endD - startD).toFixed(2) + "ms"
+
     this.content = tmpContent
     return this
   }
