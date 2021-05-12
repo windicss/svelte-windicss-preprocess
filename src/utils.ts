@@ -245,6 +245,9 @@ export class Magician {
   stylesheets: StyleSheet[] = []
   config: FullConfig = {}
   stats: Record<string, any> = {}
+  computedStyleSheet: StyleSheet = new StyleSheet()
+  css: string = ""
+
   constructor(processor: Processor, content: string, filename: string, config?: FullConfig = {}) {
     this.processor = processor
     this.content = content
@@ -304,25 +307,31 @@ export class Magician {
     return this
   }
 
-  processStyle() {
+  extractStyle() {
     // TODO: ERROR HANDLING
     // TODO: Debug utils lib
 
     let tmpContent = this.content
     let start = performance.now()
+    this.css = ""
     let style = tmpContent.match(/<style[^>]*?(\/|(>([\s\S]*?)<\/style))>/)?.[0];
     if (style) {
-      var global = style.match(/\<style global\>/gi);
-      style = style.replace(/<\/?style[^>]*>/g, '');
-      if (global) {
-        this.stylesheets.push(this.useGlobal(new CSSParser(style, this.processor).parse()));
-      } else {
-        this.stylesheets.push(new CSSParser(style, this.processor).parse());
-      }
-      tmpContent = tmpContent.replace(/<style[^>]*?(\/|(>([\s\S]*?)<\/style))>/, '');
+      // var global = style.match(/\<style global\>/gi);
+      var openTag = style.match(/<style[^>]*?>/gi)?.[0] || "<style>";
+      this.css = style.replace(/<\/?style[^>]*>/g, '');
+      // if (global) {
+      //   this.stylesheets.push(this.useGlobal(new CSSParser(css, this.processor).parse()));
+      // } else {
+      //   this.stylesheets.push(new CSSParser(css, this.processor).parse());
+      // }
+      tmpContent = tmpContent.replace(/<style[^>]*?(\/|(>([\s\S]*?)<\/style))>/g, `${openTag}</style>`);
+      tmpContent = tmpContent.replace("<style", "<style windi:inject")
+    } else {
+      tmpContent += "\n\n<style windi:inject></style>"
     }
 
     this.content = tmpContent
+
     let end = performance.now()
     this.stats.styleTag = (end - start).toFixed(2) + "ms"
     return this
@@ -397,15 +406,19 @@ export class Magician {
     this.stylesheets.push(INTERPRETED_DIRECTIVE)
     this.stylesheets.push(INTERPRETED_ATTRIBUTIFY)
     this.stylesheets.push(INTERPRETED_MAIN)
-    let tmp = combineStyleList(this.stylesheets).sort()
+    this.computedStyleSheet = combineStyleList(this.stylesheets).sort()
     // let finalStyleSheet = this.useGlobal(tmp)
-    let finalStyleSheet = tmp
+    // let finalStyleSheet = tmp
 
-    let startB = performance.now()
-    tmpContent += `\n\n<style>\n${finalStyleSheet.build()}\n</style>\n`;
-    let endB = performance.now()
-    this.stats.buildStyleSheet = (endB - startB).toFixed(2) + "ms"
+    // let startB = performance.now()
 
+    // // tmpContent = tmpContent.replace(/\<\/style\>/, `\n${finalStyleSheet.build()}\n</style>\n`)
+    // // tmpContent += `\n\n<style>\n${finalStyleSheet.build()}\n</style>\n`;
+
+    // let endB = performance.now()
+    // this.stats.buildStyleSheet = (endB - startB).toFixed(2) + "ms"
+
+    // validation of timing function
     let startD = performance.now()
     const end = Date.now() + 25
     while (Date.now() < end) continue
@@ -422,28 +435,28 @@ export class Magician {
     return this
   }
 
-  generatePreflight() {
-    // TODO: ERROR HANDLING
-    // TODO: Debug utils lib
+  // generatePreflight() {
+  //   // TODO: ERROR HANDLING
+  //   // TODO: Debug utils lib
 
-    let tmpContent = this.content
-    let GENERATED_PREFLIGHTS = this.processor.preflight(this.content, true, true, true, false)
-    this.stylesheets.push(GENERATED_PREFLIGHTS)
+  //   let tmpContent = this.content
+  //   let GENERATED_PREFLIGHTS = this.processor.preflight(this.content, true, true, true, false)
+  //   this.stylesheets.push(GENERATED_PREFLIGHTS)
 
-    this.content = tmpContent
-    return this
-  }
+  //   this.content = tmpContent
+  //   return this
+  // }
 
-  processSafelist() {
-    // TODO: ERROR HANDLING
-    // TODO: Debug utils lib
+  // processSafelist() {
+  //   // TODO: ERROR HANDLING
+  //   // TODO: Debug utils lib
 
-    //   const INTERPRETED_SAFELIST = PROCESSOR.interpret(OPTIONS.safeList.join(' '));
-    //   SAFELIST.push(globalStyleSheet(INTERPRETED_SAFELIST.styleSheet));
+  //   //   const INTERPRETED_SAFELIST = PROCESSOR.interpret(OPTIONS.safeList.join(' '));
+  //   //   SAFELIST.push(globalStyleSheet(INTERPRETED_SAFELIST.styleSheet));
 
 
-    return this
-  }
+  //   return this
+  // }
 
   useDevTools() {
     // TODO: ERROR HANDLING
@@ -509,6 +522,14 @@ export class Magician {
     // TODO: Debug utils lib
 
     return this.content
+  }
+
+  getComputed() {
+    return this.computedStyleSheet
+  }
+
+  getExtracted() {
+    return this.css
   }
 
   getFilename() {

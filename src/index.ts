@@ -1,9 +1,10 @@
-import { useConfig, createLog } from "@nbhr/utils";
+import { useConfig } from "@nbhr/utils";
 // import {   } from "nodeuse";
 import { readFileSync } from "fs";
+import type { PreprocessorGroup } from "svelte/types/compiler/preprocess";
 import { Processor } from 'windicss/lib';
-import type { FullConfig } from "windicss/types/interfaces";
 import { CSSParser } from 'windicss/utils/parser';
+import type { FullConfig } from "windicss/types/interfaces";
 import { StyleSheet } from 'windicss/utils/style';
 import { combineStyleList, globalStyleSheet, logging, Magician, writeFileSync } from './utils';
 
@@ -12,11 +13,11 @@ export interface Options {
   bundle?: string;
   mode?: string;
   debug?: boolean;
-  silent?: boolean; // in readme
-  config?: string; // in readme
-  compile?: boolean; // in readme
-  prefix?: string; // in readme
-  verbosity?: number; // TODO: add mapping in docs for people
+  silent?: boolean;
+  config?: string;
+  compile?: boolean;
+  prefix?: string;
+  verbosity?: number;
   devTools?: {
     completions?: boolean;
     enabled?: boolean;
@@ -49,6 +50,8 @@ let BUNDLES: { [key: string]: StyleSheet } = {};
 let IS_MAIN: boolean = true;
 let isInit: boolean = false;
 let windiConfig: FullConfig = {}
+let CSS_SOURCE: string = ""
+let CSS_STYLESHEETS: StyleSheet = new StyleSheet()
 
 const REGEXP = {
   matchStyle: /<style[^>]*?(\/|(>([\s\S]*?)<\/style))>/,
@@ -71,18 +74,21 @@ function _preprocess(content: string, filename: string) {
   // // TODO: add magician logic
   let run = "new"
   if (run == "new") {
-    let mag = new Magician(PROCESSOR, content, filename, windiConfig).clean()
+    let mag = new Magician(PROCESSOR, content, filename, windiConfig)
+    mag = mag.clean()
     if (!(OPTIONS?.disableFormat)) mag = mag.format()
-    if (!DEV && IS_MAIN) {
-      mag = mag
-        .generatePreflight()
-      IS_MAIN = false
-    } else if (DEV) {
-      mag = mag
-        .generatePreflight()
-    }
+    //FIXME: style preprocessor
+    // if (!DEV && IS_MAIN) {
+    //   mag = mag
+    //     .generatePreflight()
+    //   IS_MAIN = false
+    // } else if (DEV) {
+    //   mag = mag
+    //     .generatePreflight()
+    // }
     mag = mag
-      .processStyle()
+      .extractStyle()
+    CSS_SOURCE = mag.getExtracted()
     mag = mag
       .each(line => {
         return line
@@ -92,20 +98,25 @@ function _preprocess(content: string, filename: string) {
           .processClassAttribute()
           .compute()
       })
-    if (OPTIONS?.safeList) mag = mag.processSafelist()
+    //FIXME: style preprocessor
+    // if (OPTIONS?.safeList) mag = mag.processSafelist()
     mag = mag
       .compute()
     // console.log(mag.getCode())
     if (DEV && OPTIONS?.devTools?.enabled) mag = mag.useDevTools()
-    // Ends the timer and print the time
-    // taken by the piece of code
 
-    table[filename] = mag.getStats()
-    size = (4 * file) + Object.entries(table).length - 1
-    process.stdout.moveCursor(0, -size) // up one line
-    process.stdout.clearLine(1) // from cursor to end
-    console.table(table)
-    file = 1
+    // table[filename] = mag.getStats()
+    // size = (4 * file) + Object.entries(table).length - 1
+    // process.stdout.moveCursor(0, -size) // up one line
+    // process.stdout.clearLine(1) // from cursor to end
+    // console.table(table)
+    // file = 1
+
+    CSS_STYLESHEETS = mag.getComputed()
+    console.log("----");
+    console.log(mag.getCode());
+
+
     return mag
       .getCode()
   } else {
@@ -416,7 +427,8 @@ function _preprocess(content: string, filename: string) {
   }
 }
 
-export function preprocess(options: typeof OPTIONS = {}) {
+export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
+  PROCESSOR = new Processor()
   OPTIONS = { ...OPTIONS, ...options }; // change global settings here;
   DEV = process.env.NODE_ENV === 'development';
   if (OPTIONS.mode) {
@@ -452,9 +464,9 @@ export function preprocess(options: typeof OPTIONS = {}) {
             if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! > 3) {
               // console.log("[DEBUG] loaded config data", windiConfig)
             }
-            PROCESSOR = new Processor(windiConfig);
+            PROCESSOR.loadConfig(windiConfig)
           } else {
-            PROCESSOR = new Processor();
+            PROCESSOR.loadConfig()
           }
           // const loadedConfig = await loadConfiguration({ config: OPTIONS.config })
 
@@ -466,19 +478,56 @@ export function preprocess(options: typeof OPTIONS = {}) {
           // createLog("[DEBUG] initialisationDone")
         }
         resolve({
-          code: _preprocess(content, filename),
+          code: _preprocess(content, filename)
         });
       });
     },
 
-    style: ({ content }) => {
-      return new Promise((resolve, _) => {
-        // potential not needed
-        resolve({ code: content.replace(/@apply[\s\S]+?;/g, '') });
+    style: ({ content, attributes, markup }) => {
+      console.log(attributes)
+      return new Promise(async (resolve, _) => {
+        let PREFLIGHTS_STYLE = ""
+        let SAFELIST_STYLE = ""
+        let CSS_STYLE = ""
+        let INLINE_STYLE = ""
+        if (attributes["windi:preflights"]) {
+          let PREFLIGHTS = PROCESSOR.preflight(
+            markup,
+            true,
+            true,
+            true,
+            false
+          )
+          if (attributes["global"]) {
+            PREFLIGHTS_STYLE = globalStyleSheet(PREFLIGHTS).build()
+          } else {
+            PREFLIGHTS_STYLE = PREFLIGHTS.build()
+          }
+        }
+        if (attributes["windi:safelist"]) {
+        }
+
+        if (CSS_SOURCE) {
+          let CSS = new CSSParser(CSS_SOURCE, PROCESSOR).parse()
+          if (attributes["global"]) {
+            CSS_STYLE = globalStyleSheet(CSS).build()
+          } else {
+            CSS_STYLE = CSS.build()
+          }
+        }
+
+        if (CSS_STYLESHEETS) {
+          if (attributes["windi:global"]) {
+            INLINE_STYLE = globalStyleSheet(CSS_STYLESHEETS).build()
+          } else {
+            INLINE_STYLE = CSS_STYLESHEETS.build()
+          }
+        }
+        resolve({
+          code: `${PREFLIGHTS_STYLE}\n\n${SAFELIST_STYLE}\n\n${CSS_STYLE}\n\n${INLINE_STYLE}`
+          // code: content.replace(/@apply[\s\S]+?;/g, '')
+        });
       });
     },
-  } as {
-    markup: ({ content, filename }: { content: string; filename: string }) => Promise<{ code: string }>;
-    style: ({ content }: { content: string }) => Promise<{ code: string }>;
-  };
+  }
 }
