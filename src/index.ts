@@ -38,15 +38,15 @@ let OPTIONS: Options = {
 
 let DEV: boolean = false;
 let PROCESSOR: Processor;
-let VARIANTS: string[] = [];
-let BUNDLEFILE: string;
-let IGNORED_CLASSES: string[] = [];
-let STYLESHEETS: StyleSheet[] = [];
-let CONDITIONS: StyleSheet[] = [];
-let SAFELIST: StyleSheet[] = [];
-let FILES: (string | undefined)[] = [];
-let BUNDLES: { [key: string]: StyleSheet } = {};
-let IS_MAIN: boolean = true;
+// let VARIANTS: string[] = [];
+// let BUNDLEFILE: string;
+// let IGNORED_CLASSES: string[] = [];
+// let STYLESHEETS: StyleSheet[] = [];
+// let CONDITIONS: StyleSheet[] = [];
+// let SAFELIST: StyleSheet[] = [];
+// let FILES: (string | undefined)[] = [];
+// let BUNDLES: { [key: string]: StyleSheet } = {};
+// let IS_MAIN: boolean = true;
 let isInit: boolean = false;
 let windiConfig: FullConfig = {}
 let CSS_SOURCE: string = ""
@@ -222,7 +222,7 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
           }
           // const loadedConfig = await loadConfiguration({ config: OPTIONS.config })
 
-          VARIANTS = [...Object.keys(PROCESSOR.resolveVariants())];
+          // VARIANTS = [...Object.keys(PROCESSOR.resolveVariants())];
           isInit = true
         } else if (!OPTIONS?.silent && OPTIONS?.debug) {
           //TODO:
