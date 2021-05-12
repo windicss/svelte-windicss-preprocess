@@ -417,7 +417,6 @@ function _preprocess(content: string, filename: string) {
 }
 
 export function preprocess(options: typeof OPTIONS = {}) {
-  PROCESSOR = new Processor(windiConfig);
   OPTIONS = { ...OPTIONS, ...options }; // change global settings here;
   DEV = process.env.NODE_ENV === 'development';
   if (OPTIONS.mode) {
@@ -453,6 +452,7 @@ export function preprocess(options: typeof OPTIONS = {}) {
             if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! > 3) {
               // console.log("[DEBUG] loaded config data", windiConfig)
             }
+            PROCESSOR = new Processor(windiConfig);
           } else {
             PROCESSOR = new Processor();
           }
