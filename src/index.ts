@@ -491,6 +491,8 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
         let SAFELIST_STYLE = ""
         let CSS_STYLE = ""
         let INLINE_STYLE = ""
+
+        // MARK: PREFLIGHTS
         if (attributes["windi:preflights"] || attributes["windi:preflights:global"]) {
           let PREFLIGHTS = PROCESSOR.preflight(
             markup,
@@ -505,6 +507,8 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
             PREFLIGHTS_STYLE = PREFLIGHTS.build()
           }
         }
+
+        // TODO: MARK: SAFELIST
         if (attributes["windi:safelist"] || attributes["windi:safelist:global"]) {
           if (attributes["windi:safelist:global"]) {
 
@@ -513,6 +517,7 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
           }
         }
 
+        // MARK: CUSTOM CSS + WINDI @apply
         if (CSS_SOURCE) {
           let CSS = new CSSParser(CSS_SOURCE, PROCESSOR).parse()
           if (attributes["global"]) {
@@ -522,6 +527,7 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
           }
         }
 
+        // MARK: WINDI CSS
         if (CSS_STYLESHEETS) {
           if (attributes["windi:global"]) {
             INLINE_STYLE = globalStyleSheet(CSS_STYLESHEETS).build()
