@@ -1,12 +1,11 @@
 import { useConfig } from "@nbhr/utils";
-// import {   } from "nodeuse";
 import { readFileSync } from "fs";
 import type { PreprocessorGroup } from "svelte/types/compiler/preprocess";
 import { Processor } from 'windicss/lib';
-import { CSSParser } from 'windicss/utils/parser';
 import type { FullConfig } from "windicss/types/interfaces";
+import { CSSParser } from 'windicss/utils/parser';
 import { StyleSheet } from 'windicss/utils/style';
-import { combineStyleList, globalStyleSheet, logging, Magician, writeFileSync } from './utils';
+import { combineStyleList, globalStyleSheet, logging, Magician } from './utils';
 
 export interface Options {
   safeList?: string[];
@@ -113,8 +112,10 @@ function _preprocess(content: string, filename: string) {
     // file = 1
 
     CSS_STYLESHEETS = mag.getComputed()
-    console.log("----");
-    console.log(mag.getCode());
+
+
+    // console.log("----");
+    // console.log(mag.getCode());
 
 
     return mag
@@ -484,13 +485,13 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
     },
 
     style: ({ content, attributes, markup }) => {
-      console.log(attributes)
+      // console.log(attributes)
       return new Promise(async (resolve, _) => {
         let PREFLIGHTS_STYLE = ""
         let SAFELIST_STYLE = ""
         let CSS_STYLE = ""
         let INLINE_STYLE = ""
-        if (attributes["windi:preflights"]) {
+        if (attributes["windi:preflights"] || attributes["windi:preflights:global"]) {
           let PREFLIGHTS = PROCESSOR.preflight(
             markup,
             true,
@@ -498,13 +499,18 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
             true,
             false
           )
-          if (attributes["global"]) {
+          if (attributes["windi:preflights:global"]) {
             PREFLIGHTS_STYLE = globalStyleSheet(PREFLIGHTS).build()
           } else {
             PREFLIGHTS_STYLE = PREFLIGHTS.build()
           }
         }
-        if (attributes["windi:safelist"]) {
+        if (attributes["windi:safelist"] || attributes["windi:safelist:global"]) {
+          if (attributes["windi:safelist:global"]) {
+
+          } else {
+
+          }
         }
 
         if (CSS_SOURCE) {

@@ -4,8 +4,9 @@ import { StyleSheet } from 'windicss/utils/style';
 import { readFileSync } from "fs";
 import type { Options } from "./index";
 import type { FullConfig } from "windicss/types/interfaces";
-import { format } from "prettier"
+import { format, RequiredOptions } from "prettier"
 import { performance } from "perf_hooks";
+
 export function combineStyleList(stylesheets: StyleSheet[]) {
   return stylesheets
     .reduce((previousValue, currentValue) => previousValue.extend(currentValue), new StyleSheet())
@@ -18,12 +19,11 @@ export function globalStyleSheet(styleSheet: StyleSheet) {
     if (!style.rule.includes(':global') && style.meta.group !== 'keyframes') {
       style.wrapRule((rule: string) => `:global(${rule})`);
     }
+    if (style.atRules && !style.atRules.includes('-global-') && style.meta.group == "keyframes") {
+      style.atRules[0] = style.atRules[0].replace(/(?<=keyframes )(?=\w)/gi, "-global-")
+    }
   });
   return styleSheet;
-}
-
-export function writeFileSync(path: string, data: string) {
-  if (!process.env.BROWSER) return require('fs').writeFileSync(path, data);
 }
 
 export function chalkColor() {
@@ -150,76 +150,12 @@ class Step {
     }
 
     this.content = tmpContent
-    // const CLASS_REGEX = 'class';
-    // const COMBINED_REGEX = `(${CLASS_REGEX}|${VARIANTS_REGEX})`;
-    // const TEXT_REGEX_MATCHER = `( ${COMBINED_REGEX}=["])([^"]*)(["])`;
-    // FIXME: CLASS_REGEX
-    // const FINAL_TEXT_MATCHES = lines[i].toString().match(new RegExp(TEXT_REGEX_MATCHER, 'i'));
-    // if (FINAL_TEXT_MATCHES) {
-    //   // if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! >= 3) {
-    //   //   console.log('[DEBUG] FINAL_TEXT_MATCHES', FINAL_TEXT_MATCHES);
-    //   // }
-    //   let extractedClasses = FINAL_TEXT_MATCHES[3];
-    //   if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! >= 3) {
-    //     console.log('[DEBUG] extractedClasses', extractedClasses);
-    //   }
-    //   // Match isolated inline expressions
-    //   let INLINE_EXPRESSION = FINAL_TEXT_MATCHES[3].toString().match(/("|'|\s)[\{].*?[\}]/gi);
-    //   // Extract classes from inline expressions
-    //   if (INLINE_EXPRESSION) {
-    //     if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! >= 3) {
-    //       console.log('[DEBUG] INLINE_EXPRESSION', INLINE_EXPRESSION, " -> ", FINAL_TEXT_MATCHES[3]);
-    //     }
-    //     extractedClasses = FINAL_TEXT_MATCHES[3].replace(/{(?=[^{]+? [\w|']+})|(?<={\w+ [^{]+?)}|(?<={\w+ [^{]*?)['|:|\?]/gi, '');
-    //     if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! >= 3) {
-    //       console.log('[DEBUG] INLINE_EXPRESSION CLEAN', extractedClasses);
-    //     }
-    //   }
-
-    //   if (OPTIONS.compile) {
-    //     const COMPILED_CLASSES = PROCESSOR.compile(extractedClasses, OPTIONS.prefix, false);
-    //     IGNORED_CLASSES = [...IGNORED_CLASSES, ...COMPILED_CLASSES.ignored];
-    //     STYLESHEETS.push(COMPILED_CLASSES.styleSheet);
-    //     let replacementValue = COMPILED_CLASSES.className
-    //       ? [COMPILED_CLASSES.className, ...COMPILED_CLASSES.ignored].join(' ')
-    //       : COMPILED_CLASSES.ignored.join(' ');
-
-    //     lines[i] = lines[i].replace(new RegExp(TEXT_REGEX_MATCHER, 'i'), `$1${replacementValue}$4`);
-    //   } else {
-    //     const INTERPRETED_CLASSES = PROCESSOR.interpret(extractedClasses);
-    //     if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 3) {
-    //       console.log('[DEBUG] interpretation', INTERPRETED_CLASSES);
-    //     }
-    //     IGNORED_CLASSES = [...IGNORED_CLASSES, ...INTERPRETED_CLASSES.ignored];
-    //     let styleSheet2
-    //     if (OPTIONS.kit) {
-    //       styleSheet2 = INTERPRETED_CLASSES.styleSheet;
-    //     } else {
-    //       styleSheet2 = globalStyleSheet(INTERPRETED_CLASSES.styleSheet);
-    //     }
-    //     STYLESHEETS.push(styleSheet2);
-    //   }
-    // }
-
     return this
   }
 
   compute(compile: boolean = false) {
     // TODO: ERROR HANDLING
     // TODO: debug utils
-    // TODO: INTERPRET WINDI EXPRESSION
-
-
-    // let INTERPRETED_WINDI = this.processor.interpret(this.mainClassList.join(' ')).styleSheet
-    // let INTERPRETED_DIRECTIVE = this.processor.interpret(this.directiveClassList.join(' ')).styleSheet
-    // let INTERPRETED_ATTRIBUTIFY = this.processor.attributify(Object.fromEntries(this.attributifyClassList)).styleSheet
-    // let INTERPRETED_MAIN = this.processor.interpret(this.mainClassList.join(' ')).styleSheet
-
-    // let sheets: StyleSheet[] = []
-    // stylesheets.push(INTERPRETED_WINDI)
-    // sheets.push(INTERPRETED_DIRECTIVE)
-    // sheets.push(INTERPRETED_ATTRIBUTIFY)
-    // sheets.push(INTERPRETED_MAIN)
 
     return {
       line: this.content,
@@ -229,6 +165,14 @@ class Step {
       classes: this.mainClassList
     }
   }
+}
+
+interface customPrettierOptions extends Partial<RequiredOptions> {
+  svelteSortOrder: string,
+  svelteStrictMode: boolean
+  svelteAllowShorthand: boolean,
+  svelteBracketNewLine: boolean
+  svelteIndentScriptAndStyle: boolean
 }
 
 export class Magician {
@@ -283,15 +227,14 @@ export class Magician {
     // TODO: better formatting.. no upstream fix of prettier-plugin expected soon
     // https://github.com/sveltejs/prettier-plugin-svelte/issues/214
     // TODO: Debug utils lib
+
     let start = performance.now()
     let tmpContent = this.content
 
-
     tmpContent = tmpContent.replace(/(?<=[\<]{1}\w[^\>]+)\n/gmi, " ")
-    // const prettier = require('prettier');
-    let formatedContent = format(tmpContent, {
+
+    let options: customPrettierOptions = {
       parser: 'svelte',
-      // pluginSearchDirs: ['.'],
       plugins: ['prettier-plugin-svelte'],
       printWidth: 5000,
       tabWidth: 2,
@@ -300,10 +243,13 @@ export class Magician {
       svelteAllowShorthand: false,
       svelteBracketNewLine: false,
       svelteIndentScriptAndStyle: false,
-    });
+    }
+    let formatedContent = format(tmpContent, options);
+
     this.content = formatedContent
     let end = performance.now()
     this.stats.prettierFormat = (end - start).toFixed(2) + "ms"
+
     return this
   }
 
@@ -384,7 +330,11 @@ export class Magician {
     // TODO: Debug utils lib
 
     let tmpContent = this.content
+
+    // TODO: WINDI EXPRESSION
     // let INTERPRETED_WINDI = this.processor.interpret(this.mainClassList.join(' ')).styleSheet
+
+
     let directiveSet = new Set(this.directives)
     // console.log(directiveSet);
     let INTERPRETED_DIRECTIVE = this.processor.interpret(Array.from(directiveSet).join(' ')).styleSheet
@@ -418,45 +368,16 @@ export class Magician {
     // let endB = performance.now()
     // this.stats.buildStyleSheet = (endB - startB).toFixed(2) + "ms"
 
-    // validation of timing function
-    let startD = performance.now()
-    const end = Date.now() + 25
-    while (Date.now() < end) continue
-    let endD = performance.now()
-    this.stats.v = (endD - startD).toFixed(2) + "ms"
+    // TODO: validation of timing function
+    // let startD = performance.now()
+    // const end = Date.now() + 25
+    // while (Date.now() < end) continue
+    // let endD = performance.now()
+    // this.stats.v = (endD - startD).toFixed(2) + "ms"
 
     this.content = tmpContent
     return this
   }
-
-  bundle() {
-    // TODO: ERROR HANDLING
-
-    return this
-  }
-
-  // generatePreflight() {
-  //   // TODO: ERROR HANDLING
-  //   // TODO: Debug utils lib
-
-  //   let tmpContent = this.content
-  //   let GENERATED_PREFLIGHTS = this.processor.preflight(this.content, true, true, true, false)
-  //   this.stylesheets.push(GENERATED_PREFLIGHTS)
-
-  //   this.content = tmpContent
-  //   return this
-  // }
-
-  // processSafelist() {
-  //   // TODO: ERROR HANDLING
-  //   // TODO: Debug utils lib
-
-  //   //   const INTERPRETED_SAFELIST = PROCESSOR.interpret(OPTIONS.safeList.join(' '));
-  //   //   SAFELIST.push(globalStyleSheet(INTERPRETED_SAFELIST.styleSheet));
-
-
-  //   return this
-  // }
 
   useDevTools() {
     // TODO: ERROR HANDLING
@@ -494,27 +415,6 @@ export class Magician {
 
     this.content = tmpContent
     return this
-  }
-
-  // useKit() {
-  //   // TODO: ERROR HANDLING
-
-  //   return this
-  // }
-
-  useGlobal(styleSheet: StyleSheet) {
-    // TODO: ERROR HANDLING
-    // turn all styles in stylesheet to global style
-    // add global keyframe
-    styleSheet.children.forEach(style => {
-      if (!style.rule.includes(':global') && style.meta.group !== 'keyframes') {
-        style.wrapRule((rule: string) => `:global(${rule})`);
-      }
-      if (style.atRules && !style.atRules.includes('-global-') && style.meta.group == "keyframes") {
-        style.atRules[0] = style.atRules[0].replace(/(?<=keyframes )(?=\w)/gi, "-global-")
-      }
-    });
-    return styleSheet;
   }
 
   getCode() {
