@@ -245,13 +245,14 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
 
         // MARK: PREFLIGHTS
         if (attributes["windi:preflights"] || attributes["windi:preflights:global"]) {
-          let PREFLIGHTS = PROCESSOR.preflight(
-            markup,
-            true,
-            true,
-            true,
-            false
-          )
+          // let PREFLIGHTS = PROCESSOR.preflight(
+          //   markup,
+          //   true,
+          //   true,
+          //   true,
+          //   false
+          // )
+          let PREFLIGHTS = PROCESSOR.preflight()
           if (attributes["windi:preflights:global"]) {
             PREFLIGHTS_STYLE = globalStyleSheet(PREFLIGHTS).build()
           } else {
