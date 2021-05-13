@@ -8,32 +8,37 @@ import { StyleSheet } from 'windicss/utils/style';
 import { combineStyleList, globalStyleSheet, logging, Magician } from './utils';
 
 export interface Options {
-  safeList?: string[];
-  bundle?: string;
-  mode?: string;
-  debug?: boolean;
-  silent?: boolean;
-  config?: string;
-  compile?: boolean;
-  prefix?: string;
-  verbosity?: number;
+  silent?: boolean,
+  mode?: 'development' | 'production',
+  configPath?: string,
+  disableFormat?: boolean,
   devTools?: {
-    completions?: boolean;
-    enabled?: boolean;
+    enabled: boolean,
+    completions?: boolean,
   },
-  kit?: boolean,
-  disableFormat?: boolean
+  //
+  safeList?: string[];
+  // bundle?: string;
+  // debug?: boolean;
+  // compile?: boolean;
+  // prefix?: string;
+  // verbosity?: number;
 }
 
 let OPTIONS: Options = {
+  silent: false,
+  // mode
+  // configPath
+  disableFormat: false,
+  devTools: {
+    enabled: false
+  },
   safeList: undefined,
-  bundle: undefined,
-  compile: false,
-  prefix: 'windi-',
-  verbosity: 1,
-  debug: false,
-  devTools: undefined,
-  disableFormat: false
+  // bundle: undefined,
+  // compile: false,
+  // prefix: 'windi-',
+  // verbosity: 1,
+  // debug: false,
 };
 
 let DEV: boolean = false;
@@ -182,12 +187,16 @@ function _preprocess(content: string, filename: string) {
 export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
   PROCESSOR = new Processor()
   OPTIONS = { ...OPTIONS, ...options }; // change global settings here;
-  DEV = process.env.NODE_ENV === 'development';
-  if (OPTIONS.mode) {
-    if (OPTIONS.mode == undefined) DEV = false;
-    if (OPTIONS.mode === 'dev' || OPTIONS.mode === 'development') DEV = true;
-    if (OPTIONS.mode === 'prod' || OPTIONS.mode === 'production') DEV = false;
+  DEV = false
+  if (!OPTIONS.mode) {
+    if (process.env.NODE_ENV === 'development') {
+      OPTIONS.mode = 'development'
+    } else if (process.env.NODE_ENV === 'production') {
+      OPTIONS.mode = 'production'
+    }
   }
+  if (OPTIONS.mode === 'development') DEV = true;
+  if (OPTIONS.mode === 'production') DEV = false;
   // TODO: rework logging information block
   // log if verbosity is 0
   if (options?.silent === false) logging(OPTIONS);
@@ -197,25 +206,26 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
     markup: ({ content, filename }) => {
       return new Promise(async (resolve, _) => {
         // useDebug.info("svelte preprocessor lifecycle called", 1)
-        if (!OPTIONS?.silent && OPTIONS?.debug) {
-          // createLog('[DEBUG] called preprocessor')
-        }
+        // if (!OPTIONS?.silent && OPTIONS?.debug) {
+        //   // createLog('[DEBUG] called preprocessor')
+        // }
         if (isInit == false) {
           //TODO:
           // useDebug.warn("windicss compile init not complete yet", 1)
-          if (!OPTIONS?.silent && OPTIONS?.debug) {
-            // createLog("[DEBUG] initialisationPending")
-          }
-          if (OPTIONS.config) {
-            const loadedConfig = await useConfig.load(OPTIONS.config)
+          // if (!OPTIONS?.silent && OPTIONS?.debug) {
+          //   // createLog("[DEBUG] initialisationPending")
+          // }
+          if (OPTIONS.configPath) {
+            const loadedConfig = await useConfig.load(OPTIONS.configPath)
             windiConfig = loadedConfig
+            // OPTIONS.safeList = windiConfig.safelist
             //TODO:
             // if (error) useDebug.error()
             // useDebug.info("windicss configuration file loaded", 1)
             // useDebug.info("\n" +loadedConfig, 2)
-            if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! > 3) {
-              // console.log("[DEBUG] loaded config data", windiConfig)
-            }
+            // if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! > 3) {
+            //   // console.log("[DEBUG] loaded config data", windiConfig)
+            // }
             PROCESSOR.loadConfig(windiConfig)
           } else {
             PROCESSOR.loadConfig()
@@ -224,11 +234,12 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
 
           // VARIANTS = [...Object.keys(PROCESSOR.resolveVariants())];
           isInit = true
-        } else if (!OPTIONS?.silent && OPTIONS?.debug) {
-          //TODO:
-          // useDebug.info("windicss compile init complete", 1)
-          // createLog("[DEBUG] initialisationDone")
         }
+        // else if (!OPTIONS?.silent && OPTIONS?.debug) {
+        //   //TODO:
+        //   // useDebug.info("windicss compile init complete", 1)
+        //   // createLog("[DEBUG] initialisationDone")
+        // }
         resolve({
           code: _preprocess(content, filename)
         });
