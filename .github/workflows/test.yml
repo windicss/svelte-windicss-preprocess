@@ -3,11 +3,7 @@
 
 name: Test
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+on: [push, pull_request]
 
 jobs:
   build:
@@ -28,6 +24,6 @@ jobs:
     - name: Install dependencies
       run: npm install --frozen-lockfile
     - name: Build package
-      run: npm run build
+      run: npm run build:clean
     - name: Run tests
       run: npm run test

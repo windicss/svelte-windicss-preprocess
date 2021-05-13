@@ -1,17 +1,15 @@
 {
-	"compilerOptions": {
-		"rootDir": ".",
-		"target": "es5",
-		"module": "esnext",
-		"moduleResolution": "node",
-		"lib": ["dom", "es2017", "dom.iterable", "scripthost"],
-		"allowJs": true,
-		"strict": true,
-		"esModuleInterop": true,
-		"skipLibCheck": true,
-		"forceConsistentCasingInFileNames": true,
-		"resolveJsonModule": true
-	},
-  "include": ["./src", "./test"],
-	"exclude": ["./test/assets", "./test/helpers", "dist"]
+  "compilerOptions": {
+    "target": "ES2015",
+    "module": "es2015",
+    "strict": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": [
+      "ES2020.String",
+      "ES2019.Object"
+    ]
+  },
 }

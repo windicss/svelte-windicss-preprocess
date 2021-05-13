@@ -1,9 +1,11 @@
-name: Publish Package
+name: Publish next Package
 
 on:
   push:
     tags:
-      - v[12].[0-9]+.[0-9]+
+      - v*-beta*
+      - v*-alpha*
+      - v*-next*
 
 jobs:
   publish-npm:
@@ -20,6 +22,6 @@ jobs:
       - run: npx conventional-github-releaser -p angular
         env:
           CONVENTIONAL_GITHUB_RELEASER_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      - run: cd dist && npm publish --tag latest
+      - run: npm publish --tag next
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_SECRET}}
