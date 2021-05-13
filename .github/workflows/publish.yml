@@ -20,6 +20,6 @@ jobs:
       - run: npx conventional-github-releaser -p angular
         env:
           CONVENTIONAL_GITHUB_RELEASER_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      - run: cd dist && npm publish --tag latest
+      - run: npm publish --tag latest
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_SECRET}}
