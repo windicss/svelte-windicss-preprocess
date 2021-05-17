@@ -1,33 +1,34 @@
-import Processor from 'windicss';
-import { CSSParser } from 'windicss/utils/parser';
-import { StyleSheet } from 'windicss/utils/style';
-import { readFileSync } from "fs";
-import type { Options } from "./index";
-import type { FullConfig } from "windicss/types/interfaces";
-import { format, RequiredOptions } from "prettier"
-import { performance } from "perf_hooks";
+import Processor from 'windicss'
+import { CSSParser } from 'windicss/utils/parser'
+import { StyleSheet } from 'windicss/utils/style'
+import { readFileSync } from 'fs'
+import type { Options } from './index'
+import type { FullConfig } from 'windicss/types/interfaces'
+import { format, RequiredOptions } from 'prettier'
+import { performance } from 'perf_hooks'
 
 export function combineStyleList(stylesheets: StyleSheet[]) {
   return stylesheets
     .reduce((previousValue, currentValue) => previousValue.extend(currentValue), new StyleSheet())
-    .combine(); //.sort();
+    .combine() //.sort();
 }
 
 export function globalStyleSheet(styleSheet: StyleSheet) {
   // turn all styles in stylesheet to global style
   styleSheet.children.forEach(style => {
     if (!style.rule.includes(':global') && style.meta.group !== 'keyframes') {
-      style.wrapRule((rule: string) => `:global(${rule})`);
+      style.wrapRule((rule: string) => `:global(${rule})`)
     }
-    if (style.atRules && !style.atRules.includes('-global-') && style.meta.group == "keyframes") {
-      style.atRules[0] = style.atRules[0].replace(/(?<=keyframes )(?=\w)/gi, "-global-")
+    if (style.atRules && !style.atRules.includes('-global-') && style.meta.group == 'keyframes') {
+      style.atRules[0] = style.atRules[0].replace(/(?<=keyframes )(?=\w)/gi, '-global-')
     }
-  });
-  return styleSheet;
+  })
+  return styleSheet
 }
 
 export function chalkColor() {
-  const chalk = require('chalk');
+  // eslint-disable-next-line
+  const chalk = require('chalk')
   return {
     blueBold: (text: string) => chalk.hex('#0ea5e9').bold(text),
     blackBold: (text: string) => chalk.hex('#000').bold(text),
@@ -35,16 +36,18 @@ export function chalkColor() {
     redBold: (text: string) => chalk.hex('#FF4000').bold(text),
     green: (text: string) => chalk.hex('#00D17A')(text),
     gray: (text: string) => chalk.hex('#717272')(text),
-  };
+  }
 }
 
+
 export function logging(options: Options) {
-  const chalk = chalkColor();
-  process.stdout.write(`${chalk.blueBold('')}\n`);
-  process.stdout.write(`${chalk.blueBold('│')} ${chalk.blueBold('svelte-windicss-preprocess')}\n`);
+  /* eslint-disable */
+  const chalk = chalkColor()
+  process.stdout.write(`${chalk.blueBold('')}\n`)
+  process.stdout.write(`${chalk.blueBold('│')} ${chalk.blueBold('svelte-windicss-preprocess')}\n`)
   process.stdout.write(
     `${chalk.blueBold('│')} ${process.env.NODE_ENV == undefined ? chalk.redBold('NODE_ENV is undefined') : ''}\n`
-  );
+  )
   process.stdout.write(
     `${chalk.blueBold('│')} ${chalk.blackBold('-')} windicss running mode: ${process.env.NODE_ENV === 'development'
       ? chalk.yellowBold('dev')
@@ -52,23 +55,25 @@ export function logging(options: Options) {
         ? chalk.green('prod')
         : chalk.yellowBold('process.env.NODE_ENV check failed (check setup)')
     }\n`
-  );
+  )
+
   process.stdout.write(
     `${chalk.blueBold('│')} ${chalk.blackBold('-')} advanced debug logs: ${options?.debug === true ? chalk.yellowBold('on') : chalk.green('off')
     }\n`
-  );
+  )
 
   process.stdout.write(
     `${chalk.blueBold('│')}    ${chalk.blackBold('•')} compilation mode: ${options?.compile == true ? chalk.gray('enabled') : chalk.gray('disabled')
     }\n`
-  );
+  )
   process.stdout.write(
     `${chalk.blueBold('│')}    ${chalk.blackBold('•')} class prefix: ${options?.prefix ? chalk.gray(options.prefix) : chalk.yellowBold('not set')
     }\n`
-  );
+  )
 
-  process.stdout.write(`${chalk.blueBold('│')}\n`);
-  process.stdout.write(`${chalk.blueBold('└──────────')}\n`);
+  process.stdout.write(`${chalk.blueBold('│')}\n`)
+  process.stdout.write(`${chalk.blueBold('└──────────')}\n`)
+  /* eslint-enable */
 }
 
 
@@ -103,8 +108,8 @@ class Step {
     // TODO: ERROR HANDLING
     // TODO: Debug utils lib
 
-    let tmpContent = this.content
-    const DIRECTIVE_CLASS_MATCHES = [...tmpContent.matchAll(/\s(class):([^=]+)(=)/gi)];
+    const tmpContent = this.content
+    const DIRECTIVE_CLASS_MATCHES = [...tmpContent.matchAll(/\s(class):([^=]+)(=)/gi)]
     if (DIRECTIVE_CLASS_MATCHES.length < 1) return this
     for (const match of DIRECTIVE_CLASS_MATCHES) {
       this.directiveClassList.push(match[2])
@@ -121,13 +126,13 @@ class Step {
 
     // FIXME: not bulletprof yet
 
-    let tmpContent = this.content
-    const ATTRIBUTIFY_CLASS_MATCHES = [...tmpContent.matchAll(/([\w+:_/-]+)=(['"])([!\w\s\n~:/\\,%#\[\].$-]*?)\2/gi)];
+    const tmpContent = this.content
+    const ATTRIBUTIFY_CLASS_MATCHES = [...tmpContent.matchAll(/([\w+:_/-]+)=(['"])([!\w\s\n~:/\\,%#[\].$-]*?)\2/gi)]
     // TODO: allow prefix with ::
     // extract key & value as class array
     if (ATTRIBUTIFY_CLASS_MATCHES.length < 1) return this
     for (const match of ATTRIBUTIFY_CLASS_MATCHES) {
-      if (match[1] == "class") continue
+      if (match[1] == 'class') continue
       this.attributifyClassList.set(match[1].toString(), match[3].split(' '))
     }
 
@@ -139,12 +144,12 @@ class Step {
     // TODO: ERROR HANDLING
     // TODO: Debug utils lib
 
-    let tmpContent = this.content
-    const CLASS_MATCHES = [...tmpContent.matchAll(/(class)=(['"])([^\2]*?)\2/gi)];
+    const tmpContent = this.content
+    const CLASS_MATCHES = [...tmpContent.matchAll(/(class)=(['"])([^\2]*?)\2/gi)]
     if (CLASS_MATCHES.length < 1) return this
     for (const match of CLASS_MATCHES) {
-      let cleanedMatch = match[3]
-        .replace(/windi[`].+?[`]|(?<![-])[$](?=[{])|(?<=([{][\w\s]+[^{]*?))['":]|([{][\w\s]+[^{]*?[\?])|^[{]|(?<=["'`)])[}]/gi, ' ')
+      const cleanedMatch = match[3]
+        .replace(/windi[`].+?[`]|(?<![-])[$](?=[{])|(?<=([{][\w\s]+[^{]*?))['":]|([{][\w\s]+[^{]*?[?])|^[{]|(?<=["'`)])[}]/gi, ' ')
         .replace(/ {2,}/gi, ' ')
       this.mainClassList = cleanedMatch.split(' ')
     }
@@ -153,7 +158,7 @@ class Step {
     return this
   }
 
-  compute(compile: boolean = false) {
+  compute(compile = false) {
     // TODO: ERROR HANDLING
     // TODO: debug utils
 
@@ -179,8 +184,8 @@ export class Magician {
   processor: Processor
   content: string
   filename: string
-  isBundled: boolean = false
-  isCompiled: boolean = false
+  isBundled = false
+  isCompiled = false
   lines: string[] = []
   expressions: string[] = []
   directives: string[] = []
@@ -190,7 +195,7 @@ export class Magician {
   config: FullConfig = {}
   stats: Record<string, any> = {}
   computedStyleSheet: StyleSheet = new StyleSheet()
-  css: string = ""
+  css = ''
 
   constructor(processor: Processor, content: string, filename: string, config: FullConfig = {}) {
     this.processor = processor
@@ -210,13 +215,13 @@ export class Magician {
 
     let tmpContent = this.content
     // FIXME: needs to be refactored. shouldn't remove comments completly, just for parsing
-    tmpContent = tmpContent.replace(/<!--[\s\S]*?-->/g, '');
+    tmpContent = tmpContent.replace(/<!--[\s\S]*?-->/g, '')
     tmpContent = tmpContent.replace(/([!\w][\w:_/-]*?):\(([\w\s/-]*?)\)/gm, (_, groupOne: string, groupTwo: string) =>
       groupTwo
         .split(/\s/g)
         .map(cssClass => `${groupOne}:${cssClass}`)
         .join(' ')
-    );
+    )
 
     this.content = tmpContent
     return this
@@ -228,12 +233,12 @@ export class Magician {
     // https://github.com/sveltejs/prettier-plugin-svelte/issues/214
     // TODO: Debug utils lib
 
-    let start = performance.now()
+    const start = performance.now()
     let tmpContent = this.content
 
-    tmpContent = tmpContent.replace(/(?<=[\<]{1}\w[^\>]+)\n/gmi, " ")
+    tmpContent = tmpContent.replace(/(?<=[<]{1}\w[^>]+)\n/gmi, ' ')
 
-    let options: customPrettierOptions = {
+    const options: customPrettierOptions = {
       parser: 'svelte',
       plugins: ['prettier-plugin-svelte'],
       printWidth: 5000,
@@ -244,11 +249,11 @@ export class Magician {
       svelteBracketNewLine: false,
       svelteIndentScriptAndStyle: false,
     }
-    let formatedContent = format(tmpContent, options);
+    const formatedContent = format(tmpContent, options)
 
     this.content = formatedContent
-    let end = performance.now()
-    this.stats.prettierFormat = (end - start).toFixed(2) + "ms"
+    const end = performance.now()
+    this.stats.prettierFormat = (end - start).toFixed(2) + 'ms'
 
     return this
   }
@@ -258,28 +263,28 @@ export class Magician {
     // TODO: Debug utils lib
 
     let tmpContent = this.content
-    let start = performance.now()
-    this.css = ""
-    let style = tmpContent.match(/<style[^>]*?(\/|(>([\s\S]*?)<\/style))>/)?.[0];
+    const start = performance.now()
+    this.css = ''
+    const style = tmpContent.match(/<style[^>]*?(\/|(>([\s\S]*?)<\/style))>/)?.[0]
     if (style) {
       // var global = style.match(/\<style global\>/gi);
-      var openTag = style.match(/<style[^>]*?>/gi)?.[0] || "<style>";
-      this.css = style.replace(/<\/?style[^>]*>/g, '');
+      const openTag = style.match(/<style[^>]*?>/gi)?.[0] || '<style>'
+      this.css = style.replace(/<\/?style[^>]*>/g, '')
       // if (global) {
       //   this.stylesheets.push(this.useGlobal(new CSSParser(css, this.processor).parse()));
       // } else {
       //   this.stylesheets.push(new CSSParser(css, this.processor).parse());
       // }
-      tmpContent = tmpContent.replace(/<style[^>]*?(\/|(>([\s\S]*?)<\/style))>/g, `${openTag}</style>`);
-      tmpContent = tmpContent.replace("<style", "<style windi:inject")
+      tmpContent = tmpContent.replace(/<style[^>]*?(\/|(>([\s\S]*?)<\/style))>/g, `${openTag}</style>`)
+      tmpContent = tmpContent.replace('<style', '<style windi:inject')
     } else {
-      tmpContent += "\n\n<style windi:inject></style>"
+      tmpContent += '\n\n<style windi:inject></style>'
     }
 
     this.content = tmpContent
 
-    let end = performance.now()
-    this.stats.styleTag = (end - start).toFixed(2) + "ms"
+    const end = performance.now()
+    this.stats.styleTag = (end - start).toFixed(2) + 'ms'
     return this
   }
 
@@ -295,7 +300,7 @@ export class Magician {
 
     let tmpContent = this.content
 
-    this.lines = tmpContent.split('\n');
+    this.lines = tmpContent.split('\n')
     this.lines.forEach(el => {
       // let result
       const { line, expressions, directives, attributifies, classes } = callbackfn(new Step(this.processor, el, this.filename))
@@ -304,7 +309,7 @@ export class Magician {
       this.directives = this.directives.concat(directives)
       attributifies.forEach((v, k) => {
         if (this.attributifies.has(k)) {
-          let oldValue = this.attributifies.get(k)
+          const oldValue = this.attributifies.get(k)
           if (oldValue) {
             this.attributifies.set(k, oldValue.concat(v))
           }
@@ -316,10 +321,10 @@ export class Magician {
       // this.stylesheets = this.stylesheets.concat(sheets)
     })
     this.attributifies.forEach((v, k) => {
-      let unique = new Set(v)
+      const unique = new Set(v)
       this.attributifies.set(k, Array.from(unique))
     })
-    tmpContent = this.lines.join('\n');
+    tmpContent = this.lines.join('\n')
     this.content = tmpContent
 
     return this
@@ -329,28 +334,28 @@ export class Magician {
     // TODO: ERROR HANDLING
     // TODO: Debug utils lib
 
-    let tmpContent = this.content
+    const tmpContent = this.content
 
     // TODO: WINDI EXPRESSION
     // let INTERPRETED_WINDI = this.processor.interpret(this.mainClassList.join(' ')).styleSheet
 
 
-    let directiveSet = new Set(this.directives)
+    const directiveSet = new Set(this.directives)
     // console.log(directiveSet);
-    let INTERPRETED_DIRECTIVE = this.processor.interpret(Array.from(directiveSet).join(' ')).styleSheet
+    const INTERPRETED_DIRECTIVE = this.processor.interpret(Array.from(directiveSet).join(' ')).styleSheet
 
     // console.log(this.attributifies);
-    let startA = performance.now()
-    let INTERPRETED_ATTRIBUTIFY = this.processor.attributify(Object.fromEntries(this.attributifies)).styleSheet
-    let endA = performance.now()
-    this.stats.computeAttributify = (endA - startA).toFixed(2) + "ms"
+    const startA = performance.now()
+    const INTERPRETED_ATTRIBUTIFY = this.processor.attributify(Object.fromEntries(this.attributifies)).styleSheet
+    const endA = performance.now()
+    this.stats.computeAttributify = (endA - startA).toFixed(2) + 'ms'
 
-    let classSet = new Set(this.classes)
+    const classSet = new Set(this.classes)
     // console.log(classSet)
-    let startC = performance.now()
-    let INTERPRETED_MAIN = this.processor.interpret(Array.from(classSet).join(' ')).styleSheet
-    let endC = performance.now()
-    this.stats.computeClasslist = (endC - startC).toFixed(2) + "ms"
+    const startC = performance.now()
+    const INTERPRETED_MAIN = this.processor.interpret(Array.from(classSet).join(' ')).styleSheet
+    const endC = performance.now()
+    this.stats.computeClasslist = (endC - startC).toFixed(2) + 'ms'
 
     // windiexpression
     this.stylesheets.push(INTERPRETED_DIRECTIVE)
@@ -383,12 +388,12 @@ export class Magician {
     // TODO: ERROR HANDLING
 
     let tmpContent = this.content
-    const path = require.resolve("windicss-runtime-dom");
-    let runtimeConfig: FullConfig = {
+    const path = require.resolve('windicss-runtime-dom')
+    const runtimeConfig: FullConfig = {
       theme: this.config.theme
     }
-    let windiRuntimeDom = readFileSync(path, "utf-8");
-    let windiRuntimeDomConfig = `
+    const windiRuntimeDom = readFileSync(path, 'utf-8')
+    const windiRuntimeDomConfig = `
         window.windicssRuntimeOptions = {
           extractInitial: false,
           preflight: false,
@@ -396,7 +401,7 @@ export class Magician {
           config: ${JSON.stringify(runtimeConfig)}
         }
       `
-    let injectScript = `
+    const injectScript = `
         if (!document.getElementById("windicss-devtools")) {
           const script = document.createElement("script");
           script.id = "windicss-devtools";
@@ -404,13 +409,13 @@ export class Magician {
           script.innerHTML = ${JSON.stringify(windiRuntimeDomConfig + windiRuntimeDom)};
           document.head.append(script);
         }
-      `;
+      `
 
-    let script = tmpContent.match(/<script[^>]*?(\/|(>([\s\S]*?)<\/script))>/)?.[0]
+    const script = tmpContent.match(/<script[^>]*?(\/|(>([\s\S]*?)<\/script))>/)?.[0]
     if (script) {
-      tmpContent = tmpContent.replace(/\<script\>/, `<script>\n${injectScript}`)
+      tmpContent = tmpContent.replace(/<script>/, `<script>\n${injectScript}`)
     } else {
-      tmpContent += `\n\n<script>${injectScript}</script>\n\n`;
+      tmpContent += `\n\n<script>${injectScript}</script>\n\n`
     }
 
     this.content = tmpContent

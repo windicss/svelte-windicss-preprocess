@@ -1,11 +1,11 @@
-import { useConfig } from "@nbhr/utils";
-import { readFileSync } from "fs";
-import type { PreprocessorGroup } from "svelte/types/compiler/preprocess";
-import { Processor } from 'windicss/lib';
-import type { FullConfig } from "windicss/types/interfaces";
-import { CSSParser } from 'windicss/utils/parser';
-import { StyleSheet } from 'windicss/utils/style';
-import { combineStyleList, globalStyleSheet, logging, Magician } from './utils';
+import { useConfig } from '@nbhr/utils'
+import { readFileSync } from 'fs'
+import type { PreprocessorGroup } from 'svelte/types/compiler/preprocess'
+import { Processor } from 'windicss/lib'
+import type { FullConfig } from 'windicss/types/interfaces'
+import { CSSParser } from 'windicss/utils/parser'
+import { StyleSheet } from 'windicss/utils/style'
+import { combineStyleList, globalStyleSheet, logging, Magician } from './utils'
 
 export interface Options {
   silent?: boolean,
@@ -39,10 +39,10 @@ let OPTIONS: Options = {
   // prefix: 'windi-',
   // verbosity: 1,
   // debug: false,
-};
+}
 
-let DEV: boolean = false;
-let PROCESSOR: Processor;
+let DEV = false
+let PROCESSOR: Processor
 // let VARIANTS: string[] = [];
 // let BUNDLEFILE: string;
 // let IGNORED_CLASSES: string[] = [];
@@ -52,19 +52,19 @@ let PROCESSOR: Processor;
 // let FILES: (string | undefined)[] = [];
 // let BUNDLES: { [key: string]: StyleSheet } = {};
 // let IS_MAIN: boolean = true;
-let isInit: boolean = false;
+let isInit = false
 let windiConfig: FullConfig = {}
-let CSS_SOURCE: string = ""
+let CSS_SOURCE = ''
 let CSS_STYLESHEETS: StyleSheet = new StyleSheet()
 
 const REGEXP = {
   matchStyle: /<style[^>]*?(\/|(>([\s\S]*?)<\/style))>/,
   matchScript: /<script[^>]*?(\/|(>([\s\S]*?)<\/script))>/,
   matchClasses: /('[\s\S]+?')|("[\s\S]+?")|(`[\s\S]+?`)/g,
-};
-let table: any = {}
-let size: any = 0
-let file: any = 0
+}
+const table: any = {}
+const size: any = 0
+const file: any = 0
 
 // const MODIFIED: { [key: string]: string } = {
 //   xxl: '2xl',
@@ -76,8 +76,8 @@ let file: any = 0
 function _preprocess(content: string, filename: string) {
 
   // // TODO: add magician logic
-  let run = "new"
-  if (run == "new") {
+  const run = 'new'
+  if (run == 'new') {
     let mag = new Magician(PROCESSOR, content, filename, windiConfig)
     mag = mag.clean()
     if (!(OPTIONS?.disableFormat)) mag = mag.format()
@@ -180,13 +180,13 @@ function _preprocess(content: string, filename: string) {
     //   : COMPILED_CLASSES.ignored.join(' ');
 
     // lines[i] = lines[i].replace(new RegExp(TEXT_REGEX_MATCHER, 'i'), `$1${replacementValue}$4`);
-    return ""
+    return ''
   }
 }
 
 export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
   PROCESSOR = new Processor()
-  OPTIONS = { ...OPTIONS, ...options }; // change global settings here;
+  OPTIONS = { ...OPTIONS, ...options } // change global settings here;
   DEV = false
   if (!OPTIONS.mode) {
     if (process.env.NODE_ENV === 'development') {
@@ -195,15 +195,16 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
       OPTIONS.mode = 'production'
     }
   }
-  if (OPTIONS.mode === 'development') DEV = true;
-  if (OPTIONS.mode === 'production') DEV = false;
+  if (OPTIONS.mode === 'development') DEV = true
+  if (OPTIONS.mode === 'production') DEV = false
   // TODO: rework logging information block
   // log if verbosity is 0
-  if (options?.silent === false) logging(OPTIONS);
+  if (options?.silent === false) logging(OPTIONS)
   //TODO:
   // useEnv.set("windi:verbosity", OPTIONS.verbosity || -1)
   return {
     markup: ({ content, filename }) => {
+      // eslint-disable-next-line
       return new Promise(async (resolve, _) => {
         // useDebug.info("svelte preprocessor lifecycle called", 1)
         // if (!OPTIONS?.silent && OPTIONS?.debug) {
@@ -242,20 +243,21 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
         // }
         resolve({
           code: _preprocess(content, filename)
-        });
-      });
+        })
+      })
     },
 
     style: ({ content, attributes, markup }) => {
       // console.log(attributes)
+      // eslint-disable-next-line
       return new Promise(async (resolve, _) => {
-        let PREFLIGHTS_STYLE = ""
-        let SAFELIST_STYLE = ""
-        let CSS_STYLE = ""
-        let INLINE_STYLE = ""
+        let PREFLIGHTS_STYLE = ''
+        let SAFELIST_STYLE = ''
+        let CSS_STYLE = ''
+        let INLINE_STYLE = ''
 
         // MARK: PREFLIGHTS
-        if (attributes["windi:preflights"] || attributes["windi:preflights:global"]) {
+        if (attributes['windi:preflights'] || attributes['windi:preflights:global']) {
           // let PREFLIGHTS = PROCESSOR.preflight(
           //   markup,
           //   true,
@@ -263,8 +265,8 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
           //   true,
           //   false
           // )
-          let PREFLIGHTS = PROCESSOR.preflight()
-          if (attributes["windi:preflights:global"]) {
+          const PREFLIGHTS = PROCESSOR.preflight()
+          if (attributes['windi:preflights:global']) {
             PREFLIGHTS_STYLE = globalStyleSheet(PREFLIGHTS).build()
           } else {
             PREFLIGHTS_STYLE = PREFLIGHTS.build()
@@ -272,10 +274,10 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
         }
 
         // TODO: MARK: SAFELIST
-        if (attributes["windi:safelist"] || attributes["windi:safelist:global"]) {
+        if (attributes['windi:safelist'] || attributes['windi:safelist:global']) {
           if (OPTIONS.safeList) {
-            const SAFELIST = PROCESSOR.interpret(OPTIONS.safeList.join(' ')).styleSheet;
-            if (attributes["windi:safelist:global"]) {
+            const SAFELIST = PROCESSOR.interpret(OPTIONS.safeList.join(' ')).styleSheet
+            if (attributes['windi:safelist:global']) {
               SAFELIST_STYLE = globalStyleSheet(SAFELIST).build()
             } else {
               SAFELIST_STYLE = SAFELIST.build()
@@ -285,22 +287,22 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
 
         // MARK: CUSTOM CSS + WINDI @apply
         if (CSS_SOURCE) {
-          let CSS: StyleSheet;
-          if (attributes["global"]) {
+          let CSS: StyleSheet
+          if (attributes['global']) {
             CSS = new CSSParser(CSS_SOURCE, PROCESSOR).parse()
             CSS_STYLE = globalStyleSheet(CSS).build()
           } else {
-            let tmpCSS = CSS_SOURCE
+            const tmpCSS = CSS_SOURCE
             // let globalMatches = [...tmpCSS.matchAll(/:global\((?<selector>.*)\).*{(?<css>[^}]*)}/gmi) || []]
-            let globalMatches = [...tmpCSS.matchAll(/:global\((?<selector>.*)\).*{(?<css>[^}]*)}/gmi) || []].map(el => {
+            const globalMatches = [...tmpCSS.matchAll(/:global\((?<selector>.*)\).*{(?<css>[^}]*)}/gmi) || []].map(el => {
               if (el.groups == null) return el
               return `${el.groups.selector} {${el.groups.css}}`
-            }).join("\n")
-            let scopedMatches = tmpCSS.replace(/:global\([^}]*}/gmi, '')
+            }).join('\n')
+            const scopedMatches = tmpCSS.replace(/:global\([^}]*}/gmi, '')
             // console.log(globalMatches);
             // console.log(scopedMatches);
 
-            let globalCSS = new CSSParser(globalMatches, PROCESSOR).parse()
+            const globalCSS = new CSSParser(globalMatches, PROCESSOR).parse()
             CSS_STYLE = globalStyleSheet(globalCSS).build()
             CSS = new CSSParser(scopedMatches, PROCESSOR).parse()
             CSS_STYLE += '\n' + CSS.build()
@@ -311,7 +313,7 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
 
         // MARK: WINDI CSS
         if (CSS_STYLESHEETS) {
-          if (attributes["windi:global"]) {
+          if (attributes['windi:global']) {
             INLINE_STYLE = globalStyleSheet(CSS_STYLESHEETS).build()
           } else {
             INLINE_STYLE = CSS_STYLESHEETS.build()
@@ -320,8 +322,8 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
         resolve({
           code: `${PREFLIGHTS_STYLE}\n\n${SAFELIST_STYLE}\n\n${CSS_STYLE}\n\n${INLINE_STYLE}`
           // code: content.replace(/@apply[\s\S]+?;/g, '')
-        });
-      });
+        })
+      })
     },
   }
 }
