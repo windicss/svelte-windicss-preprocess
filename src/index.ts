@@ -285,11 +285,27 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
 
         // MARK: CUSTOM CSS + WINDI @apply
         if (CSS_SOURCE) {
-          let CSS = new CSSParser(CSS_SOURCE, PROCESSOR).parse()
+          let CSS: StyleSheet;
           if (attributes["global"]) {
+            CSS = new CSSParser(CSS_SOURCE, PROCESSOR).parse()
             CSS_STYLE = globalStyleSheet(CSS).build()
           } else {
-            CSS_STYLE = CSS.build()
+            let tmpCSS = CSS_SOURCE
+            // let globalMatches = [...tmpCSS.matchAll(/:global\((?<selector>.*)\).*{(?<css>[^}]*)}/gmi) || []]
+            let globalMatches = [...tmpCSS.matchAll(/:global\((?<selector>.*)\).*{(?<css>[^}]*)}/gmi) || []].map(el => {
+              if (el.groups == null) return el
+              return `${el.groups.selector} {${el.groups.css}}`
+            }).join("\n")
+            let scopedMatches = tmpCSS.replace(/:global\([^}]*}/gmi, '')
+            // console.log(globalMatches);
+            // console.log(scopedMatches);
+
+            let globalCSS = new CSSParser(globalMatches, PROCESSOR).parse()
+            CSS_STYLE = globalStyleSheet(globalCSS).build()
+            CSS = new CSSParser(scopedMatches, PROCESSOR).parse()
+            CSS_STYLE += '\n' + CSS.build()
+
+            // console.log(CSS_STYLE);
           }
         }
 
