@@ -17,7 +17,7 @@ export interface Options {
     completions?: boolean,
   },
   //
-  safeList?: string[];
+  safeList?: string;
   // bundle?: string;
   // debug?: boolean;
   // compile?: boolean;
@@ -219,6 +219,17 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
           if (OPTIONS.configPath) {
             const loadedConfig = await useConfig.load(OPTIONS.configPath)
             windiConfig = loadedConfig
+            if (windiConfig.safelist) {
+              if (typeof windiConfig.safelist == 'string') {
+                OPTIONS.safeList = windiConfig.safelist
+              } else {
+                const tmpSafelist = windiConfig.safelist as (string | string[])[]
+                // @ts-expect-error flatten on already flattened Array is fine
+                OPTIONS.safeList = [...new Set(tmpSafelist.flat(Infinity))].join(' ')
+
+              }
+              // console.log('SAFELIST', OPTIONS.safeList)
+            }
             // OPTIONS.safeList = windiConfig.safelist
             //TODO:
             // if (error) useDebug.error()
@@ -276,7 +287,7 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
         // TODO: MARK: SAFELIST
         if (attributes['windi:safelist'] || attributes['windi:safelist:global']) {
           if (OPTIONS.safeList) {
-            const SAFELIST = PROCESSOR.interpret(OPTIONS.safeList.join(' ')).styleSheet
+            const SAFELIST = PROCESSOR.interpret(OPTIONS.safeList).styleSheet
             if (attributes['windi:safelist:global']) {
               SAFELIST_STYLE = globalStyleSheet(SAFELIST).build()
             } else {
