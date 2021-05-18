@@ -41,7 +41,7 @@
     "@types/fs-extra": "9.0.11",
     "@types/node": "15.0.3",
     "@types/prettier": "2.2.3",
-    "@typescript-eslint/eslint-plugin": "4.23.0",
+    "@typescript-eslint/eslint-plugin": "4.24.0",
     "@typescript-eslint/parser": "4.23.0",
     "bumpp": "6.0.6",
     "chalk": "4.1.1",
