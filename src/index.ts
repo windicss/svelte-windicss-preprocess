@@ -17,7 +17,8 @@ export interface Options {
     completions?: boolean,
   },
   //
-  safeList?: string;
+  safeList?: string,
+  preflights?: boolean
   // bundle?: string;
   // debug?: boolean;
   // compile?: boolean;
@@ -34,6 +35,7 @@ let OPTIONS: Options = {
     enabled: false
   },
   safeList: undefined,
+  preflights: true
   // bundle: undefined,
   // compile: false,
   // prefix: 'windi-',
@@ -219,6 +221,7 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
           if (OPTIONS.configPath) {
             const loadedConfig = await useConfig.load(OPTIONS.configPath)
             windiConfig = loadedConfig
+            if (windiConfig.preflight === false) OPTIONS.preflights = false
             if (windiConfig.safelist) {
               if (typeof windiConfig.safelist == 'string') {
                 OPTIONS.safeList = windiConfig.safelist
@@ -267,20 +270,15 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
         let CSS_STYLE = ''
         let INLINE_STYLE = ''
 
-        // MARK: PREFLIGHTS
-        if (attributes['windi:preflights'] || attributes['windi:preflights:global']) {
-          // let PREFLIGHTS = PROCESSOR.preflight(
-          //   markup,
-          //   true,
-          //   true,
-          //   true,
-          //   false
-          // )
-          const PREFLIGHTS = PROCESSOR.preflight()
-          if (attributes['windi:preflights:global']) {
-            PREFLIGHTS_STYLE = globalStyleSheet(PREFLIGHTS).build()
-          } else {
-            PREFLIGHTS_STYLE = PREFLIGHTS.build()
+        if (OPTIONS.preflights === true) {
+          // MARK: PREFLIGHTS
+          if (attributes['windi:preflights'] || attributes['windi:preflights:global']) {
+            const PREFLIGHTS = PROCESSOR.preflight()
+            if (attributes['windi:preflights:global']) {
+              PREFLIGHTS_STYLE = globalStyleSheet(PREFLIGHTS).build()
+            } else {
+              PREFLIGHTS_STYLE = PREFLIGHTS.build()
+            }
           }
         }
 
