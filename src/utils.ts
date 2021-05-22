@@ -151,6 +151,7 @@ class Step {
       const cleanedMatch = match[3]
         .replace(/windi[`].+?[`]|(?<![-])[$](?=[{])|(?<=([{][\w\s]+[^{]*?))['":]|([{][\w\s]+[^{]*?[?])|^[{]|(?<=["'`)])[}]/gi, ' ')
         .replace(/ {2,}/gi, ' ')
+        .replace(/["'`]/gi, '')
       this.mainClassList = cleanedMatch.split(' ')
     }
 
@@ -275,10 +276,10 @@ export class Magician {
       // } else {
       //   this.stylesheets.push(new CSSParser(css, this.processor).parse());
       // }
-      tmpContent = tmpContent.replace(/<style[^>]*?(\/|(>([\s\S]*?)<\/style))>/g, `${openTag}</style>`)
+      tmpContent = tmpContent.replace(/<style[^>]*?(\/|(>([\s\S]*?)<\/style))>/g, `${openTag}\n</style>`)
       tmpContent = tmpContent.replace('<style', '<style windi:inject')
     } else {
-      tmpContent += '\n\n<style windi:inject></style>'
+      tmpContent += '\n\n<style windi:inject>\n</style>'
     }
 
     this.content = tmpContent

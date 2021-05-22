@@ -314,7 +314,7 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
             const globalCSS = new CSSParser(globalMatches, PROCESSOR).parse()
             CSS_STYLE = globalStyleSheet(globalCSS).build()
             CSS = new CSSParser(scopedMatches, PROCESSOR).parse()
-            CSS_STYLE += '\n' + CSS.build()
+            CSS_STYLE += CSS.build()
 
             // console.log(CSS_STYLE);
           }
@@ -329,7 +329,7 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
           }
         }
         resolve({
-          code: `${PREFLIGHTS_STYLE}\n\n${SAFELIST_STYLE}\n\n${CSS_STYLE}\n\n${INLINE_STYLE}`
+          code: `${PREFLIGHTS_STYLE}${PREFLIGHTS_STYLE.length > 0 ? '\n' : ''}${SAFELIST_STYLE}${SAFELIST_STYLE.length > 0 ? '\n' : ''}${CSS_STYLE}${CSS_STYLE.length > 0 ? '\n' : ''}\n${INLINE_STYLE}${INLINE_STYLE.length > 0 ? '\n' : ''}`
           // code: content.replace(/@apply[\s\S]+?;/g, '')
         })
       })
