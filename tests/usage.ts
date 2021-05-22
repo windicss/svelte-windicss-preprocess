@@ -74,4 +74,17 @@ classTest('class_case-05', async () => {
   fixture(code, expected)
 })
 
+classTest('class_case-06', async () => {
+  const input = readFileSync('tests/assets/input/classAttribute/case-06.svelte', 'utf-8')
+  const expected = readFileSync('tests/assets/expected/classAttribute/case-06.svelte', 'utf-8')
+  // eslint-disable-next-line
+  const { code } = await preprocess(input, require('../src/index').windi({
+    silent: true
+  }), {
+    filename: 'case-06.svelte'
+  })
+
+  fixture(code, expected)
+})
+
 classTest.run()

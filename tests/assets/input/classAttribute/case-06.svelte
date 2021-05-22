@@ -1,11 +1,10 @@
 <script>
-	let className = "text-4xl"
+  let isPrimary = true
 </script>
 
 <main>
-    <div class={className}>My background is togglable</div>
+  <div class={isPrimary ? 'bg-red-500' : 'bg-yellow-500' }>my text is large</div>
 </main>
 
 <style>
 </style>
-
