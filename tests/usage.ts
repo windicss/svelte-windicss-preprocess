@@ -1,7 +1,41 @@
-import { readFileSync } from 'fs'
+import { readFileSync, writeFileSync } from 'fs'
 import { preprocess } from 'svelte/compiler'
 import { suite } from 'uvu'
 import { fixture } from 'uvu/assert'
+
+const windiTest = suite('windi')
+
+windiTest.before.each(() => {
+  delete require.cache[require.resolve('../src/index')]
+})
+
+windiTest('windi_case-01', async () => {
+  const input = readFileSync('tests/assets/input/windi/case-01.svelte', 'utf-8')
+  const expected = readFileSync('tests/assets/expected/windi/case-01.svelte', 'utf-8')
+  // eslint-disable-next-line
+  const { code } = await preprocess(input, require('../src/index').windi({
+    silent: true
+  }), {
+    filename: 'case-01.svelte'
+  })
+
+  fixture(code, expected)
+})
+
+windiTest('windi_case-02', async () => {
+  const input = readFileSync('tests/assets/input/windi/case-02.svelte', 'utf-8')
+  const expected = readFileSync('tests/assets/expected/windi/case-02.svelte', 'utf-8')
+  // eslint-disable-next-line
+  const { code } = await preprocess(input, require('../src/index').windi({
+    silent: true
+  }), {
+    filename: 'case-02.svelte'
+  })
+
+  fixture(code, expected)
+})
+
+windiTest.run()
 
 const classTest = suite('class attribute')
 
