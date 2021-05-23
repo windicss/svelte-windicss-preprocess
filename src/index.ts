@@ -145,54 +145,32 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
   PROCESSOR = new Processor()
   OPTIONS = { ...OPTIONS, ...options } // change global settings here;
   DEV = false
-  if (!OPTIONS.mode && process.env.NODE_ENV === 'development') OPTIONS.mode = 'development'
-  if (!OPTIONS.mode && process.env.NODE_ENV === 'production')  OPTIONS.mode = 'production'
 
-  if (OPTIONS.mode === 'development') DEV = true
+  if (process.env.NODE_ENV === 'production')  DEV = false
+  if ( process.env.NODE_ENV === 'development') DEV = true
   if (OPTIONS.mode === 'production') DEV = false
-  // TODO: rework logging information block
+  if (OPTIONS.mode === 'development') DEV = true
   if (options?.silent === false) logging(OPTIONS)
-  // useEnv.set("windi:verbosity", OPTIONS.verbosity || -1)
+
   return {
     markup: ({ content, filename }) => {
-      return new Promise((resolve, _) => {
-        if (isInit == false) {
-          if (OPTIONS.configPath) {
-            useConfig.load(OPTIONS.configPath).then(config => {
-              console.log(config)
-              windiConfig = config
-              if (windiConfig.preflight === false) OPTIONS.preflights = false
-              if (windiConfig.safelist) {
-                if (typeof windiConfig.safelist == 'string') {
-                  OPTIONS.safeList = windiConfig.safelist
-                } else {
-                  const tmpSafelist = windiConfig.safelist
-                  // @ts-expect-error flatten on already flattened Array is fine
-                  OPTIONS.safeList = [...new Set(tmpSafelist.flat(Infinity))].join(' ')
-                }
-              }
-              PROCESSOR.loadConfig(windiConfig)
-              isInit = true
-            })
-            // const loadedConfig = useConfig.load(OPTIONS.configPath)
-            // // console.log(loadedConfig)
-
-            // windiConfig = loadedConfig
-            // if (windiConfig.preflight === false) OPTIONS.preflights = false
-            // if (windiConfig.safelist) {
-            //   if (typeof windiConfig.safelist == 'string') {
-            //     OPTIONS.safeList = windiConfig.safelist
-            //   } else {
-            //     const tmpSafelist = windiConfig.safelist
-            //     // @ts-expect-error flatten on already flattened Array is fine
-            //     OPTIONS.safeList = [...new Set(tmpSafelist.flat(Infinity))].join(' ')
-            //   }
-            // }
-            // PROCESSOR.loadConfig(windiConfig)
-          } else {
-            PROCESSOR.loadConfig()
+      return new Promise((resolve) => {
+        if (isInit == false && OPTIONS.configPath) {
+          useConfig.load(OPTIONS.configPath).then(config => {
+            if (config.preflight === false) OPTIONS.preflights = false
+            // safelist
+            if (config.safelist && typeof config.safelist == 'string') {
+              OPTIONS.safeList = config.safelist
+            } else if (config.safelist) {
+              const tmpSafelist = config.safelist
+              OPTIONS.safeList = [...new Set(tmpSafelist.flat(Infinity))].join(' ')
+            }
+            PROCESSOR.loadConfig(config)
             isInit = true
-          }
+          })
+        } else if (isInit == false) {
+          PROCESSOR.loadConfig()
+          isInit = true
         }
         resolve({
           code: _preprocess(content, filename)
@@ -207,61 +185,60 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
         let CSS_STYLE = ''
         let INLINE_STYLE = ''
 
-        if (OPTIONS.preflights === true) {
-          // MARK: PREFLIGHTS
-          if (attributes['windi:preflights'] || attributes['windi:preflights:global']) {
-            const PREFLIGHTS = PROCESSOR.preflight()
-            if (attributes['windi:preflights:global']) {
-              PREFLIGHTS_STYLE = globalStyleSheet(PREFLIGHTS).build()
-            } else {
-              PREFLIGHTS_STYLE = PREFLIGHTS.build()
-            }
-          }
+        // MARK: PREFLIGHTS
+        if (OPTIONS.preflights === true && attributes['windi:preflights:global']) {
+          const PREFLIGHTS = PROCESSOR.preflight()
+          PREFLIGHTS_STYLE = globalStyleSheet(PREFLIGHTS).build()
+        } else if (OPTIONS.preflights === true && attributes['windi:preflights']) {
+          const PREFLIGHTS = PROCESSOR.preflight()
+          PREFLIGHTS_STYLE = PREFLIGHTS.build()
         }
 
         // MARK: SAFELIST
-        if (attributes['windi:safelist'] || attributes['windi:safelist:global']) {
-          if (OPTIONS.safeList) {
-            const SAFELIST = PROCESSOR.interpret(OPTIONS.safeList).styleSheet
-            if (attributes['windi:safelist:global']) {
-              SAFELIST_STYLE = globalStyleSheet(SAFELIST).build()
-            } else {
-              SAFELIST_STYLE = SAFELIST.build()
-            }
-          }
+        if (OPTIONS.safeList && attributes['windi:safelist:global']) {
+          const SAFELIST = PROCESSOR.interpret(OPTIONS.safeList).styleSheet
+          SAFELIST_STYLE = globalStyleSheet(SAFELIST).build()
+        } else if (OPTIONS.safeList && attributes['windi:safelist']) {
+          const SAFELIST = PROCESSOR.interpret(OPTIONS.safeList).styleSheet
+          SAFELIST_STYLE = SAFELIST.build()
         }
 
         // MARK: CUSTOM CSS + WINDI @apply
-        if (CSS_SOURCE) {
-          let CSS: StyleSheet
-          if (attributes['global']) {
-            CSS = new CSSParser(CSS_SOURCE, PROCESSOR).parse()
-            CSS_STYLE = globalStyleSheet(CSS).build()
-          } else {
-            const tmpCSS = CSS_SOURCE
-            // let globalMatches = [...tmpCSS.matchAll(/:global\((?<selector>.*)\).*{(?<css>[^}]*)}/gmi) || []]
-            const globalMatches = [...tmpCSS.matchAll(/:global\((?<selector>.*)\).*{(?<css>[^}]*)}/gmi) || []].map(el => {
-              if (el.groups == null) return el
-              return `${el.groups.selector} {${el.groups.css}}`
-            }).join('\n')
-            const scopedMatches = tmpCSS.replace(/:global\([^}]*}/gmi, '')
-            const globalCSS = new CSSParser(globalMatches, PROCESSOR).parse()
-            CSS_STYLE = globalStyleSheet(globalCSS).build()
-            CSS = new CSSParser(scopedMatches, PROCESSOR).parse()
-            CSS_STYLE += CSS.build()
-          }
+        let CSS: StyleSheet
+        if (CSS_SOURCE && attributes['global']) {
+          CSS = new CSSParser(CSS_SOURCE, PROCESSOR).parse()
+          CSS_STYLE = globalStyleSheet(CSS).build()
+        } else if (CSS_SOURCE) {
+          const tmpCSS = CSS_SOURCE
+          // global styles
+          const globalMatches = [...tmpCSS.matchAll(/:global\((?<selector>.*)\).*{(?<css>[^}]*)}/gmi) || []].map(el => {
+            return `${el.groups?.selector} {${el.groups?.css}}`
+          }).join('\n')
+          const globalCSS = new CSSParser(globalMatches, PROCESSOR).parse()
+          const buildGlobalCSS = globalStyleSheet(globalCSS).build()
+          if(buildGlobalCSS.length > 0) CSS_STYLE += buildGlobalCSS + '\n'
+          // local styles
+          const scopedMatches = tmpCSS.replace(/:global\([^}]*}/gmi, '')
+          CSS = new CSSParser(scopedMatches, PROCESSOR).parse()
+          const buildLocalCSS = CSS.build()
+          if(buildLocalCSS.length > 0) CSS_STYLE += buildLocalCSS
         }
 
         // MARK: WINDI CSS
-        if (CSS_STYLESHEETS) {
-          if (attributes['windi:global']) {
-            INLINE_STYLE = globalStyleSheet(CSS_STYLESHEETS).build()
-          } else {
-            INLINE_STYLE = CSS_STYLESHEETS.build()
-          }
+        if (CSS_STYLESHEETS && attributes['windi:global']) {
+          INLINE_STYLE = globalStyleSheet(CSS_STYLESHEETS).build()
+        } else if (CSS_STYLESHEETS) {
+          INLINE_STYLE = CSS_STYLESHEETS.build()
         }
+
+        let newStyleCode = '\n'
+        if(PREFLIGHTS_STYLE.length > 0) newStyleCode += PREFLIGHTS_STYLE + '\n'
+        if(SAFELIST_STYLE.length > 0) newStyleCode += SAFELIST_STYLE + '\n'
+        if(CSS_STYLE.length > 0) newStyleCode += CSS_STYLE + '\n'
+        if(INLINE_STYLE.length > 0) newStyleCode += INLINE_STYLE + '\n'
+
         resolve({
-          code: `\n${PREFLIGHTS_STYLE}${PREFLIGHTS_STYLE.length > 0 ? '\n' : ''}${SAFELIST_STYLE}${SAFELIST_STYLE.length > 0 ? '\n' : ''}${CSS_STYLE}${CSS_STYLE.length > 0 ? '\n' : ''}${INLINE_STYLE}${INLINE_STYLE.length > 0 ? '\n' : ''}`
+          code: newStyleCode
         })
       })
     },
