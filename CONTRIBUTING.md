@@ -69,7 +69,7 @@ $ pnpm build:prod
 
 ## Submit a Pull Request
 
-After you successfully [build the project](#build-the-project), you can make some changes of your own. 
+After you successfully [build the project](#build-the-project), you can make some changes of your own.
 
 There are five steps to submit pull request:
 
@@ -92,7 +92,7 @@ Make sure your code is following [TypeScript Style Guide](https://google.github.
 
 ### Test your changes
 
-You should add a new test file for your changes into [test](/tree/main/test) folder, the file should has extension `.test.ts`.
+You should add a new test file for your changes into [test](/tree/main/test) folder, the file should have extension `.test.ts`.
 
 Run tests:
 ```

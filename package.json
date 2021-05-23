@@ -30,6 +30,12 @@
     "compiler"
   ],
   "author": "Veritas Raven",
+  "contributors": [
+    {
+      "name": "Alexander Niebuhr",
+      "email": "45965090+alexanderniebuhr@users.noreply.github.com"
+    }
+  ],
   "license": "MIT",
   "homepage": "https://windicss.org/",
   "dependencies": {
