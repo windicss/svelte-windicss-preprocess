@@ -1,19 +1,18 @@
-import Processor from 'windicss'
-import { CSSParser } from 'windicss/utils/parser'
-import { StyleSheet } from 'windicss/utils/style'
 import { readFileSync } from 'fs'
-import type { Options } from './index'
-import type { FullConfig } from 'windicss/types/interfaces'
-import { format, RequiredOptions } from 'prettier'
 import { performance } from 'perf_hooks'
+import { format, RequiredOptions } from 'prettier'
+import Processor from 'windicss'
+import type { FullConfig } from 'windicss/types/interfaces'
+import { StyleSheet } from 'windicss/utils/style'
+import type { Options } from './index'
 
-export function combineStyleList(stylesheets: StyleSheet[]) {
+export function combineStyleList(stylesheets: StyleSheet[]): StyleSheet {
   return stylesheets
     .reduce((previousValue, currentValue) => previousValue.extend(currentValue), new StyleSheet())
     .combine() //.sort();
 }
 
-export function globalStyleSheet(styleSheet: StyleSheet) {
+export function globalStyleSheet(styleSheet: StyleSheet): StyleSheet {
   // turn all styles in stylesheet to global style
   styleSheet.children.forEach(style => {
     if (!style.rule.includes(':global') && style.meta.group !== 'keyframes') {
@@ -40,7 +39,7 @@ export function chalkColor() {
 }
 
 
-export function logging(options: Options) {
+export function logging(options: Options): void {
   /* eslint-disable */
   const chalk = chalkColor()
   process.stdout.write(`${chalk.blueBold('')}\n`)
@@ -219,11 +218,11 @@ export class Magician {
     // TODO: Debug utils lib
   }
 
-  getStats() {
+  getStats(): Record<string, any> {
     return this.stats
   }
 
-  clean() {
+  clean(): this {
     // TODO: ERROR HANDLING
     // TODO: Debug utils lib
 
@@ -241,7 +240,7 @@ export class Magician {
     return this
   }
 
-  format() {
+  format(): this {
     // TODO: ERROR HANDLING
     // TODO: better formatting.. no upstream fix of prettier-plugin expected soon
     // https://github.com/sveltejs/prettier-plugin-svelte/issues/214
@@ -272,7 +271,7 @@ export class Magician {
     return this
   }
 
-  extractStyle() {
+  extractStyle(): this {
     // TODO: ERROR HANDLING
     // TODO: Debug utils lib
 
@@ -308,7 +307,7 @@ export class Magician {
     directives: string[],
     attributifies: Map<string, string[]>,
     classes: string[]
-  }) {
+  }): this {
     // TODO: ERROR HANDLING
     // TODO: Debug utils lib
 
@@ -344,7 +343,7 @@ export class Magician {
     return this
   }
 
-  compute() {
+  compute(): this {
     // TODO: ERROR HANDLING
     // TODO: Debug utils lib
 
@@ -352,7 +351,7 @@ export class Magician {
 
     // TODO: WINDI EXPRESSION
     const windiSet = new Set(this.expressions)
-    let INTERPRETED_WINDI = this.processor.interpret( Array.from(windiSet).join(' ')).styleSheet
+    const INTERPRETED_WINDI = this.processor.interpret( Array.from(windiSet).join(' ')).styleSheet
 
 
     const directiveSet = new Set(this.directives)
@@ -400,7 +399,7 @@ export class Magician {
     return this
   }
 
-  useDevTools() {
+  useDevTools(): this {
     // TODO: ERROR HANDLING
 
     let tmpContent = this.content
@@ -438,22 +437,22 @@ export class Magician {
     return this
   }
 
-  getCode() {
+  getCode(): string {
     // TODO: ERROR HANDLING
     // TODO: Debug utils lib
 
     return this.content
   }
 
-  getComputed() {
+  getComputed(): StyleSheet {
     return this.computedStyleSheet
   }
 
-  getExtracted() {
+  getExtracted(): string {
     return this.css
   }
 
-  getFilename() {
+  getFilename(): string {
     // TODO: ERROR HANDLING
     // TODO: Debug utils lib
 
