@@ -95,11 +95,6 @@ class Step {
     // TODO: ERROR HANDLING
     // TODO: Debug utils lib
 
-    // let WINDI_EXPRESSION = lines[i].toString().match(/windi\`(.*?)\`/i);
-    // if (WINDI_EXPRESSION) {
-    //   const INTERPRETED_WINDI_EXPRESSION = PROCESSOR.interpret(WINDI_EXPRESSION[1]);
-    // }
-
     const tmpContent = this.content
     const WINDI_MATCHES = [...tmpContent.matchAll(/windi`(.*?)`/gi)]
     if (WINDI_MATCHES.length < 1) return this
@@ -135,9 +130,7 @@ class Step {
     // TODO: ERROR HANDLING
     // TODO: Debug utils lib
 
-
-    // FIXME: not bulletprof yet
-
+    // FIXME: #150 not bulletprof yet
     const tmpContent = this.content
     const ATTRIBUTIFY_CLASS_MATCHES = [...tmpContent.matchAll(/([\w+:_/-]+)=(['"])([!\w\s\n~:/\\,%#[\].$-]*?)\2/gi)]
     // TODO: allow prefix with ::
@@ -227,7 +220,7 @@ export class Magician {
     // TODO: Debug utils lib
 
     let tmpContent = this.content
-    // FIXME: needs to be refactored. shouldn't remove comments completly, just for parsing
+    // FIXME: CodeQL CODE WARNING
     tmpContent = tmpContent.replace(/<!--[\s\S]*?-->/g, '')
     tmpContent = tmpContent.replace(/([!\w][\w:_/-]*?):\(([\w\s/-]*?)\)/gm, (_, groupOne: string, groupTwo: string) =>
       groupTwo
@@ -280,14 +273,9 @@ export class Magician {
     this.css = ''
     const style = tmpContent.match(/<style[^>]*?(\/|(>([\s\S]*?)<\/style))>/)?.[0]
     if (style) {
-      // var global = style.match(/\<style global\>/gi);
       const openTag = style.match(/<style[^>]*?>/gi)?.[0] || '<style>'
+      // FIXME: CODEQL CODE WARNING
       this.css = style.replace(/<\/?style[^>]*>/g, '')
-      // if (global) {
-      //   this.stylesheets.push(this.useGlobal(new CSSParser(css, this.processor).parse()));
-      // } else {
-      //   this.stylesheets.push(new CSSParser(css, this.processor).parse());
-      // }
       tmpContent = tmpContent.replace(/<style[^>]*?(\/|(>([\s\S]*?)<\/style))>/g, `${openTag}\n</style>`)
       tmpContent = tmpContent.replace('<style', '<style windi:inject')
     } else {
@@ -355,10 +343,7 @@ export class Magician {
 
 
     const directiveSet = new Set(this.directives)
-    // console.log(directiveSet);
     const INTERPRETED_DIRECTIVE = this.processor.interpret(Array.from(directiveSet).join(' ')).styleSheet
-
-    // console.log(this.attributifies);
     const startA = performance.now()
     const INTERPRETED_ATTRIBUTIFY = this.processor.attributify(Object.fromEntries(this.attributifies)).styleSheet
     const endA = performance.now()

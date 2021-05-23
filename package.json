@@ -13,7 +13,9 @@
     "test:generate": "node -r sucrase/register generate.ts",
     "build:clean": "rimraf dist && npm run build",
     "build": "tsup ./src/index.ts --dts --format esm,cjs",
-    "release": "npm run build:clean && bumpp --tag --commit --push"
+    "release": "npm run build:clean && bumpp --tag --commit --push",
+    "lint": "eslint src",
+    "lint:tests": "eslint tests --ext .ts"
   },
   "repository": {
     "type": "git",
