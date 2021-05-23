@@ -30,7 +30,8 @@
     "compiler"
   ],
   "author": "Veritas Raven",
-  "contributors": [
+  "contributors": [],
+  "maintainers": [
     {
       "name": "Alexander Niebuhr",
       "email": "45965090+alexanderniebuhr@users.noreply.github.com"
