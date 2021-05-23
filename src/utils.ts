@@ -279,7 +279,7 @@ export class Magician {
       tmpContent = tmpContent.replace(/<style[^>]*?(\/|(>([\s\S]*?)<\/style))>/g, `${openTag}\n</style>`)
       tmpContent = tmpContent.replace('<style', '<style windi:inject')
     } else {
-      tmpContent += '\n\n<style windi:inject>\n</style>'
+      tmpContent += '\n<style windi:inject>\n</style>'
     }
 
     this.content = tmpContent
