@@ -9,7 +9,7 @@ import type { Options } from './index'
 export function combineStyleList(stylesheets: StyleSheet[]): StyleSheet {
   return stylesheets
     .reduce((previousValue, currentValue) => previousValue.extend(currentValue), new StyleSheet())
-    .combine() //.sort();
+    .combine()
 }
 
 export function globalStyleSheet(styleSheet: StyleSheet): StyleSheet {
