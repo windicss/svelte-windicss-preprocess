@@ -128,51 +128,6 @@ function _preprocess(content: string, filename: string) {
     return mag
       .getCode()
   } else {
-    // const modifiedVARIANTS = VARIANTS.filter((value, _index, _arr) => {
-    //   if (
-    //     value === 'sm' ||
-    //     value === '-sm' ||
-    //     value === '+sm' ||
-    //     value === 'md' ||
-    //     value === '-md' ||
-    //     value === '+md' ||
-    //     value === 'lg' ||
-    //     value === '-lg' ||
-    //     value === '+lg' ||
-    //     value === 'xl' ||
-    //     value === '-xl' ||
-    //     value === '+xl' ||
-    //     value === 'light' ||
-    //     value === 'dark' ||
-    //     value === 'checked' ||
-    //     value === 'hover' ||
-    //     value === 'visited' ||
-    //     value === 'focus'
-    //   ) {
-    //     return true
-    //   } else {
-    //     return false
-    //   }
-    // }).map(value => `w:${value.toString()}`);
-    // const VARIANTS_REGEX = modifiedVARIANTS.map(element => element).join('|');
-    // const CLASS_REGEX = 'class';
-    // const COMBINED_REGEX = `(${CLASS_REGEX}|${VARIANTS_REGEX})`;
-    // const TEXT_REGEX_MATCHER = `( ${COMBINED_REGEX}=["])([^"]*)(["])`;
-
-    // let WINDI_EXPRESSION = lines[i].toString().match(/windi\`(.*?)\`/i);
-    //   if (WINDI_EXPRESSION) {
-    //     const INTERPRETED_WINDI_EXPRESSION = PROCESSOR.interpret(WINDI_EXPRESSION[1]);
-    //     if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! == 3) {
-    //       console.log('[DEBUG] windi expression', INTERPRETED_WINDI_EXPRESSION);
-    //     }
-    //     let dynamicStylesheet
-    //     if (OPTIONS.kit) {
-    //       dynamicStylesheet = INTERPRETED_WINDI_EXPRESSION.styleSheet;
-    //     } else {
-    //       dynamicStylesheet = globalStyleSheet(INTERPRETED_WINDI_EXPRESSION.styleSheet);
-    //     }
-    //     STYLESHEETS.push(dynamicStylesheet);
-    //   }
 
     // const COMPILED_CLASSES = PROCESSOR.compile(extractedClasses, OPTIONS.prefix, false);
     // IGNORED_CLASSES = [...IGNORED_CLASSES, ...COMPILED_CLASSES.ignored];
@@ -190,71 +145,55 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
   PROCESSOR = new Processor()
   OPTIONS = { ...OPTIONS, ...options } // change global settings here;
   DEV = false
-  if (!OPTIONS.mode) {
-    if (process.env.NODE_ENV === 'development') {
-      OPTIONS.mode = 'development'
-    } else if (process.env.NODE_ENV === 'production') {
-      OPTIONS.mode = 'production'
-    }
-  }
+  if (!OPTIONS.mode && process.env.NODE_ENV === 'development') OPTIONS.mode = 'development'
+  if (!OPTIONS.mode && process.env.NODE_ENV === 'production')  OPTIONS.mode = 'production'
+
   if (OPTIONS.mode === 'development') DEV = true
   if (OPTIONS.mode === 'production') DEV = false
   // TODO: rework logging information block
-  // log if verbosity is 0
   if (options?.silent === false) logging(OPTIONS)
-  //TODO:
   // useEnv.set("windi:verbosity", OPTIONS.verbosity || -1)
   return {
     markup: ({ content, filename }) => {
-      // eslint-disable-next-line
-      return new Promise(async (resolve, _) => {
-        // useDebug.info("svelte preprocessor lifecycle called", 1)
-        // if (!OPTIONS?.silent && OPTIONS?.debug) {
-        //   // createLog('[DEBUG] called preprocessor')
-        // }
+      return new Promise((resolve, _) => {
         if (isInit == false) {
-          //TODO:
-          // useDebug.warn("windicss compile init not complete yet", 1)
-          // if (!OPTIONS?.silent && OPTIONS?.debug) {
-          //   // createLog("[DEBUG] initialisationPending")
-          // }
           if (OPTIONS.configPath) {
-            const loadedConfig = await useConfig.load(OPTIONS.configPath)
-            windiConfig = loadedConfig
-            if (windiConfig.preflight === false) OPTIONS.preflights = false
-            if (windiConfig.safelist) {
-              if (typeof windiConfig.safelist == 'string') {
-                OPTIONS.safeList = windiConfig.safelist
-              } else {
-                const tmpSafelist = windiConfig.safelist as (string | string[])[]
-                // @ts-expect-error flatten on already flattened Array is fine
-                OPTIONS.safeList = [...new Set(tmpSafelist.flat(Infinity))].join(' ')
-
+            useConfig.load(OPTIONS.configPath).then(config => {
+              console.log(config)
+              windiConfig = config
+              if (windiConfig.preflight === false) OPTIONS.preflights = false
+              if (windiConfig.safelist) {
+                if (typeof windiConfig.safelist == 'string') {
+                  OPTIONS.safeList = windiConfig.safelist
+                } else {
+                  const tmpSafelist = windiConfig.safelist
+                  // @ts-expect-error flatten on already flattened Array is fine
+                  OPTIONS.safeList = [...new Set(tmpSafelist.flat(Infinity))].join(' ')
+                }
               }
-              // console.log('SAFELIST', OPTIONS.safeList)
-            }
-            // OPTIONS.safeList = windiConfig.safelist
-            //TODO:
-            // if (error) useDebug.error()
-            // useDebug.info("windicss configuration file loaded", 1)
-            // useDebug.info("\n" +loadedConfig, 2)
-            // if (!OPTIONS?.silent && OPTIONS?.debug && OPTIONS?.verbosity! > 3) {
-            //   // console.log("[DEBUG] loaded config data", windiConfig)
+              PROCESSOR.loadConfig(windiConfig)
+              isInit = true
+            })
+            // const loadedConfig = useConfig.load(OPTIONS.configPath)
+            // // console.log(loadedConfig)
+
+            // windiConfig = loadedConfig
+            // if (windiConfig.preflight === false) OPTIONS.preflights = false
+            // if (windiConfig.safelist) {
+            //   if (typeof windiConfig.safelist == 'string') {
+            //     OPTIONS.safeList = windiConfig.safelist
+            //   } else {
+            //     const tmpSafelist = windiConfig.safelist
+            //     // @ts-expect-error flatten on already flattened Array is fine
+            //     OPTIONS.safeList = [...new Set(tmpSafelist.flat(Infinity))].join(' ')
+            //   }
             // }
-            PROCESSOR.loadConfig(windiConfig)
+            // PROCESSOR.loadConfig(windiConfig)
           } else {
             PROCESSOR.loadConfig()
+            isInit = true
           }
-          // const loadedConfig = await loadConfiguration({ config: OPTIONS.config })
-
-          // VARIANTS = [...Object.keys(PROCESSOR.resolveVariants())];
-          isInit = true
         }
-        // else if (!OPTIONS?.silent && OPTIONS?.debug) {
-        //   //TODO:
-        //   // useDebug.info("windicss compile init complete", 1)
-        //   // createLog("[DEBUG] initialisationDone")
-        // }
         resolve({
           code: _preprocess(content, filename)
         })
@@ -262,9 +201,7 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
     },
 
     style: ({ content, attributes, markup }) => {
-      // console.log(attributes)
-      // eslint-disable-next-line
-      return new Promise(async (resolve, _) => {
+      return new Promise((resolve) => {
         let PREFLIGHTS_STYLE = ''
         let SAFELIST_STYLE = ''
         let CSS_STYLE = ''
@@ -282,7 +219,7 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
           }
         }
 
-        // TODO: MARK: SAFELIST
+        // MARK: SAFELIST
         if (attributes['windi:safelist'] || attributes['windi:safelist:global']) {
           if (OPTIONS.safeList) {
             const SAFELIST = PROCESSOR.interpret(OPTIONS.safeList).styleSheet
@@ -308,15 +245,10 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
               return `${el.groups.selector} {${el.groups.css}}`
             }).join('\n')
             const scopedMatches = tmpCSS.replace(/:global\([^}]*}/gmi, '')
-            // console.log(globalMatches);
-            // console.log(scopedMatches);
-
             const globalCSS = new CSSParser(globalMatches, PROCESSOR).parse()
             CSS_STYLE = globalStyleSheet(globalCSS).build()
             CSS = new CSSParser(scopedMatches, PROCESSOR).parse()
             CSS_STYLE += CSS.build()
-
-            // console.log(CSS_STYLE);
           }
         }
 
@@ -330,7 +262,6 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
         }
         resolve({
           code: `\n${PREFLIGHTS_STYLE}${PREFLIGHTS_STYLE.length > 0 ? '\n' : ''}${SAFELIST_STYLE}${SAFELIST_STYLE.length > 0 ? '\n' : ''}${CSS_STYLE}${CSS_STYLE.length > 0 ? '\n' : ''}${INLINE_STYLE}${INLINE_STYLE.length > 0 ? '\n' : ''}`
-          // code: content.replace(/@apply[\s\S]+?;/g, '')
         })
       })
     },
