@@ -101,7 +101,20 @@ class Step {
     //   const INTERPRETED_WINDI_EXPRESSION = PROCESSOR.interpret(WINDI_EXPRESSION[1]);
     // }
 
+    const tmpContent = this.content
+    const WINDI_MATCHES = [...tmpContent.matchAll(/windi`(.*?)`/gi)]
+    if (WINDI_MATCHES.length < 1) return this
+    for (const match of WINDI_MATCHES) {
+      const cleanedMatch = match[1]
+        .replace(/(?<![-])[$](?=[{])|(?<=([{][\w\s]+[^{]*?))['":]|([{][\w\s]+[^{]*?[?])|^[{]|(?<=["'`)])[}]/gi, ' ')
+        .replace(/ {2,}/gi, ' ')
+        .replace(/["'`]/gi, '')
+      this.windiClassList = this.windiClassList.concat(cleanedMatch.split(' '))
+    }
+
+    this.content = tmpContent
     return this
+
   }
 
   processDirectiveClass() {
@@ -338,7 +351,8 @@ export class Magician {
     const tmpContent = this.content
 
     // TODO: WINDI EXPRESSION
-    // let INTERPRETED_WINDI = this.processor.interpret(this.mainClassList.join(' ')).styleSheet
+    const windiSet = new Set(this.expressions)
+    let INTERPRETED_WINDI = this.processor.interpret( Array.from(windiSet).join(' ')).styleSheet
 
 
     const directiveSet = new Set(this.directives)
@@ -361,6 +375,7 @@ export class Magician {
     // windiexpression
     this.stylesheets.push(INTERPRETED_DIRECTIVE)
     this.stylesheets.push(INTERPRETED_ATTRIBUTIFY)
+    this.stylesheets.push(INTERPRETED_WINDI)
     this.stylesheets.push(INTERPRETED_MAIN)
     this.computedStyleSheet = combineStyleList(this.stylesheets).sort()
     // let finalStyleSheet = this.useGlobal(tmp)

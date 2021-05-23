@@ -98,7 +98,7 @@ function _preprocess(content: string, filename: string) {
     mag = mag
       .each(line => {
         return line
-          // .processWindiExpression()
+          .processWindiExpression()
           .processDirectiveClass()
           .processAttributify()
           .processClassAttribute()
