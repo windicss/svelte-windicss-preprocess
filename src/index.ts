@@ -68,13 +68,6 @@ const table: any = {}
 const size: any = 0
 const file: any = 0
 
-// const MODIFIED: { [key: string]: string } = {
-//   xxl: '2xl',
-//   'tw-disabled': 'disabled',
-//   'tw-required': 'required',
-//   'tw-checked': 'checked',
-// };
-
 function _preprocess(content: string, filename: string) {
 
   // // TODO: add magician logic
@@ -165,6 +158,7 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
               OPTIONS.safeList = [...new Set(tmpSafelist.flat(Infinity))].join(' ')
             }
             PROCESSOR.loadConfig(config)
+            windiConfig = config
             isInit = true
           })
         } else if (isInit == false) {
