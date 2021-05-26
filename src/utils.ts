@@ -88,12 +88,9 @@ class Step {
     this.processor = processor
     this.content = content
     this.filename = filename
-    // TODO: Debug utils lib
   }
 
   processWindiExpression() {
-    // TODO: ERROR HANDLING
-    // TODO: Debug utils lib
 
     const tmpContent = this.content
     const WINDI_MATCHES = [...tmpContent.matchAll(/windi`(.*?)`/gi)]
@@ -112,8 +109,6 @@ class Step {
   }
 
   processDirectiveClass() {
-    // TODO: ERROR HANDLING
-    // TODO: Debug utils lib
 
     const tmpContent = this.content
     const DIRECTIVE_CLASS_MATCHES = [...tmpContent.matchAll(/\s(class):([^=]+)(=)/gi)]
@@ -127,8 +122,6 @@ class Step {
   }
 
   processAttributify() {
-    // TODO: ERROR HANDLING
-    // TODO: Debug utils lib
 
     // FIXME: #150 not bulletprof yet
     const tmpContent = this.content
@@ -146,8 +139,6 @@ class Step {
   }
 
   processClassAttribute() {
-    // TODO: ERROR HANDLING
-    // TODO: Debug utils lib
 
     const tmpContent = this.content
     const CLASS_MATCHES = [...tmpContent.matchAll(/(class)=(['"])([^\2]*?)\2/gi)]
@@ -165,8 +156,6 @@ class Step {
   }
 
   compute(compile = false) {
-    // TODO: ERROR HANDLING
-    // TODO: debug utils
 
     return {
       line: this.content,
@@ -208,7 +197,6 @@ export class Magician {
     this.content = content
     this.filename = filename
     this.config = config
-    // TODO: Debug utils lib
   }
 
   getStats(): Record<string, any> {
@@ -216,9 +204,6 @@ export class Magician {
   }
 
   clean(): this {
-    // TODO: ERROR HANDLING
-    // TODO: Debug utils lib
-
     let tmpContent = this.content
     // FIXME: CodeQL CODE WARNING
     tmpContent = tmpContent.replace(/<!--[\s\S]*?-->/g, '')
@@ -234,10 +219,8 @@ export class Magician {
   }
 
   format(): this {
-    // TODO: ERROR HANDLING
     // TODO: better formatting.. no upstream fix of prettier-plugin expected soon
     // https://github.com/sveltejs/prettier-plugin-svelte/issues/214
-    // TODO: Debug utils lib
 
     const start = performance.now()
     let tmpContent = this.content
@@ -265,8 +248,6 @@ export class Magician {
   }
 
   extractStyle(): this {
-    // TODO: ERROR HANDLING
-    // TODO: Debug utils lib
 
     let tmpContent = this.content
     const start = performance.now()
@@ -296,9 +277,6 @@ export class Magician {
     attributifies: Map<string, string[]>,
     classes: string[]
   }): this {
-    // TODO: ERROR HANDLING
-    // TODO: Debug utils lib
-
     let tmpContent = this.content
 
     this.lines = tmpContent.split('\n')
@@ -332,12 +310,8 @@ export class Magician {
   }
 
   compute(): this {
-    // TODO: ERROR HANDLING
-    // TODO: Debug utils lib
-
     const tmpContent = this.content
 
-    // TODO: WINDI EXPRESSION
     const windiSet = new Set(this.expressions)
     const INTERPRETED_WINDI = this.processor.interpret( Array.from(windiSet).join(' ')).styleSheet
 
@@ -384,9 +358,8 @@ export class Magician {
     return this
   }
 
+  // FIXME: #156
   useDevTools(): this {
-    // TODO: ERROR HANDLING
-
     let tmpContent = this.content
     const path = require.resolve('windicss-runtime-dom')
     const runtimeConfig: FullConfig = {
@@ -423,9 +396,6 @@ export class Magician {
   }
 
   getCode(): string {
-    // TODO: ERROR HANDLING
-    // TODO: Debug utils lib
-
     return this.content
   }
 
@@ -438,9 +408,6 @@ export class Magician {
   }
 
   getFilename(): string {
-    // TODO: ERROR HANDLING
-    // TODO: Debug utils lib
-
     return this.filename
   }
 }
