@@ -134,6 +134,10 @@ function _preprocess(content: string, filename: string) {
   }
 }
 
+
+// Svelte evaluates preprocessors by running all markup preprocessors first,
+// then script and finally styles.
+// Some preprocesses may not work if other preprocessors haven't been run.
 export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
   PROCESSOR = new Processor()
   OPTIONS = { ...OPTIONS, ...options } // change global settings here;
@@ -148,7 +152,7 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
   return {
     markup: ({ content, filename }) => {
       return new Promise((resolve) => {
-        if (isInit == false && OPTIONS.configPath) {
+        if (OPTIONS.configPath) {
           useConfig.load<FullConfig>(OPTIONS.configPath).then(config => {
             if (config.preflight === false) OPTIONS.preflights = false
             if (config.safelist && typeof config.safelist == 'string') {
@@ -159,18 +163,29 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
             }
             PROCESSOR.loadConfig(config)
             windiConfig = config
-            isInit = true
+            // isInit = true
+          }).finally(() => {
+            resolve({
+              code: _preprocess(content, filename)
+            })
           })
-        } else if (isInit == false) {
+        } else {
           PROCESSOR.loadConfig()
-          isInit = true
+          // isInit = true
+          resolve({
+            code: _preprocess(content, filename)
+          })
         }
+      })
+    },
+    script: ({ content, attributes, markup }) => {
+      return new Promise((resolve) => {
+
         resolve({
-          code: _preprocess(content, filename)
+          code: content
         })
       })
     },
-
     style: ({ content, attributes, markup }) => {
       return new Promise((resolve) => {
         let PREFLIGHTS_STYLE = ''
@@ -186,11 +201,11 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
           const PREFLIGHTS = PROCESSOR.preflight()
           PREFLIGHTS_STYLE = PREFLIGHTS.build()
         }
-
         // MARK: SAFELIST
         if (OPTIONS.safeList && attributes['windi:safelist:global']) {
           const SAFELIST = PROCESSOR.interpret(OPTIONS.safeList).styleSheet
           SAFELIST_STYLE = globalStyleSheet(SAFELIST).build()
+          console.log(SAFELIST_STYLE)
         } else if (OPTIONS.safeList && attributes['windi:safelist']) {
           const SAFELIST = PROCESSOR.interpret(OPTIONS.safeList).styleSheet
           SAFELIST_STYLE = SAFELIST.build()
@@ -234,6 +249,6 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
           code: newStyleCode
         })
       })
-    },
+    }
   }
 }
