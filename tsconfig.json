@@ -9,7 +9,8 @@
     "forceConsistentCasingInFileNames": true,
     "lib": [
       "ES2020.String",
-      "ES2019.Object"
+      "ES2019.Object",
+      "ES2019.Array"
     ]
   },
 }

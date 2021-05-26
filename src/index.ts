@@ -156,13 +156,12 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
     markup: ({ content, filename }) => {
       return new Promise((resolve) => {
         if (isInit == false && OPTIONS.configPath) {
-          useConfig.load(OPTIONS.configPath).then(config => {
+          useConfig.load<FullConfig>(OPTIONS.configPath).then(config => {
             if (config.preflight === false) OPTIONS.preflights = false
-            // safelist
             if (config.safelist && typeof config.safelist == 'string') {
               OPTIONS.safeList = config.safelist
             } else if (config.safelist) {
-              const tmpSafelist = config.safelist
+              const tmpSafelist = config.safelist as (string | string[])[]
               OPTIONS.safeList = [...new Set(tmpSafelist.flat(Infinity))].join(' ')
             }
             PROCESSOR.loadConfig(config)
