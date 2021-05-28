@@ -247,6 +247,21 @@ export class Magician {
     return this
   }
 
+  setInject(): this {
+
+    let tmpContent = this.content
+    const styleMatch = tmpContent.match(/(?<openTag><style[^>]*?>)(?<content>[\s\S]*?)(?<closeTag><\/style>)/gi)
+
+    if (styleMatch) {
+      tmpContent = tmpContent.replace('<style', '<style windi:inject')
+    } else {
+      tmpContent += '\n<style windi:inject>\n</style>'
+    }
+
+    this.content = tmpContent
+    return this
+  }
+
   extractStyle(): this {
 
     let tmpContent = this.content
@@ -257,6 +272,7 @@ export class Magician {
       const openTag = style.match(/<style[^>]*?>/gi)?.[0] || '<style>'
       // FIXME: CODEQL CODE WARNING
       this.css = style.replace(/<\/?style[^>]*>/g, '')
+
       tmpContent = tmpContent.replace(/<style[^>]*?(\/|(>([\s\S]*?)<\/style))>/g, `${openTag}\n</style>`)
       tmpContent = tmpContent.replace('<style', '<style windi:inject')
     } else {

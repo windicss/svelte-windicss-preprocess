@@ -85,9 +85,10 @@ function _preprocess(content: string, filename: string) {
     //   mag = mag
     //     .generatePreflight()
     // }
-    mag = mag
-      .extractStyle()
-    CSS_SOURCE = mag.getExtracted()
+    mag = mag.setInject()
+    // mag = mag
+    //   .extractStyle()
+    // CSS_SOURCE = mag.getExtracted()
     mag = mag
       .each(line => {
         return line
@@ -186,7 +187,7 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
         })
       })
     },
-    style: ({ content, attributes, markup }) => {
+    style: ({ content, attributes, markup, filename }) => {
       return new Promise((resolve) => {
         let PREFLIGHTS_STYLE = ''
         let SAFELIST_STYLE = ''
@@ -213,6 +214,7 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
 
         // MARK: CUSTOM CSS + WINDI @apply
         let CSS: StyleSheet
+        CSS_SOURCE = content
         if (CSS_SOURCE && attributes['global']) {
           CSS = new CSSParser(CSS_SOURCE, PROCESSOR).parse()
           CSS_STYLE = globalStyleSheet(CSS).build()
