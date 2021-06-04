@@ -5,7 +5,7 @@ import { Processor } from 'windicss/lib'
 import type { FullConfig } from 'windicss/types/interfaces'
 import { CSSParser } from 'windicss/utils/parser'
 import { StyleSheet } from 'windicss/utils/style'
-import { combineStyleList, globalStyleSheet, logging, Magician } from './utils'
+import { combineStyleList, globalStyleSheet, Magician } from './utils'
 
 export interface Options {
   silent?: boolean,
@@ -147,7 +147,6 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
   if (process.env.NODE_ENV === 'development') DEV = true
   if (OPTIONS.mode === 'production') DEV = false
   if (OPTIONS.mode === 'development') DEV = true
-  if (options?.silent === false) logging(OPTIONS)
 
   return {
     markup: ({ content, filename }) => {
