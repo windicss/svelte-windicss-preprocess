@@ -135,7 +135,6 @@ function _preprocess(content: string, filename: string) {
   }
 }
 
-
 // Svelte evaluates preprocessors by running all markup preprocessors first,
 // then script and finally styles.
 // Some preprocesses may not work if other preprocessors haven't been run.
@@ -256,3 +255,5 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
     }
   }
 }
+
+export default windi
