@@ -373,43 +373,6 @@ export class Magician {
     return this
   }
 
-  // FIXME: #156
-  useDevTools(): this {
-    let tmpContent = this.content
-    const path = require.resolve('windicss-runtime-dom')
-    const runtimeConfig: FullConfig = {
-      theme: this.config.theme
-    }
-    const windiRuntimeDom = readFileSync(path, 'utf-8')
-    const windiRuntimeDomConfig = `
-        window.windicssRuntimeOptions = {
-          extractInitial: false,
-          preflight: false,
-          mockClasses: true,
-          config: ${JSON.stringify(runtimeConfig)}
-        }
-      `
-    const injectScript = `
-        if (!document.getElementById("windicss-devtools")) {
-          const script = document.createElement("script");
-          script.id = "windicss-devtools";
-          script.setAttribute("type", "text/javascript");
-          script.innerHTML = ${JSON.stringify(windiRuntimeDomConfig + windiRuntimeDom)};
-          document.head.append(script);
-        }
-      `
-
-    const script = tmpContent.match(/<script[^>]*?(\/|(>([\s\S]*?)<\/script))>/)?.[0]
-    if (script) {
-      tmpContent = tmpContent.replace(/<script>/, `<script>\n${injectScript}`)
-    } else {
-      tmpContent += `\n\n<script>${injectScript}</script>\n\n`
-    }
-
-    this.content = tmpContent
-    return this
-  }
-
   getCode(): string {
     return this.content
   }

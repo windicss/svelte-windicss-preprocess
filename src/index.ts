@@ -103,7 +103,7 @@ function _preprocess(content: string, filename: string) {
     mag = mag
       .compute()
     // console.log(mag.getCode())
-    if (DEV && OPTIONS?.devTools?.enabled) mag = mag.useDevTools()
+    // if (DEV && OPTIONS?.devTools?.enabled) mag = mag.useDevTools()
 
     // table[filename] = mag.getStats()
     // size = (4 * file) + Object.entries(table).length - 1
@@ -144,7 +144,7 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
   DEV = false
 
   if (process.env.NODE_ENV === 'production')  DEV = false
-  if ( process.env.NODE_ENV === 'development') DEV = true
+  if (process.env.NODE_ENV === 'development') DEV = true
   if (OPTIONS.mode === 'production') DEV = false
   if (OPTIONS.mode === 'development') DEV = true
   if (options?.silent === false) logging(OPTIONS)
@@ -181,9 +181,39 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
     script: ({ content, attributes, markup }) => {
       return new Promise((resolve) => {
 
+        if (DEV === true && OPTIONS.devTools && OPTIONS.devTools.enabled !== false && attributes['windi:devtools']) {
+          const path = require.resolve('windicss-runtime-dom')
+          const runtimeConfig: FullConfig = {
+            theme: windiConfig.theme
+          }
+          const windiRuntimeDom = readFileSync(path, 'utf-8')
+          const windiRuntimeDomConfig = `
+              window.windicssRuntimeOptions = {
+                extractInitial: false,
+                preflight: false,
+                mockClasses: true,
+                config: ${JSON.stringify(runtimeConfig)}
+              }
+            `
+          const injectScript = `
+              if (!document.getElementById("windicss-devtools")) {
+                const script = document.createElement("script");
+                script.id = "windicss-devtools";
+                script.setAttribute("type", "text/javascript");
+                script.innerHTML = ${JSON.stringify(windiRuntimeDomConfig + windiRuntimeDom)};
+                document.head.append(script);
+              }
+            `
+
+          resolve({
+            code: injectScript + '\n' + content
+          })
+        }
+
         resolve({
           code: content
         })
+
       })
     },
     style: ({ content, attributes, markup, filename }) => {
