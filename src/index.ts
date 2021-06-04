@@ -202,6 +202,7 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
           const PREFLIGHTS = PROCESSOR.preflight()
           PREFLIGHTS_STYLE = PREFLIGHTS.build()
         }
+
         // MARK: SAFELIST
         if (OPTIONS.safeList && attributes['windi:safelist:global']) {
           const SAFELIST = PROCESSOR.interpret(OPTIONS.safeList).styleSheet
@@ -241,6 +242,7 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
           INLINE_STYLE = CSS_STYLESHEETS.build()
         }
 
+        // MARK: COMBINE
         let newStyleCode = '\n'
         if(PREFLIGHTS_STYLE.length > 0) newStyleCode += PREFLIGHTS_STYLE + '\n'
         if(SAFELIST_STYLE.length > 0) newStyleCode += SAFELIST_STYLE + '\n'
