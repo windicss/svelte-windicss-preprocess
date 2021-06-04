@@ -75,7 +75,6 @@ export function logging(options: Options): void {
   /* eslint-enable */
 }
 
-
 class Step {
   processor: Processor
   content: string
@@ -167,7 +166,7 @@ class Step {
   }
 }
 
-interface customPrettierOptions extends Partial<RequiredOptions> {
+interface CustomPrettierOptions extends Partial<RequiredOptions> {
   svelteSortOrder: string,
   svelteStrictMode: boolean
   svelteAllowShorthand: boolean,
@@ -227,7 +226,7 @@ export class Magician {
 
     tmpContent = tmpContent.replace(/(?<=[<]{1}\w[^>]+)\n/gmi, ' ')
 
-    const options: customPrettierOptions = {
+    const options: CustomPrettierOptions = {
       parser: 'svelte',
       plugins: ['prettier-plugin-svelte'],
       printWidth: 5000,
