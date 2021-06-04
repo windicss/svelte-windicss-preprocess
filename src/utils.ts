@@ -137,7 +137,7 @@ export class Magician {
   classes: string[] = []
   stylesheets: StyleSheet[] = []
   config: FullConfig = {}
-  stats: Record<string, any> = {}
+  stats: Map<Record<string, string>,Record<string, string|number>> = new Map()
   computedStyleSheet: StyleSheet = new StyleSheet()
   css = ''
 
@@ -148,7 +148,7 @@ export class Magician {
     this.config = config
   }
 
-  getStats(): Record<string, any> {
+  getStats(): Map<Record<string, string>,Record<string, string|number>> {
     return this.stats
   }
 
@@ -190,8 +190,7 @@ export class Magician {
     const formatedContent = format(tmpContent, options)
 
     this.content = formatedContent
-    const end = performance.now()
-    this.stats.prettierFormat = (end - start).toFixed(2) + 'ms'
+    this.stats.set({file: this.filename, category: 'format'},{text: 'Format .svelte File by Prettier', time: (performance.now() - start).toFixed(2)})
 
     return this
   }
@@ -207,30 +206,6 @@ export class Magician {
     }
 
     this.content = tmpContent
-    return this
-  }
-
-  extractStyle(): this {
-
-    let tmpContent = this.content
-    const start = performance.now()
-    this.css = ''
-    const style = tmpContent.match(/<style[^>]*?(\/|(>([\s\S]*?)<\/style))>/)?.[0]
-    if (style) {
-      const openTag = style.match(/<style[^>]*?>/gi)?.[0] || '<style>'
-      // FIXME: CODEQL CODE WARNING
-      this.css = style.replace(/<\/?style[^>]*>/g, '')
-
-      tmpContent = tmpContent.replace(/<style[^>]*?(\/|(>([\s\S]*?)<\/style))>/g, `${openTag}\n</style>`)
-      tmpContent = tmpContent.replace('<style', '<style windi:inject')
-    } else {
-      tmpContent += '\n<style windi:inject>\n</style>'
-    }
-
-    this.content = tmpContent
-
-    const end = performance.now()
-    this.stats.styleTag = (end - start).toFixed(2) + 'ms'
     return this
   }
 
@@ -282,41 +257,24 @@ export class Magician {
 
     const directiveSet = new Set(this.directives)
     const INTERPRETED_DIRECTIVE = this.processor.interpret(Array.from(directiveSet).join(' ')).styleSheet
-    const startA = performance.now()
+    const start = performance.now()
     const INTERPRETED_ATTRIBUTIFY = this.processor.attributify(Object.fromEntries(this.attributifies)).styleSheet
-    const endA = performance.now()
-    this.stats.computeAttributify = (endA - startA).toFixed(2) + 'ms'
+    this.stats.set({file: this.filename, category: 'attributify'},{text: 'Handle Attributify by Windi CSS', time: (performance.now() - start).toFixed(2)})
 
     const classSet = new Set(this.classes)
     // console.log(classSet)
-    const startC = performance.now()
+    const start2 = performance.now()
     const INTERPRETED_MAIN = this.processor.interpret(Array.from(classSet).join(' ')).styleSheet
-    const endC = performance.now()
-    this.stats.computeClasslist = (endC - startC).toFixed(2) + 'ms'
+    this.stats.set({file: this.filename, category: 'classes'},{text: 'Handle usual Classes by Windi CSS', time: (performance.now() - start2).toFixed(2)})
 
     // windiexpression
     this.stylesheets.push(INTERPRETED_DIRECTIVE)
     this.stylesheets.push(INTERPRETED_ATTRIBUTIFY)
     this.stylesheets.push(INTERPRETED_WINDI)
     this.stylesheets.push(INTERPRETED_MAIN)
+    const start3 = performance.now()
     this.computedStyleSheet = combineStyleList(this.stylesheets).sort()
-    // let finalStyleSheet = this.useGlobal(tmp)
-    // let finalStyleSheet = tmp
-
-    // let startB = performance.now()
-
-    // // tmpContent = tmpContent.replace(/\<\/style\>/, `\n${finalStyleSheet.build()}\n</style>\n`)
-    // // tmpContent += `\n\n<style>\n${finalStyleSheet.build()}\n</style>\n`;
-
-    // let endB = performance.now()
-    // this.stats.buildStyleSheet = (endB - startB).toFixed(2) + "ms"
-
-    // TODO: validation of timing function
-    // let startD = performance.now()
-    // const end = Date.now() + 25
-    // while (Date.now() < end) continue
-    // let endD = performance.now()
-    // this.stats.v = (endD - startD).toFixed(2) + "ms"
+    this.stats.set({file: this.filename, category: 'sort'},{text: 'Combine and sort Styles by Windi CSS', time: (performance.now() - start3).toFixed(2)})
 
     this.content = tmpContent
     return this

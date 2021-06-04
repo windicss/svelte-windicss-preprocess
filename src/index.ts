@@ -75,20 +75,9 @@ function _preprocess(content: string, filename: string) {
   if (run == 'new') {
     let mag = new Magician(PROCESSOR, content, filename, windiConfig)
     mag = mag.clean()
+
     if (!(OPTIONS?.disableFormat)) mag = mag.format()
-    //FIXME: style preprocessor
-    // if (!DEV && IS_MAIN) {
-    //   mag = mag
-    //     .generatePreflight()
-    //   IS_MAIN = false
-    // } else if (DEV) {
-    //   mag = mag
-    //     .generatePreflight()
-    // }
     mag = mag.setInject()
-    // mag = mag
-    //   .extractStyle()
-    // CSS_SOURCE = mag.getExtracted()
     mag = mag
       .each(line => {
         return line
@@ -98,26 +87,13 @@ function _preprocess(content: string, filename: string) {
           .processClassAttribute()
           .compute()
       })
-    //FIXME: style preprocessor
-    // if (OPTIONS?.safeList) mag = mag.processSafelist()
+
     mag = mag
       .compute()
-    // console.log(mag.getCode())
-    // if (DEV && OPTIONS?.devTools?.enabled) mag = mag.useDevTools()
 
-    // table[filename] = mag.getStats()
-    // size = (4 * file) + Object.entries(table).length - 1
-    // process.stdout.moveCursor(0, -size) // up one line
-    // process.stdout.clearLine(1) // from cursor to end
-    // console.table(table)
-    // file = 1
+    // console.log(mag.getStats())
 
     CSS_STYLESHEETS = mag.getComputed()
-
-
-    // console.log("----");
-    // console.log(mag.getCode());
-
 
     return mag
       .getCode()
