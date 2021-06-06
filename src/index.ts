@@ -1,4 +1,4 @@
-import { useConfig } from '@nbhr/utils'
+import { useConfig, useDebugger } from '@nbhr/utils'
 import { readFileSync } from 'fs'
 import type { PreprocessorGroup } from 'svelte/types/compiler/preprocess'
 import { Processor } from 'windicss/lib'
@@ -55,7 +55,7 @@ let PROCESSOR: Processor
 // let BUNDLES: { [key: string]: StyleSheet } = {};
 // let IS_MAIN: boolean = true;
 let isInit = false
-let windiConfig: FullConfig = {}
+let windiConfig: FullConfig
 let CSS_SOURCE = ''
 let CSS_STYLESHEETS: StyleSheet = new StyleSheet()
 
@@ -98,7 +98,6 @@ function _preprocess(content: string, filename: string) {
     return mag
       .getCode()
   } else {
-
     // const COMPILED_CLASSES = PROCESSOR.compile(extractedClasses, OPTIONS.prefix, false);
     // IGNORED_CLASSES = [...IGNORED_CLASSES, ...COMPILED_CLASSES.ignored];
     // STYLESHEETS.push(COMPILED_CLASSES.styleSheet);
@@ -116,7 +115,7 @@ function _preprocess(content: string, filename: string) {
 // Some preprocesses may not work if other preprocessors haven't been run.
 export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
   PROCESSOR = new Processor()
-  OPTIONS = { ...OPTIONS, ...options } // change global settings here;
+  OPTIONS = { ...OPTIONS, ...options }
   DEV = false
 
   if (process.env.NODE_ENV === 'production')  DEV = false
@@ -127,29 +126,39 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
   return {
     markup: ({ content, filename }) => {
       return new Promise((resolve) => {
-        if (OPTIONS.configPath) {
-          useConfig.load<FullConfig>(OPTIONS.configPath).then(config => {
-            if (config.preflight === false) OPTIONS.preflights = false
-            if (config.safelist && typeof config.safelist == 'string') {
-              OPTIONS.safeList = config.safelist
-            } else if (config.safelist) {
-              const tmpSafelist = config.safelist as (string | string[])[]
-              OPTIONS.safeList = [...new Set(tmpSafelist.flat(Infinity))].join(' ')
-            }
-            PROCESSOR.loadConfig(config)
-            windiConfig = config
-            // isInit = true
-          }).finally(() => {
-            resolve({
-              code: _preprocess(content, filename)
-            })
-          })
-        } else {
-          PROCESSOR.loadConfig()
-          // isInit = true
+        if (windiConfig != undefined) {
           resolve({
             code: _preprocess(content, filename)
           })
+        } else {
+          if (OPTIONS.configPath) {
+            useDebugger.createLog('Trying to load windi configuration from' + OPTIONS.configPath)
+            useConfig.load<FullConfig>(OPTIONS.configPath).then(config => {
+              if (config.preflight === false) OPTIONS.preflights = false
+              if (config.safelist && typeof config.safelist == 'string') {
+                OPTIONS.safeList = config.safelist
+              } else if (config.safelist) {
+                const tmpSafelist = config.safelist as (string | string[])[]
+                OPTIONS.safeList = [...new Set(tmpSafelist.flat(Infinity))].join(' ')
+              }
+              PROCESSOR.loadConfig(config)
+              windiConfig = config
+              // isInit = true
+            }).catch((e) => {
+              useDebugger.createLog('Unknown Error loading the config')
+              console.error(e)
+            }).finally(() => {
+              resolve({
+                code: _preprocess(content, filename)
+              })
+            })
+          } else {
+            PROCESSOR.loadConfig()
+            // isInit = true
+            resolve({
+              code: _preprocess(content, filename)
+            })
+          }
         }
       })
     },
@@ -211,7 +220,6 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
         if (OPTIONS.safeList && attributes['windi:safelist:global']) {
           const SAFELIST = PROCESSOR.interpret(OPTIONS.safeList).styleSheet
           SAFELIST_STYLE = globalStyleSheet(SAFELIST).build()
-          console.log(SAFELIST_STYLE)
         } else if (OPTIONS.safeList && attributes['windi:safelist']) {
           const SAFELIST = PROCESSOR.interpret(OPTIONS.safeList).styleSheet
           SAFELIST_STYLE = SAFELIST.build()

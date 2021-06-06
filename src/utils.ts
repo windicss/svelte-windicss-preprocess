@@ -262,7 +262,6 @@ export class Magician {
     this.stats.set({file: this.filename, category: 'attributify'},{text: 'Handle Attributify by Windi CSS', time: (performance.now() - start).toFixed(2)})
 
     const classSet = new Set(this.classes)
-    // console.log(classSet)
     const start2 = performance.now()
     const INTERPRETED_MAIN = this.processor.interpret(Array.from(classSet).join(' ')).styleSheet
     this.stats.set({file: this.filename, category: 'classes'},{text: 'Handle usual Classes by Windi CSS', time: (performance.now() - start2).toFixed(2)})
