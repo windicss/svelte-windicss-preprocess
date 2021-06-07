@@ -46,7 +46,7 @@
     "windicss-runtime-dom": "0.1.1"
   },
   "devDependencies": {
-    "@nbhr/utils": "0.0.28",
+    "@nbhr/utils": "0.0.29",
     "@types/node": "15.12.0",
     "@types/prettier": "2.2.3",
     "@typescript-eslint/eslint-plugin": "4.26.0",
