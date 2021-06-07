@@ -42,7 +42,7 @@
   "dependencies": {
     "prettier": "2.3.0",
     "prettier-plugin-svelte": "2.3.0",
-    "windicss": "3.1.0",
+    "windicss": "3.1.1",
     "windicss-runtime-dom": "0.1.1"
   },
   "devDependencies": {
