@@ -1,6 +1,6 @@
 {
   "name": "svelte-windicss-preprocess",
-  "version": "4.0.9",
+  "version": "4.0.10",
   "description": "A Svelte Preprocessor to compile tailwindcss at build time based on windicss compiler.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -42,15 +42,15 @@
   "dependencies": {
     "prettier": "2.3.0",
     "prettier-plugin-svelte": "2.3.0",
-    "windicss": "3.1.0",
+    "windicss": "3.1.3",
     "windicss-runtime-dom": "0.1.1"
   },
   "devDependencies": {
-    "@nbhr/utils": "0.0.28",
+    "@nbhr/utils": "0.0.29",
     "@types/node": "15.12.0",
     "@types/prettier": "2.2.3",
     "@typescript-eslint/eslint-plugin": "4.26.0",
-    "@typescript-eslint/parser": "4.26.0",
+    "@typescript-eslint/parser": "4.27.0",
     "bumpp": "6.0.6",
     "chalk": "4.1.1",
     "cross-env": "7.0.3",
