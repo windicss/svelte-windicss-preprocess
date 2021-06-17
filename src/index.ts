@@ -57,7 +57,7 @@ let PROCESSOR: Processor
 let isInit = false
 let windiConfig: FullConfig
 let CSS_SOURCE = ''
-let CSS_STYLESHEETS: StyleSheet = new StyleSheet()
+let CSS_STYLESHEETS: Map<string,StyleSheet> = new Map()
 
 const REGEXP = {
   matchStyle: /<style[^>]*?(\/|(>([\s\S]*?)<\/style))>/,
@@ -93,7 +93,7 @@ function _preprocess(content: string, filename: string) {
 
     // console.log(mag.getStats())
 
-    CSS_STYLESHEETS = mag.getComputed()
+    CSS_STYLESHEETS.set(filename, mag.getComputed())
 
     return mag
       .getCode()
@@ -132,7 +132,7 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
           })
         } else {
           if (OPTIONS.configPath) {
-            useDebugger.createLog('Trying to load windi configuration from' + OPTIONS.configPath)
+            useDebugger.createLog('Trying to load windi configuration from ' + OPTIONS.configPath)
             useConfig.load<FullConfig>(OPTIONS.configPath).then(config => {
               if (config.preflight === false) OPTIONS.preflights = false
               if (config.safelist && typeof config.safelist == 'string') {
@@ -141,6 +141,7 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
                 const tmpSafelist = config.safelist as (string | string[])[]
                 OPTIONS.safeList = [...new Set(tmpSafelist.flat(Infinity))].join(' ')
               }
+              useDebugger.createLog('Configuration loaded successfully')
               PROCESSOR.loadConfig(config)
               windiConfig = config
               // isInit = true
@@ -248,10 +249,12 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
         }
 
         // MARK: WINDI CSS
-        if (CSS_STYLESHEETS && attributes['windi:global']) {
-          INLINE_STYLE = globalStyleSheet(CSS_STYLESHEETS).build()
-        } else if (CSS_STYLESHEETS) {
-          INLINE_STYLE = CSS_STYLESHEETS.build()
+        if (filename && CSS_STYLESHEETS.has(filename) && attributes['windi:global']) {
+          const FILESHEET = CSS_STYLESHEETS.get(filename)!
+          INLINE_STYLE = globalStyleSheet(FILESHEET).build()
+        } else if (filename && CSS_STYLESHEETS.has(filename)) {
+          const FILESHEET = CSS_STYLESHEETS.get(filename)!
+          INLINE_STYLE = FILESHEET.build()
         }
 
         // MARK: COMBINE
