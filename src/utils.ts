@@ -74,13 +74,17 @@ class Step {
 
     // FIXME: #150 not bulletprof yet
     const tmpContent = this.content
-    const ATTRIBUTIFY_CLASS_MATCHES = [...tmpContent.matchAll(/([\w+:_/-]+)=(['"])([!\w\s\n~:/\\,%#[\].$-]*?)\2/gi)]
+    const ATTRIBUTIFY_CLASS_MATCHES = [...tmpContent.matchAll(/([\w+:_/-]+)=(['"])([^\2]*?)\2/gi)]
     // TODO: allow prefix with ::
     // extract key & value as class array
     if (ATTRIBUTIFY_CLASS_MATCHES.length < 1) return this
     for (const match of ATTRIBUTIFY_CLASS_MATCHES) {
       if (match[1] == 'class') continue
-      this.attributifyClassList.set(match[1].toString(), match[3].split(' '))
+      const cleanedMatch = match[3]
+        .replace(/windi[`].+?[`]|(?<![-])[$](?=[{])|(?<=([{][\w\s]+[^{]*?))['"]|(?<=([{][\w\s]+[^{]*?))\s[:]|([{][\w\s]+[^{]*?[?])|^[{]|(?<=["'`)])[}]/gi, ' ')
+        .replace(/ {2,}/gi, ' ')
+        .replace(/["'`]/gi, '')
+      this.attributifyClassList.set(match[1].toString(), cleanedMatch.split(' '))
     }
 
     this.content = tmpContent
@@ -94,7 +98,7 @@ class Step {
     if (CLASS_MATCHES.length < 1) return this
     for (const match of CLASS_MATCHES) {
       const cleanedMatch = match[3]
-        .replace(/windi[`].+?[`]|(?<![-])[$](?=[{])|(?<=([{][\w\s]+[^{]*?))['":]|([{][\w\s]+[^{]*?[?])|^[{]|(?<=["'`)])[}]/gi, ' ')
+        .replace(/windi[`].+?[`]|(?<![-])[$](?=[{])|(?<=([{][\w\s]+[^{]*?))['"]|(?<=([{][\w\s]+[^{]*?))\s[:]|([{][\w\s]+[^{]*?[?])|^[{]|(?<=["'`)])[}]/gi, ' ')
         .replace(/ {2,}/gi, ' ')
         .replace(/["'`]/gi, '')
       this.mainClassList = cleanedMatch.split(' ')
