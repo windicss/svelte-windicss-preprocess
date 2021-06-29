@@ -48,7 +48,7 @@
   "devDependencies": {
     "@nbhr/utils": "0.0.29",
     "@types/node": "15.12.5",
-    "@types/prettier": "2.2.3",
+    "@types/prettier": "2.3.0",
     "@typescript-eslint/eslint-plugin": "4.28.1",
     "@typescript-eslint/parser": "4.28.1",
     "bumpp": "6.0.6",
