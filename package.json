@@ -56,7 +56,7 @@
     "cross-env": "7.0.3",
     "eslint": "7.29.0",
     "rimraf": "3.0.2",
-    "sucrase": "3.18.1",
+    "sucrase": "3.19.0",
     "svelte": "3.38.2",
     "tslib": "2.2.0",
     "tsup": "4.11.2",
