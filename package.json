@@ -54,7 +54,7 @@
     "bumpp": "6.0.6",
     "chalk": "4.1.1",
     "cross-env": "7.0.3",
-    "eslint": "7.29.0",
+    "eslint": "7.30.0",
     "rimraf": "3.0.2",
     "sucrase": "3.19.0",
     "svelte": "3.38.3",
