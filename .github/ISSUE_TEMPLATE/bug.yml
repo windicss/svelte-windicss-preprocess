@@ -18,7 +18,6 @@ body:
     id: system-info
     attributes:
       label: System Info
-      --System --Managers --IDEs --Languages --Binaries --Browsers --npmGlobalPackages --npmPackages --markdown
       description: Output of `npx envinfo --console --system --IDEs --binaries --browsers --npmPackages windicss,svelte-windicss-preprocess,svelte`
       render: shell
       placeholder: System, Binaries, Browsers
