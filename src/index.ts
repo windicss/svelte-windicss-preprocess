@@ -168,8 +168,13 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
 
         if (DEV === true && OPTIONS.devTools && OPTIONS.devTools.enabled !== false && attributes['windi:devtools']) {
           const path = require.resolve('windicss-runtime-dom')
-          const runtimeConfig: FullConfig = {
-            theme: windiConfig.theme
+          let runtimeConfig: FullConfig
+          if (windiConfig !== undefined) {
+            runtimeConfig = {
+              theme: windiConfig.theme
+            }
+          } else {
+            runtimeConfig = {}
           }
           const windiRuntimeDom = readFileSync(path, 'utf-8')
           const windiRuntimeDomConfig = `
