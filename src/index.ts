@@ -1,5 +1,6 @@
 import { useConfig, useDebugger } from '@nbhr/utils'
 import { readFileSync } from 'fs'
+import { createRequire } from 'module'
 import type { PreprocessorGroup } from 'svelte/types/compiler/preprocess'
 import { Processor } from 'windicss/lib'
 import type { FullConfig } from 'windicss/types/interfaces'
@@ -164,10 +165,12 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
       })
     },
     script: ({ content, attributes, markup }) => {
-      return new Promise((resolve) => {
+      return new Promise(async (resolve) => {
 
         if (DEV === true && OPTIONS.devTools && OPTIONS.devTools.enabled !== false && attributes['windi:devtools']) {
-          const path = require.resolve('windicss-runtime-dom')
+          // const path = require.resolve('windicss-runtime-dom')
+          const r = createRequire(import.meta.url)
+          const path = r.resolve('windicss-runtime-dom')
           let runtimeConfig: FullConfig
           if (windiConfig !== undefined) {
             runtimeConfig = {
