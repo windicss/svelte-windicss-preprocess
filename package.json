@@ -43,7 +43,7 @@
     "prettier": "2.3.2",
     "prettier-plugin-svelte": "2.3.1",
     "windicss": "3.1.4",
-    "windicss-runtime-dom": "0.1.1"
+    "windicss-runtime-dom": "3.0.0"
   },
   "devDependencies": {
     "@nbhr/utils": "0.0.29",
