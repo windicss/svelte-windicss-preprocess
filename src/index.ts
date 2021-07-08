@@ -168,9 +168,9 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
       return new Promise(async (resolve) => {
 
         if (DEV === true && OPTIONS.devTools && OPTIONS.devTools.enabled !== false && attributes['windi:devtools']) {
-          // const path = require.resolve('windicss-runtime-dom')
-          const r = createRequire(import.meta.url)
-          const path = r.resolve('windicss-runtime-dom')
+          const path = require.resolve('windicss-runtime-dom')
+          // const r = createRequire(import.meta.url)
+          // const path = r.resolve('windicss-runtime-dom')
           let runtimeConfig: FullConfig
           if (windiConfig !== undefined) {
             runtimeConfig = {

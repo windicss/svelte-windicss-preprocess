@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, readdirSync, readdir  } from 'fs'
+import { readdir, readdirSync, readFileSync, writeFileSync } from 'fs'
 import { preprocess } from 'svelte/compiler'
 import { suite } from 'uvu'
 import { fixture } from 'uvu/assert'
@@ -11,7 +11,8 @@ readdirSync('tests/assets/input', {withFileTypes: true}).forEach(dirent => {
         test(dirent.name + '_' + file.name, async () => {
           const input = readFileSync('tests/assets/input/' + dirent.name + '/' + file.name, 'utf-8')
           const expected = readFileSync('tests/assets/expected/' + dirent.name + '/' + file.name, 'utf-8')
-          const { code } = await preprocess(input, require('../src/index').windi({
+          const { windi } = await import('../src/index')
+          const { code } = await preprocess(input, windi({
             silent: true
           }), {
             filename: file.name
