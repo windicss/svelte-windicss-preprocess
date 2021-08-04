@@ -1,8 +1,9 @@
 <script>
+let isPrimary = true
 </script>
 
 <main>
-  <div class='text-4xl'>my text is large</div>
+  <div class={isPrimary ? 'bg-red-500' : 'bg-yellow-500'}>my text is large</div>
 </main>
 
 <style>

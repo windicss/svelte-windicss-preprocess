@@ -2,9 +2,7 @@
   // i am a script
 </script>
 
-<main>
-  <!-- i am a template -->
-</main>
+<main />
 
 <style>
   /* i am a style */
