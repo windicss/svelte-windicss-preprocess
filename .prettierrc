@@ -2,9 +2,10 @@
   "arrowParens": "avoid",
   "bracketSpacing": true,
   "printWidth": 120,
-  "semi": true,
+  "semi": false,
   "singleQuote": true,
   "tabWidth": 2,
   "useTabs": false,
-  "proseWrap": "never"
+  "proseWrap": "never",
+  "svelteIndentScriptAndStyle": false
 }
