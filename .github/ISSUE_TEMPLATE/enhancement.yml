@@ -1,6 +1,6 @@
 name: "\U0001F680 New feature proposal"
 description: Propose a new feature to be added to Vite
-labels: ["enhancement"]
+labels: ['enhancement']
 body:
   - type: markdown
     attributes:
@@ -10,14 +10,14 @@ body:
     id: feature-description
     attributes:
       label: Clear and concise description of the problem
-      description: "I want this feature."
+      description: 'I want this feature.'
     validations:
       required: true
   - type: textarea
     id: suggested-solution
     attributes:
       label: Suggested solution
-      description: "What are your ideas?"
+      description: 'What are your ideas?'
     validations:
       required: true
   - type: textarea
