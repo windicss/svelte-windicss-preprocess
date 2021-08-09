@@ -165,6 +165,7 @@ export class Magician {
       if (match[1] == 'viewBox') continue
       if (match[1] == 'points') continue
       if (match[1] == 'label') continue
+      if (match[1] == 'xmlns') continue
       if (match[1].startsWith('class:')) continue
       const cleanedMatch = match[3]
         .replace(
