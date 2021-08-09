@@ -194,20 +194,18 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
           CSS_STYLE = globalStyleSheet(CSS).build()
         } else if (CSS_SOURCE) {
           const tmpCSS = CSS_SOURCE
-          // global styles
-          const globalMatches = [...(tmpCSS.matchAll(/:global\((?<selector>.*)\).*{(?<css>[^}]*)}/gim) || [])]
-            .map(el => {
-              return `${el.groups?.selector} {${el.groups?.css}}`
-            })
-            .join('\n')
-          const globalCSS = new CSSParser(globalMatches, PROCESSOR).parse()
-          const buildGlobalCSS = globalStyleSheet(globalCSS).build()
-          if (buildGlobalCSS.length > 0) CSS_STYLE += buildGlobalCSS + '\n'
-          // local styles
-          const scopedMatches = tmpCSS.replace(/:global\([^}]*}/gim, '')
-          CSS = new CSSParser(scopedMatches, PROCESSOR).parse()
-          const buildLocalCSS = CSS.build()
-          if (buildLocalCSS.length > 0) CSS_STYLE += buildLocalCSS
+          const rules = [...(tmpCSS.matchAll(/(?<selector>.*){(?<css>[^}]*)}/gim) || [])]
+          rules.forEach(rule => {
+            if (rule.groups && rule.groups.selector.includes(':global')) {
+              const globalCSS = new CSSParser(rule[0], PROCESSOR).parse()
+              const buildGlobalCSS = globalStyleSheet(globalCSS).build()
+              if (buildGlobalCSS.length > 0) CSS_STYLE += buildGlobalCSS + '\n'
+            } else {
+              CSS = new CSSParser(rule[0], PROCESSOR).parse()
+              const buildLocalCSS = CSS.build()
+              if (buildLocalCSS.length > 0) CSS_STYLE += buildLocalCSS + '\n'
+            }
+          })
         }
 
         // MARK: WINDI CSS
