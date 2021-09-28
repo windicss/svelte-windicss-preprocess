@@ -80,6 +80,8 @@ export class Magician {
 
   setInject(): this {
     let tmpContent = this.content
+    tmpContent = tmpContent.replace('windi:inject', '')
+
     const styleMatch = tmpContent.match(/(?<openTag><style[^>]*?>)(?<content>[\s\S]*?)(?<closeTag><\/style>)/gi)
 
     if (styleMatch) {
