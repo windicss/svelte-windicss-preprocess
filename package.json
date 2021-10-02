@@ -20,7 +20,7 @@
   "maintainers": [
     {
       "name": "Alexander Niebuhr",
-      "email": "45965090+alexanderniebuhr@users.noreply.github.com"
+      "email": "tech@nbhr.io"
     }
   ],
   "contributors": [],
@@ -37,29 +37,27 @@
     "build": "tsup ./src/index.ts --dts --format esm,cjs",
     "release": "npm run test && npm run build:clean && bumpp --tag --commit --push",
     "lint": "eslint src",
-    "lint:tests": "eslint tests --ext .ts",
-    "sort": "npx sort-package-json@latest",
-    "check": "npx taze@latest major"
+    "lint:tests": "eslint tests --ext .ts"
   },
   "dependencies": {
-    "windicss": "^3.1.7",
+    "windicss": "^3.1.8",
     "windicss-runtime-dom": "^3.0.0"
   },
   "devDependencies": {
     "@nbhr/utils": "0.0.29",
-    "@types/node": "16.4.13",
-    "@typescript-eslint/eslint-plugin": "4.29.0",
-    "@typescript-eslint/parser": "4.29.0",
+    "@types/node": "16.10.2",
+    "@typescript-eslint/eslint-plugin": "4.32.0",
+    "@typescript-eslint/parser": "4.32.0",
     "bumpp": "6.0.6",
     "chalk": "4.1.2",
     "cross-env": "7.0.3",
     "eslint": "7.32.0",
     "rimraf": "3.0.2",
     "sucrase": "3.20.1",
-    "svelte": "^3.42.1",
-    "tslib": "2.3.0",
+    "svelte": "^3.43.1",
+    "tslib": "2.3.1",
     "tsup": "4.13.1",
-    "typescript": "4.3.5",
+    "typescript": "4.4.3",
     "uvu": "0.5.1"
   }
 }
