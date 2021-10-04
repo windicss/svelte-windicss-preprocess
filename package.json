@@ -40,7 +40,7 @@
     "lint:tests": "eslint tests --ext .ts"
   },
   "dependencies": {
-    "windicss": "^3.1.8",
+    "windicss": "^3.1.9",
     "windicss-runtime-dom": "^3.0.0"
   },
   "devDependencies": {
