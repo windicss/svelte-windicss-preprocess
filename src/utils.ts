@@ -113,7 +113,6 @@ export class Magician {
         })
       )
     }
-    //console.log(this.classes)
 
     this.content = tmpContent
     return this
@@ -127,7 +126,6 @@ export class Magician {
       this.directives = this.directives.concat(match[2])
       // this.directiveClassList.push(match[2])
     }
-    //console.log(this.directives)
     this.content = tmpContent
     return this
   }
@@ -144,7 +142,6 @@ export class Magician {
       this.expressions = this.expressions.concat(cleanedMatch.split(' '))
       // this.windiClassList = this.windiClassList.concat(cleanedMatch.split(' '))
     }
-    //console.log(this.expressions)
     this.content = tmpContent
     return this
   }
@@ -187,7 +184,6 @@ export class Magician {
         this.attributifies.set(match[1].toString(), cleanedMatch.split(' '))
       }
     }
-    //console.log(this.attributifies)
 
     this.content = tmpContent
     return this
@@ -221,6 +217,7 @@ export class Magician {
   getComputed(): Computed | undefined {
     return this.computed
   }
+
   getComputedStyleSheet(): StyleSheet {
     return this.computedStyleSheet
   }
