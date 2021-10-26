@@ -194,7 +194,7 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
           CSS_STYLE = globalStyleSheet(CSS).build()
         } else if (CSS_SOURCE) {
           const tmpCSS = CSS_SOURCE
-          const rules = [...(tmpCSS.matchAll(/(?<selector>.*){(?<css>[^}]*)}/gim) || [])]
+          const rules = [...(tmpCSS.matchAll(/(?<selector>[^}]*){(?<css>[^}]*)}/gim) || [])]
           rules.forEach(rule => {
             if (rule.groups && rule.groups.selector.includes(':global')) {
               const globalCSS = new CSSParser(rule[0], PROCESSOR).parse()
