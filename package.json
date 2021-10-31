@@ -53,7 +53,7 @@
     "@unocss/preset-icons": "0.4.5",
     "bumpp": "7.1.1",
     "cross-env": "7.0.3",
-    "eslint": "7.32.0",
+    "eslint": "8.1.0",
     "fast-glob": "3.2.7",
     "picocolors": "1.0.0",
     "rimraf": "3.0.2",
