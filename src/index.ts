@@ -248,11 +248,11 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
         // MARK: UNO CSS
         if (OPTIONS.safeList) {
           const { css } = await UNO.generate(OPTIONS.safeList)
-          UNO_STYLE = css
+          UNO_STYLE += css
         }
         if (filename && UNO_CSS.has(filename)) {
           const { css } = await UNO_CSS.get(filename)!
-          UNO_STYLE = css
+          UNO_STYLE += css
         }
 
         // MARK: COMBINE
