@@ -1,5 +1,9 @@
+import type { UnoGenerator } from '@unocss/core'
+import { createGenerator, GenerateResult } from '@unocss/core'
+import UnocssIcons from '@unocss/preset-icons'
 import Processor from 'windicss'
 import type { FullConfig } from 'windicss/types/interfaces'
+import type { Options } from './index'
 import { StyleSheet } from 'windicss/utils/style'
 
 export function combineStyleList(stylesheets: StyleSheet[]): StyleSheet {
@@ -36,6 +40,7 @@ interface Computed {
 
 export class Magician {
   processor: Processor
+  uno: UnoGenerator | undefined
   content: string
   filename: string
   isBundled = false
@@ -47,16 +52,41 @@ export class Magician {
   classes: string[] = []
   stylesheets: StyleSheet[] = []
   config: FullConfig = {}
+  userConfig: Options = {}
   stats: Map<Record<string, string>, Record<string, string | number>> = new Map()
   computed: Computed | undefined = undefined
   computedStyleSheet: StyleSheet = new StyleSheet()
+  unoCSS: Promise<GenerateResult> | undefined
   css = ''
 
-  constructor(processor: Processor, content: string, filename: string, config: FullConfig = {}) {
+  constructor(
+    processor: Processor,
+    content: string,
+    filename: string,
+    config: FullConfig = {},
+    userConfig: Options = {}
+  ) {
     this.processor = processor
     this.content = content
     this.filename = filename
     this.config = config
+    this.userConfig = userConfig
+
+    if (userConfig.experimental && userConfig.experimental.icons != undefined) {
+      this.uno = createGenerator(
+        {
+          // when `presets` is specified, the default preset will be disabled
+          // so you could only use the pure CSS icons in addition to your
+          // existing app without polluting other CSS
+          presets: [
+            UnocssIcons({
+              ...userConfig.experimental.icons,
+            }),
+          ],
+        },
+        {}
+      )
+    }
   }
 
   getStats(): Map<Record<string, string>, Record<string, string | number>> {
@@ -193,7 +223,36 @@ export class Magician {
     const tmpContent = this.content
 
     const defaultSet = new Set(this.classes.concat(this.directives).concat(this.expressions))
+
+    if (this.userConfig.experimental?.icons != undefined && this.uno) {
+      const iconSet = new Set([...defaultSet.values()].filter(c => c.startsWith('i-')))
+      this.unoCSS = this.uno.generate(iconSet)
+    }
+
     const INTERPRETED_DEFAULT = this.processor.interpret(Array.from(defaultSet).join(' '))
+    // this.uno.generate(iconSet).then(({ css }) => {
+    //   const INTERPRETED_ICON = new StyleSheet()
+    //   const rawStyles = css.split('\n')
+    //   // regex to split css rule into selector & content
+    //   const RULE_REGEX = /(?<selector>.+?)\{(?<content>.+?)\}/gi
+    //   for (const rawStyle of rawStyles) {
+    //     const rule = RULE_REGEX.exec(rawStyle)
+    //     if (rule && rule.groups && rule.groups.selector && rule.groups.content) {
+    //       const selector = rule.groups.selector
+    //       const content = rule.groups.content
+    //       const properties = content.split(';').map(p => {
+    //         // regex to split css property into key & value
+    //         const PROPERTY_REGEX = /(?<key>[\w-]+):(?<value>[^;]+)/gi
+    //         const property = PROPERTY_REGEX.exec(p)
+    //         console.log(property)
+    //         if (property && property.groups && property.groups.key && property.groups.value) {
+    //           return new Property(property.groups.key, property.groups.value)
+    //         }
+    //       })
+    //       INTERPRETED_ICON.add(new Style(selector, properties, false))
+    //     }
+    //   }
+    // })
 
     this.attributifies.forEach((v, k) => {
       const unique = new Set(v)
@@ -220,6 +279,10 @@ export class Magician {
 
   getComputedStyleSheet(): StyleSheet {
     return this.computedStyleSheet
+  }
+
+  getUnoCSS(): Promise<GenerateResult> | undefined {
+    return this.unoCSS
   }
 
   getExtracted(): string {

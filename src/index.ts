@@ -1,4 +1,5 @@
 import { useConfig, useDebugger } from '@nbhr/utils'
+import { GenerateResult } from '@unocss/core'
 import { readFileSync } from 'fs'
 import type { PreprocessorGroup } from 'svelte/types/compiler/preprocess'
 import { Processor } from 'windicss/lib'
@@ -24,6 +25,12 @@ export interface Options {
   // compile?: boolean;
   // prefix?: string;
   // verbosity?: number;
+  experimental?: {
+    icons?: {
+      prefix?: string
+      extraProperties?: Record<string, string>
+    }
+  }
 }
 
 let OPTIONS: Options = {
@@ -49,9 +56,10 @@ let PROCESSOR: Processor
 let windiConfig: FullConfig
 let CSS_SOURCE = ''
 const CSS_STYLESHEETS: Map<string, { lastmodified: Date; code: StyleSheet }> = new Map()
+const UNO_CSS: Map<string, Promise<GenerateResult>> = new Map()
 
 function _preprocess(content: string, filename: string) {
-  let mag = new Magician(PROCESSOR, content, filename, windiConfig)
+  let mag = new Magician(PROCESSOR, content, filename, windiConfig, OPTIONS)
   mag = mag.prepare()
   mag = mag.setInject()
   // mag = mag.each(line => {
@@ -61,6 +69,7 @@ function _preprocess(content: string, filename: string) {
   mag = mag.processAttributify()
   mag = mag.compute()
   CSS_STYLESHEETS.set(filename, { code: mag.getComputedStyleSheet(), lastmodified: new Date() })
+  UNO_CSS.set(filename, mag.getUnoCSS() || Promise.resolve((<unknown>{ css: '', matched: '' }) as GenerateResult))
   return mag.getCode()
 }
 
@@ -162,11 +171,12 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
       })
     },
     style: ({ content, attributes, filename }) => {
-      return new Promise(resolve => {
+      return new Promise(async resolve => {
         let PREFLIGHTS_STYLE = ''
         let SAFELIST_STYLE = ''
         let CSS_STYLE = ''
         let INLINE_STYLE = ''
+        let UNO_STYLE = ''
 
         // MARK: PREFLIGHTS
         if (OPTIONS.preflights === true && attributes['windi:preflights:global']) {
@@ -217,12 +227,19 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
           INLINE_STYLE = FILESHEET['code'].build()
         }
 
+        // MARK: UNO CSS
+        if (filename && UNO_CSS.has(filename)) {
+          const { css } = await UNO_CSS.get(filename)!
+          UNO_STYLE = css
+        }
+
         // MARK: COMBINE
         let newStyleCode = '\n'
         if (PREFLIGHTS_STYLE.length > 0) newStyleCode += PREFLIGHTS_STYLE + '\n'
         if (SAFELIST_STYLE.length > 0) newStyleCode += SAFELIST_STYLE + '\n'
         if (CSS_STYLE.length > 0) newStyleCode += CSS_STYLE + '\n'
         if (INLINE_STYLE.length > 0) newStyleCode += INLINE_STYLE + '\n'
+        if (UNO_STYLE.length > 0) newStyleCode += UNO_STYLE + '\n'
 
         resolve({
           code: newStyleCode,
