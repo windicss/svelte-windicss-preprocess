@@ -24,7 +24,12 @@
     }
   ],
   "contributors": [],
-  "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.mjs"
+    }
+  },
   "types": "dist/index.d.ts",
   "files": [
     "dist/**/*"

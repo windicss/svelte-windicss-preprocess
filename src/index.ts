@@ -1,8 +1,8 @@
 import { useConfig, useDebugger } from '@nbhr/utils'
-import { GenerateResult, createGenerator } from '@unocss/core'
 import type { UnoGenerator } from '@unocss/core'
+import { createGenerator, GenerateResult } from '@unocss/core'
 import UnocssIcons from '@unocss/preset-icons'
-import { readFileSync } from 'fs'
+import { copyFileSync, readFileSync, rmSync, statSync } from 'fs'
 import type { PreprocessorGroup } from 'svelte/types/compiler/preprocess'
 import { Processor } from 'windicss/lib'
 import type { FullConfig } from 'windicss/types/interfaces'
@@ -57,6 +57,7 @@ let PROCESSOR: Processor
 let UNO: UnoGenerator
 
 let windiConfig: FullConfig
+let configMTime: number
 let CSS_SOURCE = ''
 const CSS_STYLESHEETS: Map<string, { lastmodified: Date; code: StyleSheet }> = new Map()
 const UNO_CSS: Map<string, Promise<GenerateResult>> = new Map()
@@ -74,6 +75,26 @@ function _preprocess(content: string, filename: string) {
   CSS_STYLESHEETS.set(filename, { code: mag.getComputedStyleSheet(), lastmodified: new Date() })
   UNO_CSS.set(filename, mag.getUnoCSS() || Promise.resolve((<unknown>{ css: '', matched: '' }) as GenerateResult))
   return mag.getCode()
+}
+
+function loadConfig(path: string): Promise<void> {
+  useDebugger.createLog('Trying to load windi configuration from ' + path)
+  return useConfig.load<FullConfig>(path).then((config: any) => {
+    // write current unix timestamp to configMTime
+    configMTime = Date.now()
+    if (config.preflight === false) OPTIONS.preflights = false
+    if (config.safelist && typeof config.safelist == 'string') {
+      OPTIONS.safeList = config.safelist
+    } else if (config.safelist) {
+      const tmpSafelist = config.safelist as (string | string[])[]
+      OPTIONS.safeList = [...new Set(tmpSafelist.flat(Infinity))].join(' ')
+    }
+    console.log(config)
+    console.log(JSON.stringify(config.theme))
+    PROCESSOR.loadConfig(config)
+    useDebugger.createLog('Configuration loaded successfully')
+    windiConfig = config
+  })
 }
 
 // Svelte evaluates preprocessors by running all markup preprocessors first,
@@ -110,26 +131,32 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
     markup: ({ content, filename }) => {
       return new Promise(resolve => {
         if (windiConfig != undefined) {
-          resolve({
-            code: _preprocess(content, filename),
-          })
+          if (OPTIONS.configPath) {
+            // get modified time of config file
+            const mTime = statSync(OPTIONS.configPath).mtimeMs
+            if (mTime > configMTime) {
+              const tmpConfigPath = `./${Date.now()}windi.config.js`
+              copyFileSync(OPTIONS.configPath, tmpConfigPath)
+              loadConfig(tmpConfigPath)
+                .catch(e => {
+                  useDebugger.createLog('Unknown Error while loading the config')
+                  console.error(e)
+                })
+                .finally(() => {
+                  rmSync(tmpConfigPath)
+                  resolve({
+                    code: _preprocess(content, filename),
+                  })
+                })
+            } else {
+              resolve({
+                code: _preprocess(content, filename),
+              })
+            }
+          }
         } else {
           if (OPTIONS.configPath) {
-            useDebugger.createLog('Trying to load windi configuration from ' + OPTIONS.configPath)
-            useConfig
-              .load<FullConfig>(OPTIONS.configPath)
-              .then(config => {
-                if (config.preflight === false) OPTIONS.preflights = false
-                if (config.safelist && typeof config.safelist == 'string') {
-                  OPTIONS.safeList = config.safelist
-                } else if (config.safelist) {
-                  const tmpSafelist = config.safelist as (string | string[])[]
-                  OPTIONS.safeList = [...new Set(tmpSafelist.flat(Infinity))].join(' ')
-                }
-                PROCESSOR.loadConfig(config)
-                useDebugger.createLog('Configuration loaded successfully')
-                windiConfig = config
-              })
+            loadConfig(OPTIONS.configPath)
               .catch(e => {
                 useDebugger.createLog('Unknown Error while loading the config')
                 console.error(e)
