@@ -1,5 +1,7 @@
 import { useConfig, useDebugger } from '@nbhr/utils'
-import { GenerateResult } from '@unocss/core'
+import { GenerateResult, createGenerator } from '@unocss/core'
+import type { UnoGenerator } from '@unocss/core'
+import UnocssIcons from '@unocss/preset-icons'
 import { readFileSync } from 'fs'
 import type { PreprocessorGroup } from 'svelte/types/compiler/preprocess'
 import { Processor } from 'windicss/lib'
@@ -52,6 +54,7 @@ let OPTIONS: Options = {
 
 let DEV = false
 let PROCESSOR: Processor
+let UNO: UnoGenerator
 
 let windiConfig: FullConfig
 let CSS_SOURCE = ''
@@ -59,7 +62,7 @@ const CSS_STYLESHEETS: Map<string, { lastmodified: Date; code: StyleSheet }> = n
 const UNO_CSS: Map<string, Promise<GenerateResult>> = new Map()
 
 function _preprocess(content: string, filename: string) {
-  let mag = new Magician(PROCESSOR, content, filename, windiConfig, OPTIONS)
+  let mag = new Magician(PROCESSOR, content, filename, windiConfig, OPTIONS, UNO)
   mag = mag.prepare()
   mag = mag.setInject()
   // mag = mag.each(line => {
@@ -81,6 +84,21 @@ function _preprocess(content: string, filename: string) {
 export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
   PROCESSOR = new Processor()
   OPTIONS = { ...OPTIONS, ...options }
+  if (OPTIONS.experimental && OPTIONS.experimental.icons != undefined) {
+    UNO = createGenerator(
+      {
+        // when `presets` is specified, the default preset will be disabled
+        // so you could only use the pure CSS icons in addition to your
+        // existing app without polluting other CSS
+        presets: [
+          UnocssIcons({
+            ...OPTIONS.experimental.icons,
+          }),
+        ],
+      },
+      {}
+    )
+  }
   DEV = false
 
   if (process.env.NODE_ENV === 'production') DEV = false
@@ -228,6 +246,10 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
         }
 
         // MARK: UNO CSS
+        if (OPTIONS.safeList) {
+          const { css } = await UNO.generate(OPTIONS.safeList)
+          UNO_STYLE = css
+        }
         if (filename && UNO_CSS.has(filename)) {
           const { css } = await UNO_CSS.get(filename)!
           UNO_STYLE = css

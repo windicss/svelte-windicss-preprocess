@@ -1,10 +1,9 @@
 import type { UnoGenerator } from '@unocss/core'
-import { createGenerator, GenerateResult } from '@unocss/core'
-import UnocssIcons from '@unocss/preset-icons'
 import Processor from 'windicss'
 import type { FullConfig } from 'windicss/types/interfaces'
 import type { Options } from './index'
 import { StyleSheet } from 'windicss/utils/style'
+import type { GenerateResult } from '@unocss/core'
 
 export function combineStyleList(stylesheets: StyleSheet[]): StyleSheet {
   return stylesheets
@@ -64,7 +63,8 @@ export class Magician {
     content: string,
     filename: string,
     config: FullConfig = {},
-    userConfig: Options = {}
+    userConfig: Options = {},
+    uno?: UnoGenerator
   ) {
     this.processor = processor
     this.content = content
@@ -72,20 +72,8 @@ export class Magician {
     this.config = config
     this.userConfig = userConfig
 
-    if (userConfig.experimental && userConfig.experimental.icons != undefined) {
-      this.uno = createGenerator(
-        {
-          // when `presets` is specified, the default preset will be disabled
-          // so you could only use the pure CSS icons in addition to your
-          // existing app without polluting other CSS
-          presets: [
-            UnocssIcons({
-              ...userConfig.experimental.icons,
-            }),
-          ],
-        },
-        {}
-      )
+    if (uno) {
+      this.uno = uno
     }
   }
 
