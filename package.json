@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "@nbhr/utils": "0.0.29",
-    "@types/node": "16.11.3",
+    "@types/node": "16.11.6",
     "@typescript-eslint/eslint-plugin": "4.32.0",
     "@typescript-eslint/parser": "4.32.0",
     "@unocss/core": "0.4.5",
