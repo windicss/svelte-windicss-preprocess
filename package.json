@@ -46,7 +46,7 @@
   },
   "dependencies": {
     "@iconify/json": "1.1.421",
-    "windicss": "3.1.9",
+    "windicss": "3.2.0",
     "windicss-runtime-dom": "3.0.0"
   },
   "devDependencies": {
