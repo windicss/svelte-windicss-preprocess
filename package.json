@@ -40,6 +40,7 @@
     "lint:tests": "eslint tests --ext .ts"
   },
   "dependencies": {
+    "@iconify/json": "1.1.421",
     "windicss": "^3.1.9",
     "windicss-runtime-dom": "^3.0.0"
   },
@@ -48,10 +49,13 @@
     "@types/node": "16.11.3",
     "@typescript-eslint/eslint-plugin": "4.32.0",
     "@typescript-eslint/parser": "4.32.0",
+    "@unocss/core": "0.4.5",
+    "@unocss/preset-icons": "0.4.5",
     "bumpp": "7.1.1",
-    "chalk": "4.1.2",
     "cross-env": "7.0.3",
     "eslint": "7.32.0",
+    "fast-glob": "3.2.7",
+    "picocolors": "1.0.0",
     "rimraf": "3.0.2",
     "sucrase": "3.20.3",
     "svelte": "^3.44.0",
@@ -61,6 +65,6 @@
     "uvu": "0.5.2"
   },
   "volta": {
-    "node": "16.12.0"
+    "node": "16.13.0"
   }
 }
