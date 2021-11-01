@@ -20,12 +20,12 @@ specifiers:
   tsup: 5.5.0
   typescript: 4.4.4
   uvu: 0.5.2
-  windicss: 3.1.9
+  windicss: 3.2.1
   windicss-runtime-dom: 3.0.0
 
 dependencies:
   '@iconify/json': 1.1.421
-  windicss: 3.1.9
+  windicss: 3.2.1
   windicss-runtime-dom: 3.0.0
 
 devDependencies:
@@ -1587,8 +1587,8 @@ packages:
     resolution: {integrity: sha512-a12Uhu71yT1U8w0PzJ3amF9xmC8b1rWFLgXEfI/UyuwUi6D1vUACOO6vb0iY4T4OtP/bJAjQMM7lv3hMWSwLuQ==}
     dev: false
 
-  /windicss/3.1.9:
-    resolution: {integrity: sha512-5YoKvXeCQXIdwc91BoOgpKbIImr2JS8I14rPMa/5dKDDPA4ot3NgICWKELkml39R/8rn4Q0BVUUTqN+w+hjDSA==}
+  /windicss/3.2.1:
+    resolution: {integrity: sha512-LusrIrryBFHAPQ/OOTbS4EWWuzI6eGeJglI9nQ3kDBr1cqH69NWt8Z8q59f9kTkgptXroejmWfksWwqgHs8EVw==}
     engines: {node: '>= 12'}
     hasBin: true
     dev: false
