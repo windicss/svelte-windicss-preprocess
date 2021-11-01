@@ -1,9 +1,8 @@
-import type { UnoGenerator } from '@unocss/core'
+import type { GenerateResult, UnoGenerator } from '@unocss/core'
 import Processor from 'windicss'
 import type { FullConfig } from 'windicss/types/interfaces'
-import type { Options } from './index'
 import { StyleSheet } from 'windicss/utils/style'
-import type { GenerateResult } from '@unocss/core'
+import type { Options } from './index'
 
 export function combineStyleList(stylesheets: StyleSheet[]): StyleSheet {
   return stylesheets
