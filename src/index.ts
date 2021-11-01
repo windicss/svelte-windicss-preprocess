@@ -1,3 +1,4 @@
+import type { IconifyJSON } from '@iconify/types'
 import { useConfig, useDebugger } from '@nbhr/utils'
 import type { UnoGenerator } from '@unocss/core'
 import { createGenerator, GenerateResult } from '@unocss/core'
@@ -30,6 +31,7 @@ export interface Options {
   experimental?: {
     icons?: {
       prefix?: string
+      collections?: Record<string, IconifyJSON>
       extraProperties?: Record<string, string>
     }
   }
