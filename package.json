@@ -49,7 +49,7 @@
     "windicss": "3.2.1",
     "windicss-runtime-dom": "3.0.0",
     "@unocss/core": "0.4.7",
-    "@unocss/preset-icons": "0.4.7"
+    "@unocss/preset-icons": "0.4.8"
   },
   "devDependencies": {
     "@nbhr/utils": "0.0.29",
