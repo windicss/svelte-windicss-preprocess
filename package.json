@@ -48,7 +48,7 @@
     "@iconify/json": "1.1.421",
     "windicss": "3.2.1",
     "windicss-runtime-dom": "3.0.0",
-    "@unocss/core": "0.4.7",
+    "@unocss/core": "0.6.1",
     "@unocss/preset-icons": "0.4.7"
   },
   "devDependencies": {
