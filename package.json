@@ -45,7 +45,7 @@
     "lint:tests": "eslint tests --ext .ts"
   },
   "dependencies": {
-    "@iconify/json": "1.1.421",
+    "@iconify/json": "1.1.425",
     "windicss": "3.2.1",
     "windicss-runtime-dom": "3.0.0"
   },
