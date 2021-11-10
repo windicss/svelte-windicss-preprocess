@@ -51,7 +51,7 @@
   },
   "devDependencies": {
     "@unocss/core": "0.4.7",
-    "@unocss/preset-icons": "0.4.7",
+    "@unocss/preset-icons": "0.7.4",
     "@nbhr/utils": "0.0.29",
     "@types/node": "16.11.6",
     "@typescript-eslint/eslint-plugin": "5.2.0",
