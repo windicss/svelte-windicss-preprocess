@@ -27,6 +27,7 @@
     "sucrase": "3.20.3",
     "svelte": "3.44.1",
     "tslib": "2.3.1",
+    "tsm": "^2.1.4",
     "tsup": "5.6.0",
     "typescript": "4.4.4",
     "uvu": "0.5.2"
@@ -68,7 +69,7 @@
     "lint:tests": "eslint tests --ext .ts",
     "release": "nr test && nr build:clean && bumpp --tag --commit --push",
     "test": "uvu -r sucrase/register tests",
-    "test:generate": "node -r sucrase/register generate.ts"
+    "test:generate": "tsm generate.ts"
   },
   "types": "dist/index.d.ts",
   "volta": {

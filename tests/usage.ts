@@ -1,4 +1,4 @@
-import { readdir, readdirSync, readFileSync, writeFileSync } from 'fs'
+import { readdirSync, readFileSync } from 'fs'
 import { preprocess } from 'svelte/compiler'
 import { suite } from 'uvu'
 import { fixture } from 'uvu/assert'
