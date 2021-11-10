@@ -1,5 +1,5 @@
 import type { GenerateResult, UnoGenerator } from '@unocss/core'
-import Processor from 'windicss'
+import type { Processor } from 'windicss/lib'
 import type { FullConfig } from 'windicss/types/interfaces'
 import { StyleSheet } from 'windicss/utils/style'
 import type { Options } from './index'
