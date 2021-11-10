@@ -2,7 +2,7 @@ lockfileVersion: 5.3
 
 specifiers:
   '@antfu/ni': ^0.10.1
-  '@iconify/json': 1.1.421
+  '@iconify/json': 1.1.426
   '@nbhr/utils': 0.0.29
   '@types/node': 16.11.7
   '@typescript-eslint/eslint-plugin': 5.3.1
@@ -26,7 +26,7 @@ specifiers:
   windicss-runtime-dom: 3.0.0
 
 dependencies:
-  '@iconify/json': 1.1.421
+  '@iconify/json': 1.1.426
   windicss: 3.2.1
   windicss-runtime-dom: 3.0.0
 
@@ -91,8 +91,8 @@ packages:
     resolution: {integrity: sha512-wdppn25U8z/2yiaT6YGquE6X8sSv7hNMWSXYSSU1jGv/yd6XqjXgTDJ8KP4NgjTXfJ3GbRjeeb8RTV7a/VpM+w==}
     dev: true
 
-  /@iconify/json/1.1.421:
-    resolution: {integrity: sha512-nCxWszt2AjVsG/REoAhFue4aiJniZmjx8M2MAS/SCSHQUGoxKcFTg5NeyfDW1tQiKJ0R8AmbEb0Zum8ljybZNA==}
+  /@iconify/json/1.1.426:
+    resolution: {integrity: sha512-hY0VC4JAnHaXdHkUzNuoSGKS493TN+tu6BVFmT/olNVZgl2ovwiOjNhpEhBHEcOb9DRV6cV5kZH9YeNzMlVTog==}
     dev: false
 
   /@iconify/types/1.0.10:
