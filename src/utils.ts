@@ -217,29 +217,6 @@ export class Magician {
     }
 
     const INTERPRETED_DEFAULT = this.processor.interpret(Array.from(defaultSet).join(' '))
-    // this.uno.generate(iconSet).then(({ css }) => {
-    //   const INTERPRETED_ICON = new StyleSheet()
-    //   const rawStyles = css.split('\n')
-    //   // regex to split css rule into selector & content
-    //   const RULE_REGEX = /(?<selector>.+?)\{(?<content>.+?)\}/gi
-    //   for (const rawStyle of rawStyles) {
-    //     const rule = RULE_REGEX.exec(rawStyle)
-    //     if (rule && rule.groups && rule.groups.selector && rule.groups.content) {
-    //       const selector = rule.groups.selector
-    //       const content = rule.groups.content
-    //       const properties = content.split(';').map(p => {
-    //         // regex to split css property into key & value
-    //         const PROPERTY_REGEX = /(?<key>[\w-]+):(?<value>[^;]+)/gi
-    //         const property = PROPERTY_REGEX.exec(p)
-    //         console.log(property)
-    //         if (property && property.groups && property.groups.key && property.groups.value) {
-    //           return new Property(property.groups.key, property.groups.value)
-    //         }
-    //       })
-    //       INTERPRETED_ICON.add(new Style(selector, properties, false))
-    //     }
-    //   }
-    // })
 
     this.attributifies.forEach((v, k) => {
       const unique = new Set(v)

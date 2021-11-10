@@ -82,7 +82,7 @@ function _preprocess(content: string, filename: string) {
 
 function loadConfig(path: string): Promise<void> {
   useDebugger.createLog('Trying to load windi configuration from ' + path)
-  return useConfig.load<FullConfig>(path).then((config: any) => {
+  return useConfig.load<FullConfig>(path).then(config => {
     // write current unix timestamp to configMTime
     configMTime = Date.now()
     if (config.preflight === false) OPTIONS.preflights = false
@@ -224,6 +224,7 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
       })
     },
     style: ({ content, attributes, filename }) => {
+      // eslint-disable-next-line no-async-promise-executor
       return new Promise(async resolve => {
         let PREFLIGHTS_STYLE = ''
         let SAFELIST_STYLE = ''
@@ -272,11 +273,10 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
         }
 
         // MARK: WINDI CSS
-        if (filename && CSS_STYLESHEETS.has(filename) && attributes['windi:global']) {
-          const FILESHEET = CSS_STYLESHEETS.get(filename)!
+        const FILESHEET = CSS_STYLESHEETS.get(filename || '') || undefined
+        if (FILESHEET && attributes['windi:global']) {
           INLINE_STYLE = globalStyleSheet(FILESHEET['code']).build()
-        } else if (filename && CSS_STYLESHEETS.has(filename)) {
-          const FILESHEET = CSS_STYLESHEETS.get(filename)!
+        } else if (FILESHEET) {
           INLINE_STYLE = FILESHEET['code'].build()
         }
 
@@ -286,6 +286,7 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
           UNO_STYLE += css
         }
         if (filename && UNO_CSS.has(filename)) {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const { css } = await UNO_CSS.get(filename)!
           UNO_STYLE += css
         }
