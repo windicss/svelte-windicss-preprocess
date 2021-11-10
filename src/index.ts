@@ -180,35 +180,39 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
     script: ({ content, attributes }) => {
       return new Promise(resolve => {
         if (DEV === true && OPTIONS.devTools && OPTIONS.devTools.enabled !== false && attributes['windi:devtools']) {
-          const path = require.resolve('windicss-runtime-dom')
-          let runtimeConfig: FullConfig
-          if (windiConfig !== undefined) {
-            runtimeConfig = {
-              theme: windiConfig.theme,
-            }
-          } else {
-            runtimeConfig = {}
-          }
-          const windiRuntimeDom = readFileSync(path, 'utf-8')
-          const windiRuntimeDomConfig = `
-              window.windicssRuntimeOptions = {
-                extractInitial: false,
-                preflight: false,
-                mockClasses: true,
-                config: ${JSON.stringify(runtimeConfig)}
-              }
-            `
-          const injectScript = `
-              if (!document.getElementById("windicss-devtools")) {
-                const script = document.createElement("script");
-                script.id = "windicss-devtools";
-                script.setAttribute("type", "text/javascript");
-                script.innerHTML = ${JSON.stringify(windiRuntimeDomConfig + windiRuntimeDom)};
-                document.head.append(script);
-              }
-            `
+          console.log('DEVTOOLS currently disabled')
+          // const path = require.resolve('windicss-runtime-dom')
+          // let runtimeConfig: FullConfig
+          // if (windiConfig !== undefined) {
+          //   runtimeConfig = {
+          //     theme: windiConfig.theme,
+          //   }
+          // } else {
+          //   runtimeConfig = {}
+          // }
+          // const windiRuntimeDom = readFileSync(path, 'utf-8')
+          // const windiRuntimeDomConfig = `
+          //     window.windicssRuntimeOptions = {
+          //       extractInitial: false,
+          //       preflight: false,
+          //       mockClasses: true,
+          //       config: ${JSON.stringify(runtimeConfig)}
+          //     }
+          //   `
+          // const injectScript = `
+          //     if (!document.getElementById("windicss-devtools")) {
+          //       const script = document.createElement("script");
+          //       script.id = "windicss-devtools";
+          //       script.setAttribute("type", "text/javascript");
+          //       script.innerHTML = ${JSON.stringify(windiRuntimeDomConfig + windiRuntimeDom)};
+          //       document.head.append(script);
+          //     }
+          //   `
+          // resolve({
+          //   code: injectScript + '\n' + content,
+          // })
           resolve({
-            code: injectScript + '\n' + content,
+            code: content,
           })
         } else {
           resolve({
