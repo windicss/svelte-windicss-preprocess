@@ -1,6 +1,7 @@
 lockfileVersion: 5.3
 
 specifiers:
+  '@antfu/ni': ^0.10.1
   '@iconify/json': 1.1.421
   '@nbhr/utils': 0.0.29
   '@types/node': 16.11.7
@@ -13,6 +14,7 @@ specifiers:
   eslint: 8.2.0
   fast-glob: 3.2.7
   picocolors: 1.0.0
+  pnpm: ^6.21.0
   rimraf: 3.0.2
   sucrase: 3.20.3
   svelte: 3.44.1
@@ -29,6 +31,7 @@ dependencies:
   windicss-runtime-dom: 3.0.0
 
 devDependencies:
+  '@antfu/ni': 0.10.1
   '@nbhr/utils': 0.0.29
   '@types/node': 16.11.7
   '@typescript-eslint/eslint-plugin': 5.3.1_4653b7803b7453f5f37717b7e1448517
@@ -40,6 +43,7 @@ devDependencies:
   eslint: 8.2.0
   fast-glob: 3.2.7
   picocolors: 1.0.0
+  pnpm: 6.21.0
   rimraf: 3.0.2
   sucrase: 3.20.3
   svelte: 3.44.1
@@ -49,6 +53,11 @@ devDependencies:
   uvu: 0.5.2
 
 packages:
+
+  /@antfu/ni/0.10.1:
+    resolution: {integrity: sha512-0inkclq/aYzVHYjfc3fqw7wH9kpjaRu161FtjSxQLSUZGU2Agn9h44NmEgfhpr2diOZmajM+g/gddHpQK937pg==}
+    hasBin: true
+    dev: true
 
   /@eslint/eslintrc/1.0.4:
     resolution: {integrity: sha512-h8Vx6MdxwWI2WM8/zREHMoqdgLNXEL4QX3MWSVMdyNJGvXVOs+6lp+m2hc3FnuMHDc4poxFNI20vCk0OmI4G0Q==}
@@ -1239,6 +1248,12 @@ packages:
     engines: {node: '>= 6'}
     dependencies:
       node-modules-regexp: 1.0.0
+    dev: true
+
+  /pnpm/6.21.0:
+    resolution: {integrity: sha512-Emhpjbr7MiINYUP6d/X5c2vPa5ltkA1EhJ0wmGotrYZs7DCFvy6SW+RKTGNddedqLhL14LTK+4pE1rHWcQnnfg==}
+    engines: {node: '>=12.17'}
+    hasBin: true
     dev: true
 
   /postcss-load-config/3.1.0:

@@ -1,55 +1,16 @@
 {
   "name": "svelte-windicss-preprocess",
-  "version": "4.1.6",
   "description": "A Svelte Preprocessor to compile tailwindcss at build time based on windicss compiler.",
-  "keywords": [
-    "svelte",
-    "tailwindcss",
-    "windicss",
-    "preprocess",
-    "css",
-    "compiler"
-  ],
-  "homepage": "https://windicss.org/",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/windicss/svelte-windicss-preprocess.git"
-  },
-  "license": "MIT",
+  "version": "4.1.6",
   "author": "Veritas Raven",
-  "maintainers": [
-    {
-      "name": "Alexander Niebuhr",
-      "email": "tech@nbhr.io"
-    }
-  ],
   "contributors": [],
-  "exports": {
-    ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
-    }
-  },
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist/**/*"
-  ],
-  "scripts": {
-    "dev": "npm run build -- --watch",
-    "test": "uvu -r sucrase/register tests",
-    "test:generate": "node -r sucrase/register generate.ts",
-    "build:clean": "rimraf dist && npm run build",
-    "build": "tsup ./src/index.ts --dts --format esm,cjs --no-splitting",
-    "release": "npm run test && npm run build:clean && bumpp --tag --commit --push",
-    "lint": "eslint src",
-    "lint:tests": "eslint tests --ext .ts"
-  },
   "dependencies": {
     "@iconify/json": "1.1.421",
     "windicss": "3.2.1",
     "windicss-runtime-dom": "3.0.0"
   },
   "devDependencies": {
+    "@antfu/ni": "^0.10.1",
     "@nbhr/utils": "0.0.29",
     "@types/node": "16.11.7",
     "@typescript-eslint/eslint-plugin": "5.3.1",
@@ -61,6 +22,7 @@
     "eslint": "8.2.0",
     "fast-glob": "3.2.7",
     "picocolors": "1.0.0",
+    "pnpm": "^6.21.0",
     "rimraf": "3.0.2",
     "sucrase": "3.20.3",
     "svelte": "3.44.1",
@@ -69,6 +31,46 @@
     "typescript": "4.4.4",
     "uvu": "0.5.2"
   },
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "homepage": "https://windicss.org/",
+  "keywords": [
+    "compiler",
+    "css",
+    "preprocess",
+    "svelte",
+    "tailwindcss",
+    "windicss"
+  ],
+  "license": "MIT",
+  "maintainers": [
+    {
+      "name": "Alexander Niebuhr",
+      "email": "tech@nbhr.io"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/windicss/svelte-windicss-preprocess.git"
+  },
+  "scripts": {
+    "build": "tsup ./src/index.ts --dts --format esm,cjs --no-splitting",
+    "build:clean": "rimraf dist && nr build",
+    "dev": "nr build --watch",
+    "lint": "eslint src",
+    "lint:tests": "eslint tests --ext .ts",
+    "release": "nr test && nr build:clean && bumpp --tag --commit --push",
+    "test": "uvu -r sucrase/register tests",
+    "test:generate": "node -r sucrase/register generate.ts"
+  },
+  "types": "dist/index.d.ts",
   "volta": {
     "node": "16.13.0"
   }
