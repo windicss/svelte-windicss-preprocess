@@ -11,7 +11,15 @@ async function main(subPath: string) {
   const { code } = await preprocess(
     input,
     require('./src/index').windi({
-      silent: true,
+      silent: false,
+      experimental: {
+        icons: {
+          prefix: 'i-',
+          extraProperties: {
+            display: 'inline-block',
+          },
+        },
+      },
     }),
     {
       filename: 'generate.svelte',

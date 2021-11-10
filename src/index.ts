@@ -3,7 +3,7 @@ import { useConfig, useDebugger } from '@nbhr/utils'
 import type { UnoGenerator } from '@unocss/core'
 import { createGenerator, GenerateResult } from '@unocss/core'
 import UnocssIcons from '@unocss/preset-icons'
-import { copyFileSync, readFileSync, rmSync, statSync } from 'fs'
+import { copyFileSync, rmSync, statSync } from 'fs'
 import type { PreprocessorGroup } from 'svelte/types/compiler/preprocess'
 import { Processor } from 'windicss/lib'
 import type { FullConfig } from 'windicss/types/interfaces'
@@ -29,6 +29,7 @@ export interface Options {
   // prefix?: string;
   // verbosity?: number;
   experimental?: {
+    // runtime?: Record<string, unknown>
     icons?: {
       prefix?: string
       collections?: Record<string, IconifyJSON>
@@ -180,7 +181,6 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
     script: ({ content, attributes }) => {
       return new Promise(resolve => {
         if (DEV === true && OPTIONS.devTools && OPTIONS.devTools.enabled !== false && attributes['windi:devtools']) {
-          console.log('DEVTOOLS currently disabled')
           // const path = require.resolve('windicss-runtime-dom')
           // let runtimeConfig: FullConfig
           // if (windiConfig !== undefined) {
@@ -211,6 +211,8 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
           // resolve({
           //   code: injectScript + '\n' + content,
           // })
+
+          console.log('DevTools are currently in an rework. ')
           resolve({
             code: content,
           })
