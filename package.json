@@ -5,7 +5,7 @@
   "author": "Veritas Raven",
   "contributors": [],
   "dependencies": {
-    "@iconify/json": "1.1.426",
+    "@iconify/json": "1.1.428",
     "windicss": "3.2.1",
     "windicss-runtime-dom": "3.0.0"
   },
