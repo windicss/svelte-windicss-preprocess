@@ -1,5 +1,6 @@
 import type { IconifyJSON } from '@iconify/types'
 import { useConfig, useDebugger } from '@nbhr/utils'
+import { c } from '@nbhr/utils/dist/debugger-7e8ac6d4'
 import type { UnoGenerator } from '@unocss/core'
 import { createGenerator, GenerateResult } from '@unocss/core'
 import UnocssIcons from '@unocss/preset-icons'
@@ -245,9 +246,22 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
         if (OPTIONS.safeList && attributes['windi:safelist:global']) {
           const SAFELIST = PROCESSOR.interpret(OPTIONS.safeList).styleSheet
           SAFELIST_STYLE = globalStyleSheet(SAFELIST).build()
+          if (OPTIONS.experimental && OPTIONS.experimental.icons != undefined) {
+            let UNO_SAFELIST_STYLE = ''
+            const { css } = await UNO.generate(OPTIONS.safeList)
+            const UNO_SAFELIST_STYLESHEET = new CSSParser(css).parse()
+            UNO_SAFELIST_STYLE = globalStyleSheet(UNO_SAFELIST_STYLESHEET).build()
+            SAFELIST_STYLE += UNO_SAFELIST_STYLE
+          }
         } else if (OPTIONS.safeList && attributes['windi:safelist']) {
           const SAFELIST = PROCESSOR.interpret(OPTIONS.safeList).styleSheet
           SAFELIST_STYLE = SAFELIST.build()
+          if (OPTIONS.experimental && OPTIONS.experimental.icons != undefined) {
+            let UNO_SAFELIST_STYLE = ''
+            const { css } = await UNO.generate(OPTIONS.safeList)
+            UNO_SAFELIST_STYLE = css
+            SAFELIST_STYLE += UNO_SAFELIST_STYLE
+          }
         }
 
         // MARK: CUSTOM CSS + WINDI @apply
@@ -281,10 +295,6 @@ export function windi(options: typeof OPTIONS = {}): PreprocessorGroup {
         }
 
         // MARK: UNO CSS
-        if (OPTIONS.safeList) {
-          const { css } = await UNO.generate(OPTIONS.safeList)
-          UNO_STYLE += css
-        }
         if (filename && UNO_CSS.has(filename)) {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const { css } = await UNO_CSS.get(filename)!
