@@ -1,7 +1,7 @@
 {
   "name": "svelte-windicss-preprocess",
   "description": "A Svelte Preprocessor to compile tailwindcss at build time based on windicss compiler.",
-  "version": "4.1.6",
+  "version": "4.1.7",
   "author": "Veritas Raven",
   "contributors": [],
   "dependencies": {
@@ -15,7 +15,7 @@
     "@types/node": "16.11.7",
     "@typescript-eslint/eslint-plugin": "5.3.1",
     "@typescript-eslint/parser": "5.3.1",
-    "@unocss/core": "0.7.4",
+    "@unocss/core": "0.9.4",
     "@unocss/preset-icons": "0.7.4",
     "bumpp": "7.1.1",
     "cross-env": "7.0.3",
