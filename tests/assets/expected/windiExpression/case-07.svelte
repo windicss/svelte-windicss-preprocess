@@ -15,7 +15,7 @@ $: dynamicClass = toggle ? dynamicClassA : dynamicClassB
   <div class={dynamicClass}>my class should be dynamic</div>
 </main>
 
-<style windi:inject>
+<style>
 .bg-pink-500 {
   --tw-bg-opacity: 1;
   background-color: rgba(236, 72, 153, var(--tw-bg-opacity));
