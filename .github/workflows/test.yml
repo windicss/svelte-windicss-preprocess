@@ -11,8 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14, 16, 17]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        node-version: [16, 17]
 
     steps:
       - uses: actions/checkout@v2

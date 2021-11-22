@@ -1,6 +1,6 @@
 <div class="bg-red-400" p="x-2 y-1">hello world</div>
 
-<style windi:inject>
+<style>
 .bg-red-400 {
   --tw-bg-opacity: 1;
   background-color: rgba(248, 113, 113, var(--tw-bg-opacity));

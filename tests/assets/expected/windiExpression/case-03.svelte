@@ -13,7 +13,7 @@ $: dynamicClass = windi`${toggle ? 'bg-blue-500' : 'bg-green-500'}`
   <div class={dynamicClass}>my class should be dynamic</div>
 </main>
 
-<style windi:inject>
+<style>
 .bg-blue-500 {
   --tw-bg-opacity: 1;
   background-color: rgba(59, 130, 246, var(--tw-bg-opacity));

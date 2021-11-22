@@ -6,7 +6,7 @@
   Hello World
 </div>
 
-<style windi:inject>
+<style>
 [border~="blue-300"] {
   --tw-border-opacity: 1;
   border-color: rgba(147, 197, 253, var(--tw-border-opacity));
