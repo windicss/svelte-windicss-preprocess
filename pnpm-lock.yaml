@@ -13,7 +13,6 @@ specifiers:
   cross-env: 7.0.3
   eslint: 8.2.0
   fast-glob: 3.2.7
-  magic-string: 0.25.7
   picocolors: 1.0.0
   pnpm: 6.22.2
   rimraf: 3.0.2
@@ -44,7 +43,6 @@ devDependencies:
   bumpp: 7.1.1
   cross-env: 7.0.3
   eslint: 8.2.0
-  magic-string: 0.25.7
   picocolors: 1.0.0
   pnpm: 6.22.2
   rimraf: 3.0.2
@@ -1103,12 +1101,6 @@ packages:
       yallist: 4.0.0
     dev: true
 
-  /magic-string/0.25.7:
-    resolution: {integrity: sha512-4CrMT5DOHTDk4HYDlzmwu4FVCcIYI8gauveasrdCu2IKIFOJ3f0v/8MDGJCDL9oD2ppz/Av1b0Nj345H9M+XIA==}
-    dependencies:
-      sourcemap-codec: 1.4.8
-    dev: true
-
   /merge-stream/2.0.0:
     resolution: {integrity: sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==}
     dev: true
@@ -1376,10 +1368,6 @@ packages:
   /slash/3.0.0:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}
     engines: {node: '>=8'}
-    dev: true
-
-  /sourcemap-codec/1.4.8:
-    resolution: {integrity: sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==}
     dev: true
 
   /string-argv/0.3.1:
