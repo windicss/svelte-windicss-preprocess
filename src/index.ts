@@ -69,6 +69,7 @@ function agent(): PreprocessorGroup {
   let result: SetObject
   return {
     async markup({ content, filename }): Promise<Processed> {
+      if (!filename) return { code: content }
       let worker = new Magician(content, filename, configuration)
       worker = worker.prepare()
       // worker = worker.setInject()
