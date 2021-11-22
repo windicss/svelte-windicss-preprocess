@@ -5,7 +5,7 @@
   <p>Test</p>
 </label>
 
-<style windi:inject>
+<style>
 label > :global(*) {
   pointer-events: none;
   --tw-bg-opacity: 1;
@@ -24,5 +24,4 @@ test {
 :global(div) > div {
   color: red;
 }
-
 </style>

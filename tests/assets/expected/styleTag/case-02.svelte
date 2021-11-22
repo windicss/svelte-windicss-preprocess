@@ -1,8 +1,7 @@
 <script>
-  // your script goes here
 </script>
 
-<style windi:inject>
+<style>
 input, textarea, select {
   --tw-border-opacity: 1;
   border-color: rgba(229, 231, 235, var(--tw-border-opacity));
@@ -22,6 +21,6 @@ input, textarea, select {
   background-color: rgba(255, 255, 255, var(--tw-bg-opacity));
   width: 100%;
 }
-
 </style>
 
+<h1>Hello World</h1>

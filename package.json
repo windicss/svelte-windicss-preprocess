@@ -68,7 +68,7 @@
     "lint": "eslint src",
     "lint:tests": "eslint tests --ext .ts",
     "release": "nr test && nr build:clean && bumpp --tag --commit --push",
-    "test": "clear && uvu -r sucrase/register tests",
+    "test": "uvu -r sucrase/register tests",
     "test:generate": "tsm generate.ts"
   },
   "types": "dist/index.d.ts",
