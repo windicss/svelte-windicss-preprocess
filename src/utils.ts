@@ -1,14 +1,5 @@
-import type { GenerateResult, UnoGenerator } from '@unocss/core'
-import type { Processor } from 'windicss/lib'
-import type { FullConfig } from 'windicss/types/interfaces'
 import { StyleSheet } from 'windicss/utils/style'
-import type { Options } from './index'
-
-export function combineStyleList(stylesheets: StyleSheet[]): StyleSheet {
-  return stylesheets
-    .reduce((previousValue, currentValue) => previousValue.extend(currentValue), new StyleSheet())
-    .combine()
-}
+import type { BaseConfig } from './index'
 
 export function globalStyleSheet(styleSheet: StyleSheet): StyleSheet {
   // turn all styles in stylesheet to global style
@@ -16,128 +7,131 @@ export function globalStyleSheet(styleSheet: StyleSheet): StyleSheet {
     if (!style.rule.includes(':global') && style.meta.group !== 'keyframes') {
       style.wrapRule((rule: string) => `:global(${rule})`)
     }
-    if (style.atRules && !style.atRules.includes('-global-') && style.meta.group == 'keyframes') {
-      style.atRules[0] = style.atRules[0].replace(/(?<=keyframes )(?=\w)/gi, '-global-')
+    if (
+      style.atRules &&
+      !style.atRules.includes('-global-') &&
+      style.meta.group == 'keyframes'
+    ) {
+      style.atRules[0] = style.atRules[0].replace(
+        /(?<=keyframes )(?=\w)/gi,
+        '-global-'
+      )
     }
   })
   return styleSheet
 }
 
-interface Computed {
-  default: {
-    success: string[]
-    ignored: string[]
-    styleSheet: StyleSheet
-  }
-  attributify: {
-    success: string[]
-    ignored: string[]
-    styleSheet: StyleSheet
-  }
+export interface SetObject {
+  inlineClasses: Set<string>
+  inlineDirectives: Set<string>
+  inlineExpressions: Set<string>
+  inlineIcons: Set<string>
+  inlineAttributify: Map<string, Set<string>>
 }
 
 export class Magician {
-  processor: Processor
-  uno: UnoGenerator | undefined
   content: string
   filename: string
-  isBundled = false
-  isCompiled = false
-  lines: string[] = []
+  configuration: BaseConfig = {}
+  classes: string[] = []
   expressions: string[] = []
   directives: string[] = []
   attributifies: Map<string, string[]> = new Map()
-  classes: string[] = []
-  stylesheets: StyleSheet[] = []
-  config: FullConfig = {}
-  userConfig: Options = {}
-  stats: Map<Record<string, string>, Record<string, string | number>> = new Map()
-  computed: Computed | undefined = undefined
-  computedStyleSheet: StyleSheet = new StyleSheet()
-  unoCSS: Promise<GenerateResult> | undefined
-  css = ''
 
   constructor(
-    processor: Processor,
     content: string,
     filename: string,
-    config: FullConfig = {},
-    userConfig: Options = {},
-    uno?: UnoGenerator
+    configuration: BaseConfig = {}
   ) {
-    this.processor = processor
     this.content = content
     this.filename = filename
-    this.config = config
-    this.userConfig = userConfig
-
-    if (uno) {
-      this.uno = uno
-    }
-  }
-
-  getStats(): Map<Record<string, string>, Record<string, string | number>> {
-    return this.stats
+    this.configuration = configuration
   }
 
   prepare(): this {
-    let tmpContent = this.content
-    // TODO: refactor so that preprocessor persists comments
-    tmpContent = tmpContent.replace(/<!--[\s\S]*?-->/g, '')
-    tmpContent = tmpContent.replace(/([!\w][\w:_/-]*?):\(([\w\s/-]*?)\)/gm, (_, groupOne: string, groupTwo: string) =>
-      groupTwo
-        .split(/\s/g)
-        .map(cssClass => `${groupOne}:${cssClass}`)
-        .join(' ')
+    // TODO: find a way to allow comments in processing
+    this.content = this.content.replace(/<!--[\s\S]*?-->/g, '')
+    this.content = this.content.replace(
+      /([!\w][\w:_/-]*?):\(([\w\s/-]*?)\)/gm,
+      (_, groupOne: string, groupTwo: string) =>
+        groupTwo
+          .split(/\s/g)
+          .map(cssClass => `${groupOne}:${cssClass}`)
+          .join(' ')
     )
 
-    this.content = tmpContent
     return this
   }
 
-  setInject(): this {
-    let tmpContent = this.content
-    tmpContent = tmpContent.replace('windi:inject', '')
+  extract(): this {
+    // console.log(this.content)
+    this.processClassAttribute()
+    this.processClassAttributeWithCurly()
+    this.processDirectiveClass()
+    this.processAttributify()
+    this.processWindiExpression()
 
-    const styleMatch = tmpContent.match(/(?<openTag><style[^>]*?>)(?<content>[\s\S]*?)(?<closeTag><\/style>)/gi)
-
-    if (styleMatch) {
-      tmpContent = tmpContent.replace('<style', '<style windi:inject')
-    } else {
-      tmpContent += '\n<style windi:inject>\n</style>'
-    }
-
-    this.content = tmpContent
     return this
   }
 
   processClassAttribute(): this {
-    const tmpContent = this.content
-    const CLASS_MATCHES = [...tmpContent.matchAll(/(class)=(['"])(?<classes>[^\2]*?)\2/gi)]
+    const CLASS_MATCHES = [
+      ...this.content.matchAll(/class=(['"`])(?<classes>[^\1]+?)\1/gi),
+    ]
     if (CLASS_MATCHES.length < 1) return this
     for (const match of CLASS_MATCHES) {
-      const cleanedMatch = match[3]
-        .replace(
-          /windi[`].+?[`]|(?<![-])[$](?=[{])|(?<=([{][\w\s]+[^{]*?))['"]|(?<=([{][\w\s]+[^{]*?))\s[:]|([{][\w\s]+[^{]*?[?])|^[{]|(?<=["'`)])[}]/gi,
-          ' '
-        )
-        .replace(/\n/gi, ' ')
-        .replace(/ {2,}/gi, ' ')
-        .replace(/["'`]/gi, '')
+      const cleanMatch = match.groups?.classes
+        .replaceAll(/windi[`].+?[`]/gi, ' ') // windi`XYZ`
+        .replaceAll(/(?<![-])[$](?=[{])/gi, ' ') // if leading char is not -, and next char is {, then remove $
+        .replaceAll(/(?<=([{][\w\s]+[^{]*?))['"]/gi, ' ') // remove quotes in curly braces
+        .replaceAll(/(?<=([{][\w\s]+[^{]*?)\s)[:]/gi, ' ') // remove : in curly braces
+        .replaceAll(/([{][\w\s]+[^{]*?[?])/gi, ' ') // remove ? and condition in curly braces
+        .replaceAll(/[{}]/gi, ' ') // remove curly braces
+        .replaceAll(/\n/gi, ' ') // remove newline
+        .replaceAll(/ {2,}/gi, ' ') // remove multiple spaces
+        .replaceAll(/["'`]/gi, '') // remove quotes
+
       this.classes = this.classes.concat(
-        cleanedMatch.split(' ').filter(c => {
+        (cleanMatch || '').split(' ').filter(c => {
           return c.length > 0
         })
       )
     }
+    return this
+  }
 
-    this.content = tmpContent
+  processClassAttributeWithCurly(): this {
+    const CLASS_MATCHES = [
+      ...this.content.matchAll(/class=([{])(?<classes>[^}]+?)}/gi),
+    ]
+
+    if (CLASS_MATCHES.length < 1) return this
+    for (const match of CLASS_MATCHES) {
+      const cleanMatch = match.groups?.classes
+        .replaceAll(/windi[`].+?[`]/gi, ' ') // windi`XYZ`
+        .replaceAll(/(?<![-])[$](?=[{])/gi, ' ') // if leading char is not -, and next char is {, then remove $
+        .replaceAll(/(?<=([{][\w\s]+[^{]*?))['"]/gi, ' ') // remove quotes in curly braces
+        .replaceAll(/(?<=([{][\w\s]+[^{]*?)\s)[:]/gi, ' ') // remove : in curly braces
+        .replaceAll(/([{][\w\s]+[^{]*?[?])/gi, ' ') // remove ? and condition in curly braces
+        .replaceAll(/[{}]/gi, ' ') // remove curly braces
+        .replaceAll(/\n/gi, ' ') // remove newline
+        .replaceAll(/ {2,}/gi, ' ') // remove multiple spaces
+        .replaceAll(/["'`]/gi, '') // remove quotes
+
+      this.classes = this.classes.concat(
+        (cleanMatch || '').split(' ').filter(c => {
+          return c.length > 0
+        })
+      )
+    }
     return this
   }
 
   processDirectiveClass(): this {
     const tmpContent = this.content
-    const DIRECTIVE_CLASS_MATCHES = [...tmpContent.matchAll(/\s(class):(?<class>[^=]+)(=)/gi)]
+    const DIRECTIVE_CLASS_MATCHES = [
+      ...tmpContent.matchAll(/\s(class):(?<class>[^=]+)(=)/gi),
+    ]
     if (DIRECTIVE_CLASS_MATCHES.length < 1) return this
     for (const match of DIRECTIVE_CLASS_MATCHES) {
       this.directives = this.directives.concat(match[2])
@@ -153,7 +147,10 @@ export class Magician {
     if (WINDI_MATCHES.length < 1) return this
     for (const match of WINDI_MATCHES) {
       const cleanedMatch = match[1]
-        .replace(/(?<![-])[$](?=[{])|(?<=([{][\w\s]+[^{]*?))['":]|([{][\w\s]+[^{]*?[?])|^[{]|(?<=["'`)])[}]/gi, ' ')
+        .replace(
+          /(?<![-])[$](?=[{])|(?<=([{][\w\s]+[^{]*?))['":]|([{][\w\s]+[^{]*?[?])|^[{]|(?<=["'`)])[}]/gi,
+          ' '
+        )
         .replace(/ {2,}/gi, ' ')
         .replace(/["'`]/gi, '')
       this.expressions = this.expressions.concat(cleanedMatch.split(' '))
@@ -164,24 +161,24 @@ export class Magician {
   }
 
   processAttributify(): this {
-    // FIXME: #150 not bulletprof yet
-    const tmpContent = this.content
-    const ATTRIBUTIFY_CLASS_MATCHES = [...tmpContent.matchAll(/([\w+:_/-]+)=(['"])(?<classes>[^\2]*?)\2/gi)]
-    // TODO: allow prefix with ::
-    // extract key & value as class array
+    const ATTRIBUTIFY_CLASS_MATCHES = [
+      ...this.content.matchAll(/([\w+:_/-]+)=(['"`])(?<classes>[^\2]+?)\2/gi),
+    ]
+
     if (ATTRIBUTIFY_CLASS_MATCHES.length < 1) return this
     for (const match of ATTRIBUTIFY_CLASS_MATCHES) {
       if (match[1] == 'class') continue
       if (match[1] == 'href') continue
-      if (match[1] == 'this') continue
-      if (match[1] == 'name') continue
-      if (match[1] == 'stroke') continue
-      if (match[1] == 'd') continue
-      if (match[1] == 'slot') continue
-      if (match[1] == 'viewBox') continue
-      if (match[1] == 'points') continue
-      if (match[1] == 'label') continue
-      if (match[1] == 'xmlns') continue
+      if (match[1] == 'for') continue
+      // if (match[1] == 'this') continue
+      // if (match[1] == 'name') continue
+      // if (match[1] == 'stroke') continue
+      // if (match[1] == 'd') continue
+      // if (match[1] == 'slot') continue
+      // if (match[1] == 'viewBox') continue
+      // if (match[1] == 'points') continue
+      // if (match[1] == 'label') continue
+      // if (match[1] == 'xmlns') continue
       if (match[1].startsWith('class:')) continue
       const cleanedMatch = match[3]
         .replace(
@@ -190,70 +187,62 @@ export class Magician {
         )
         .replace(/ {2,}/gi, ' ')
         .replace(/["'`]/gi, '')
-      // this.attributifyClassList.set(match[1].toString(), cleanedMatch.split(' '))
+        .replace(/\n/gi, ' ')
 
       if (this.attributifies.has(match[1].toString())) {
         const oldValue = this.attributifies.get(match[1].toString())
         if (oldValue) {
-          this.attributifies.set(match[1].toString(), oldValue.concat(cleanedMatch.split(' ')))
+          this.attributifies.set(
+            match[1].toString(),
+            oldValue.concat(cleanedMatch.split(' '))
+          )
         }
       } else {
         this.attributifies.set(match[1].toString(), cleanedMatch.split(' '))
       }
     }
-
-    this.content = tmpContent
     return this
   }
 
-  compute(): this {
-    const tmpContent = this.content
-
-    const defaultSet = new Set(this.classes.concat(this.directives).concat(this.expressions))
-
-    if (this.userConfig.experimental?.icons != undefined && this.uno) {
-      const iconSet = new Set([...defaultSet.values()].filter(c => c.startsWith('i-')))
-      this.unoCSS = this.uno.generate(iconSet)
+  getSets(): SetObject {
+    let iC: Set<string> = new Set([])
+    if (this.configuration.experimental?.icons != undefined) {
+      iC = new Set(
+        this.classes.filter(
+          c =>
+            !c.startsWith(
+              this.configuration.experimental?.icons?.prefix || 'i-'
+            )
+        )
+      )
+    } else {
+      iC = new Set(this.classes)
     }
 
-    const INTERPRETED_DEFAULT = this.processor.interpret(Array.from(defaultSet).join(' '))
+    const iD = new Set(this.directives)
 
+    const iE = new Set(this.expressions)
+
+    let iI: Set<string> = new Set([])
+    if (this.configuration.experimental?.icons != undefined) {
+      iI = new Set(
+        this.classes.filter(c =>
+          c.startsWith(this.configuration.experimental?.icons?.prefix || 'i-')
+        )
+      )
+    }
+
+    const iA = new Map()
     this.attributifies.forEach((v, k) => {
       const unique = new Set(v)
-      this.attributifies.set(k, Array.from(unique))
+      iA.set(k, unique)
     })
-    const INTERPRETED_ATTRIBUTIFY = this.processor.attributify(Object.fromEntries(this.attributifies))
-
-    this.stylesheets.push(INTERPRETED_DEFAULT.styleSheet)
-    this.stylesheets.push(INTERPRETED_ATTRIBUTIFY.styleSheet)
-    this.computed = { default: INTERPRETED_DEFAULT, attributify: INTERPRETED_ATTRIBUTIFY }
-    this.computedStyleSheet = combineStyleList(this.stylesheets).sort()
-
-    this.content = tmpContent
-    return this
-  }
-
-  getCode(): string {
-    return this.content
-  }
-
-  getComputed(): Computed | undefined {
-    return this.computed
-  }
-
-  getComputedStyleSheet(): StyleSheet {
-    return this.computedStyleSheet
-  }
-
-  getUnoCSS(): Promise<GenerateResult> | undefined {
-    return this.unoCSS
-  }
-
-  getExtracted(): string {
-    return this.css
-  }
-
-  getFilename(): string {
-    return this.filename
+    return {
+      inlineClasses: iC,
+      inlineDirectives: iD,
+      inlineExpressions: iE,
+      inlineIcons: iI,
+      inlineAttributify: iA,
+    }
   }
 }
