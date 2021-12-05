@@ -214,7 +214,10 @@ function main(): PreprocessorGroup {
       //     PREFLIGHTS_STYLE = PREFLIGHTS.build()
       //   }
       let preflightStyleSheet = new StyleSheet()
-      if (attributes['windi-preflights-global']) {
+      if (
+        attributes['windi:preflights:global'] ||
+        attributes['windi-preflights-global']
+      ) {
         preflightStyleSheet = globalStyleSheet(generatorWindi.preflight())
       }
       const preflightStyles = preflightStyleSheet.build()
@@ -241,7 +244,10 @@ function main(): PreprocessorGroup {
       //     }
       //   }
       let safelistStyleSheet = new StyleSheet()
-      if (attributes['windi-safelist-global']) {
+      if (
+        attributes['windi:safelist:global'] ||
+        attributes['windi-safelist-global']
+      ) {
         safelistStyleSheet = globalStyleSheet(
           generatorWindi.interpret(configuration.safeList || '').styleSheet
         )
