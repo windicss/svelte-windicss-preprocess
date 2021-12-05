@@ -15,31 +15,13 @@ import { Processor } from 'windicss/lib'
 import { CSSParser } from 'windicss/utils/parser'
 import { StyleSheet } from 'windicss/utils/style'
 import { globalStyleSheet, Magician, SetObject } from './utils'
+import { loadConfig } from 'unconfig'
+import { FullConfig } from 'windicss/types/interfaces'
 
 // const DEV = false
 // let windiConfig: FullConfig
 // let configMTime: number
 // let OPTIONS: BaseConfig
-
-// function loadConfig(path: string): Promise<void> {
-//   useDebugger.createLog('Trying to load windi configuration from ' + path)
-//   return useConfig.load<FullConfig>(path).then(config => {
-//     // write current unix timestamp to configMTime
-//     configMTime = Date.now()
-//     if (config.preflight === false) OPTIONS.preflights = false
-//     if (config.safelist && typeof config.safelist == 'string') {
-//       OPTIONS.safeList = config.safelist
-//     } else if (config.safelist) {
-//       const tmpSafelist = config.safelist as (string | string[])[]
-//       OPTIONS.safeList = [...new Set(tmpSafelist.flat(Infinity))].join(' ')
-//     }
-//     console.log(config)
-//     console.log(JSON.stringify(config.theme))
-//     PROCESSOR.loadConfig(config)
-//     useDebugger.createLog('Configuration loaded successfully')
-//     windiConfig = config
-//   })
-// }
 
 let entryFileName = ''
 
@@ -244,6 +226,7 @@ function main(): PreprocessorGroup {
       //     }
       //   }
       let safelistStyleSheet = new StyleSheet()
+      let safelistIconsStyleSheet = new StyleSheet()
       if (
         attributes['windi:safelist:global'] ||
         attributes['windi-safelist-global']
@@ -251,8 +234,15 @@ function main(): PreprocessorGroup {
         safelistStyleSheet = globalStyleSheet(
           generatorWindi.interpret(configuration.safeList || '').styleSheet
         )
+        if (generatorUno && configuration.experimental?.icons != undefined) {
+          const { css } = await generatorUno.generate(
+            configuration.safeList || ''
+          )
+          safelistIconsStyleSheet = globalStyleSheet(new CSSParser(css).parse())
+        }
       }
-      const safelistStyles = safelistStyleSheet.build()
+      let safelistStyles = safelistStyleSheet.build()
+      safelistStyles += safelistIconsStyleSheet.build()
 
       let defaultStyles, attributifyStyles, iconStyles
       if (entryFileName.length > 0) {
@@ -377,6 +367,7 @@ const defaultConfig: DefaultConfig = {
 let configuration: BaseConfig
 let generatorWindi: Processor
 let generatorUno: UnoGenerator
+let windiConfiguration: FullConfig
 
 // if (windiConfig != undefined) {
 //   if (OPTIONS.configPath) {
@@ -422,6 +413,25 @@ let generatorUno: UnoGenerator
 //   }
 // }
 
+// function loadConfig(path: string): Promise<void> {
+//   useDebugger.createLog('Trying to load windi configuration from ' + path)
+//   return useConfig.load<FullConfig>(path).then(config => {
+//     // write current unix timestamp to configMTime
+//     configMTime = Date.now()
+//     if (config.preflight === false) OPTIONS.preflights = false
+//     if (config.safelist && typeof config.safelist == 'string') {
+//       OPTIONS.safeList = config.safelist
+//     } else if (config.safelist) {
+//       const tmpSafelist = config.safelist as (string | string[])[]
+//       OPTIONS.safeList = [...new Set(tmpSafelist.flat(Infinity))].join(' ')
+//     }
+//     console.log(config)
+//     console.log(JSON.stringify(config.theme))
+//     PROCESSOR.loadConfig(config)
+//     useDebugger.createLog('Configuration loaded successfully')
+//     windiConfig = config
+//   })
+// }
 export function windi(userConfig: UserConfig = {}): PreprocessorGroup {
   configuration = { ...defaultConfig, ...userConfig }
   generatorWindi = new Processor()
@@ -446,6 +456,27 @@ export function windi(userConfig: UserConfig = {}): PreprocessorGroup {
 
   return {
     async markup({ content, filename }): Promise<Processed> {
+      if (!windiConfiguration) {
+        const { config } = await loadConfig<FullConfig>({
+          merge: false,
+          sources: [
+            {
+              files: 'windi.config',
+              // default extensions
+              extensions: ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs', 'json', ''],
+            },
+          ],
+        })
+        windiConfiguration = config
+        if (typeof config?.safelist == 'string') {
+          configuration.safeList = config.safelist
+        } else if (config?.safelist) {
+          configuration.safeList = [
+            ...new Set(config.safelist.flat(Infinity)),
+          ].join(' ')
+        }
+        generatorWindi.loadConfig(windiConfiguration)
+      }
       let code = content
 
       for (const step of steps) {
