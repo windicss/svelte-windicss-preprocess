@@ -4,13 +4,12 @@ import type { BaseConfig } from './index'
 export function globalStyleSheet(styleSheet: StyleSheet): StyleSheet {
   // turn all styles in stylesheet to global style
   styleSheet.children.forEach(style => {
-    if (!style.rule.includes(':global') && style.meta.group !== 'keyframes') {
+    if (!style.rule.includes(':global') && style.meta.group !== 'keyframes' && !style.atRules?.some(rule => rule.includes('@keyframes'))) {
       style.wrapRule((rule: string) => `:global(${rule})`)
     }
     if (
       style.atRules &&
-      !style.atRules.includes('-global-') &&
-      style.meta.group == 'keyframes'
+      !style.atRules.includes('-global-')
     ) {
       style.atRules[0] = style.atRules[0].replace(
         /(?<=keyframes )(?=\w)/gi,
