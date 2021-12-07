@@ -52,9 +52,10 @@ function agent(): PreprocessorGroup {
   return {
     async markup({ content, filename }): Promise<Processed> {
       if (!filename) return { code: content }
+      // console.log(filename, 'markup agent')
       let worker = new Magician(content, filename, configuration)
       worker = worker.prepare()
-      // worker = worker.setInject()
+      worker = worker.setInject()
       worker = worker.extract()
       result = worker.getSets()
       raw.set(filename, {
@@ -63,7 +64,7 @@ function agent(): PreprocessorGroup {
       })
 
       return {
-        code: content,
+        code: worker.getContent(),
       }
     },
   }
@@ -186,7 +187,7 @@ function main(): PreprocessorGroup {
   return {
     async style({ content, attributes, filename }): Promise<Processed> {
       if (!filename) return { code: content }
-
+      // console.log(filename, 'style main')
       //   // MARK: PREFLIGHTS
       //   if (OPTIONS.preflights === true && attributes['windi:preflights:global']) {
       //     const PREFLIGHTS = PROCESSOR.preflight()
@@ -475,16 +476,17 @@ export function windi(userConfig: UserConfig = {}): PreprocessorGroup {
             ...new Set(config.safelist.flat(Infinity)),
           ].join(' ')
         }
-        generatorWindi.loadConfig(windiConfiguration)
+        generatorWindi.loadConfig(config)
       }
-      let code = content
+      let currentContent = content
 
       for (const step of steps) {
-        code = (await preprocess(content, step, { filename })).code
+        const code = (await preprocess(currentContent, step, { filename })).code
+        currentContent = code
       }
 
       return {
-        code,
+        code: currentContent,
       }
     },
   }

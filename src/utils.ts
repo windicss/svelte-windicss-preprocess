@@ -1,3 +1,4 @@
+import { parse } from 'svelte/compiler'
 import { StyleSheet } from 'windicss/utils/style'
 import type { BaseConfig } from './index'
 
@@ -59,6 +60,21 @@ export class Magician {
           .map(cssClass => `${groupOne}:${cssClass}`)
           .join(' ')
     )
+
+    return this
+  }
+
+  setInject(): this {
+    // const ast = parse(content, { filename })
+    let ast
+    try {
+      ast = parse(this.content, {})
+    } catch (error) {
+      //
+    }
+    if (ast && !ast.css) {
+      this.content += '\n<style>\n</style>\n'
+    }
 
     return this
   }
@@ -202,6 +218,10 @@ export class Magician {
       }
     }
     return this
+  }
+
+  getContent(): string {
+    return this.content
   }
 
   getSets(): SetObject {
