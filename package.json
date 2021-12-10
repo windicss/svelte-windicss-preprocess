@@ -1,7 +1,7 @@
 {
   "name": "svelte-windicss-preprocess",
   "description": "A Svelte Preprocessor to compile tailwindcss at build time based on windicss compiler.",
-  "version": "4.2.4",
+  "version": "4.2.5",
   "author": "Veritas Raven",
   "contributors": [],
   "dependencies": {
