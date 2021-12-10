@@ -47,29 +47,6 @@ const raw = new Map<string, generatorObject>([
   ],
 ])
 
-function agent(): PreprocessorGroup {
-  let result: SetObject
-  return {
-    async markup({ content, filename }): Promise<Processed> {
-      if (!filename) return { code: content }
-      // console.log(filename, 'markup agent')
-      let worker = new Magician(content, filename, configuration)
-      worker = worker.prepare()
-      worker = worker.setInject()
-      worker = worker.extract()
-      result = worker.getSets()
-      raw.set(filename, {
-        data: result,
-        updatedAt: Date.now(),
-      })
-
-      return {
-        code: worker.getContent(),
-      }
-    },
-  }
-}
-
 async function generateCSS(
   key: string,
   attributes: Record<string, string | boolean>
@@ -121,6 +98,29 @@ async function generateCSS(
       .then(resolve => resolve.css)
   }
   return { defaultStyles, attributifyStyles, iconStyles }
+}
+
+function agent(): PreprocessorGroup {
+  let result: SetObject
+  return {
+    async markup({ content, filename }): Promise<Processed> {
+      if (!filename) return { code: content }
+      // console.log(filename, 'markup agent')
+      let worker = new Magician(content, filename, configuration)
+      worker = worker.prepare()
+      worker = worker.setInject()
+      worker = worker.extract()
+      result = worker.getSets()
+      raw.set(filename, {
+        data: result,
+        updatedAt: Date.now(),
+      })
+
+      return {
+        code: worker.getContent(),
+      }
+    },
+  }
 }
 
 function main(): PreprocessorGroup {
