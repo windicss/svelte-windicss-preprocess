@@ -74,6 +74,8 @@ export class Magician {
     }
     if (ast && !ast.css) {
       this.content += '\n<style>\n</style>\n'
+    } else if (ast && (ast.css.content.start == ast.css.content.end)) {
+      this.content = this.content.replace("<style></style>", "<style>\n</style>")
     }
 
     return this
