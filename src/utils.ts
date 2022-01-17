@@ -1,26 +1,4 @@
 import { parse } from 'svelte/compiler'
-import { StyleSheet } from 'windicss/utils/style'
-import type { BaseConfig } from './index'
-
-export function globalStyleSheet(styleSheet: StyleSheet): StyleSheet {
-  // turn all styles in stylesheet to global style
-  styleSheet.children.forEach(style => {
-    if (
-      !style.rule.includes(':global') &&
-      style.meta.group !== 'keyframes' &&
-      !style.atRules?.some(rule => rule.includes('@keyframes'))
-    ) {
-      style.wrapRule((rule: string) => `:global(${rule})`)
-    }
-    if (style.atRules && !style.atRules.includes('-global-')) {
-      style.atRules[0] = style.atRules[0].replace(
-        /(?<=keyframes )(?=\w)/gi,
-        '-global-'
-      )
-    }
-  })
-  return styleSheet
-}
 
 export interface SetObject {
   inlineClasses: Set<string>
@@ -30,28 +8,28 @@ export interface SetObject {
   inlineAttributify: Map<string, Set<string>>
 }
 
-export class Magician {
-  content: string
-  filename: string
-  configuration: BaseConfig = {}
+export class FileHandler {
+  private content: string
   classes: string[] = []
   expressions: string[] = []
   directives: string[] = []
   attributifies: Map<string, string[]> = new Map()
 
-  constructor(
-    content: string,
-    filename: string,
-    configuration: BaseConfig = {}
-  ) {
+  constructor(content: string) {
+    console.log('CONSTRUCT')
     this.content = content
-    this.filename = filename
-    this.configuration = configuration
   }
 
-  prepare(): this {
-    // TODO: find a way to allow comments in processing
+  public clean(): this {
+    console.log('CLEAN')
+    // find a way around this
     this.content = this.content.replace(/<!--[\s\S]*?-->/g, '')
+
+    return this
+  }
+
+  public prepare(): this {
+    console.log('PREPARE')
     this.content = this.content.replace(
       /([!\w][\w:_/-]*?):\(([\w\s/-]*?)\)/gm,
       (_, groupOne: string, groupTwo: string) =>
@@ -61,33 +39,17 @@ export class Magician {
           .join(' ')
     )
 
-    return this
-  }
-
-  setInject(): this {
-    // const ast = parse(content, { filename })
-    let ast
-    try {
-      ast = parse(this.content, {})
-    } catch (error) {
-      //
-    }
-    if (ast && !ast.css) {
+    const ast = parse(this.content, {})
+    if (!ast.css) {
+      // no style tag found, so have to set one
       this.content += '\n<style>\n</style>\n'
-    } else if (ast && (ast.css.content.start == ast.css.content.end)) {
-      this.content = this.content.replace("<style></style>", "<style>\n</style>")
+    } else if (ast && ast.css.content.start == ast.css.content.end) {
+      // style tag without content, so have to set one
+      this.content = this.content.replace(
+        '<style></style>',
+        '<style>\n</style>'
+      )
     }
-
-    return this
-  }
-
-  extract(): this {
-    // console.log(this.content)
-    this.processClassAttribute()
-    this.processClassAttributeWithCurly()
-    this.processDirectiveClass()
-    this.processAttributify()
-    this.processWindiExpression()
 
     return this
   }
@@ -222,37 +184,48 @@ export class Magician {
     return this
   }
 
-  getContent(): string {
-    return this.content
+  public scan(): this {
+    console.log('SCAN')
+
+    this.processClassAttribute()
+    this.processClassAttributeWithCurly()
+    this.processDirectiveClass()
+    this.processWindiExpression()
+    this.processAttributify()
+
+    return this
   }
 
-  getSets(): SetObject {
+  public getStyles(): SetObject {
+    console.log('GET')
+
     let iC: Set<string> = new Set([])
-    if (this.configuration.experimental?.icons != undefined) {
-      iC = new Set(
-        this.classes.filter(
-          c =>
-            !c.startsWith(
-              this.configuration.experimental?.icons?.prefix || 'i-'
-            )
-        )
-      )
-    } else {
-      iC = new Set(this.classes)
-    }
+    // if (this.configuration.experimental?.icons != undefined) {
+    //   iC = new Set(
+    //     this.classes.filter(
+    //       c =>
+    //         !c.startsWith(
+    //           this.configuration.experimental?.icons?.prefix || 'i-'
+    //         )
+    //     )
+    //   )
+    // } else {
+    //   iC = new Set(this.classes)
+    // }
+    iC = new Set(this.classes)
 
     const iD = new Set(this.directives)
 
     const iE = new Set(this.expressions)
 
-    let iI: Set<string> = new Set([])
-    if (this.configuration.experimental?.icons != undefined) {
-      iI = new Set(
-        this.classes.filter(c =>
-          c.startsWith(this.configuration.experimental?.icons?.prefix || 'i-')
-        )
-      )
-    }
+    // let iI: Set<string> = new Set([])
+    // if (this.configuration.experimental?.icons != undefined) {
+    //   iI = new Set(
+    //     this.classes.filter(c =>
+    //       c.startsWith(this.configuration.experimental?.icons?.prefix || 'i-')
+    //     )
+    //   )
+    // }
 
     const iA = new Map()
     this.attributifies.forEach((v, k) => {
@@ -263,7 +236,7 @@ export class Magician {
       inlineClasses: iC,
       inlineDirectives: iD,
       inlineExpressions: iE,
-      inlineIcons: iI,
+      inlineIcons: new Set(),
       inlineAttributify: iA,
     }
   }
