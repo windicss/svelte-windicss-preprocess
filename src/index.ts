@@ -6,13 +6,15 @@ import windicssPreset from '@unocss/preset-wind'
 import { parse as CSSParser, walk as CSSWalker } from 'css-tree'
 import MagicString from 'magic-string'
 import { bgRed, white } from 'nanocolors'
-import { preprocess } from 'svelte/compiler'
+import { parse, preprocess } from 'svelte/compiler'
 import type {
   PreprocessorGroup,
   Processed,
 } from 'svelte/types/compiler/preprocess'
 import { loadConfig } from 'unconfig'
 import { FileHandler, SetObject } from './utils'
+import fg from 'fast-glob'
+import { readFileSync } from 'fs'
 
 export interface BaseConfig {
   silent?: boolean
@@ -36,23 +38,20 @@ let windiConfiguration: any
 let windiGenerator: UnoGenerator
 let iconGenerator: UnoGenerator
 
-const styleMap = new Map<
-  string,
-  {
-    data: SetObject
-    updatedAt: number
-    writtenAt?: number
-  }
->([
+const styleMap = new Map<string, any>([
   [
-    '__GLOBAL',
+    '__GLOBAL__',
     {
       data: {
-        inlineClasses: new Set(),
-        inlineDirectives: new Set(),
-        inlineExpressions: new Set(),
-        inlineIcons: new Set(),
-        inlineAttributify: new Map(),
+        inline: {
+          utilities: new Set(),
+          attributifies: new Map(),
+          icons: new Set(),
+        },
+        styles: {
+          utilities: new Set(),
+          icons: new Set(),
+        },
       },
       updatedAt: Date.now(),
     },
@@ -60,7 +59,53 @@ const styleMap = new Map<
 ])
 
 function extractStyles(): PreprocessorGroup {
-  // add logic for global scan
+  // MARK: experiment global on entry
+  if (generatorConfiguration.experimental?.scan) {
+    const filePaths = fg.sync(['src/**/*.svelte'], {})
+    for (const filepath of filePaths) {
+      const content = readFileSync(filepath).toString()
+      const ast = parse(content, { filename: filepath })
+      const hasGlobalInline = ast.css.attributes.some(
+        el => el.name == 'windi-inline-global'
+      )
+
+      const result = new FileHandler(content).prepare().scan().getStyles()
+      const globalStyles = styleMap.get('__GLOBAL__')
+      if (globalStyles && hasGlobalInline) {
+        styleMap.set('__GLOBAL__', {
+          data: {
+            inline: {
+              utilities: new Set([
+                ...globalStyles.data.inline.utilities,
+                ...result.data.inline.utilities,
+              ]),
+              attributifies: new Map([
+                ...globalStyles.data.inline.attributifies,
+                ...result.data.inline.attributifies,
+              ]),
+              icons: new Map([
+                ...globalStyles.data.inline.icons,
+                ...result.data.inline.icons,
+              ]),
+            },
+          },
+          updatedAt: Date.now(),
+        })
+        styleMap.set(filepath, {
+          data: {
+            inline: null,
+          },
+          updatedAt: Date.now(),
+        })
+      } else {
+        styleMap.set(filepath, {
+          data: result,
+          updatedAt: Date.now(),
+        })
+      }
+    }
+  }
+
   return {
     async markup({ content, filename }): Promise<Processed> {
       if (!filename) return { code: content }
@@ -70,8 +115,9 @@ function extractStyles(): PreprocessorGroup {
         .prepare()
         .scan()
         .getStyles()
+
       styleMap.set(filename, {
-        data: fileStyles,
+        data: fileStyles.data,
         updatedAt: Date.now(),
       })
       return {
@@ -87,11 +133,7 @@ function generateCSS(): PreprocessorGroup {
       if (!filename) return { code: content }
       console.log('generate: Style', filename)
 
-      const styleSet = new Set([
-        ...(styleMap.get(filename)?.data.inlineClasses || new Set()),
-        ...(styleMap.get(filename)?.data.inlineDirectives || new Set()),
-        ...(styleMap.get(filename)?.data.inlineExpressions || new Set()),
-      ])
+      const styleSet = styleMap.get(filename)?.data.inline.utilities
       const windiStyles = await windiGenerator.generate(styleSet)
       const windiStylesCSS = new MagicString(windiStyles.css)
       const windiStyleSheet = CSSParser(windiStylesCSS.toString(), {
