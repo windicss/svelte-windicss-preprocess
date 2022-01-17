@@ -1,12 +1,17 @@
 {
   "compilerOptions": {
-    "target": "ES2015",
+    "target": "ES2021",
     "module": "ES2020",
     "strict": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "lib": ["ES2021.String", "ES2020.String", "ES2019.Object", "ES2019.Array"]
+    "lib": [
+      "ES2021.String",
+      "ES2020.String",
+      "ES2019.Object",
+      "ES2019.Array"
+    ]
   }
 }
