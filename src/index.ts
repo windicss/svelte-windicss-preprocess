@@ -4,6 +4,8 @@ import { createGenerator } from '@unocss/core'
 import UnocssIcons from '@unocss/preset-icons'
 import windicssPreset from '@unocss/preset-wind'
 import { parse as CSSParser, walk as CSSWalker } from 'css-tree'
+import fg from 'fast-glob'
+import { readFileSync } from 'fs'
 import MagicString from 'magic-string'
 import { bgRed, white } from 'nanocolors'
 import { parse, preprocess } from 'svelte/compiler'
@@ -12,9 +14,7 @@ import type {
   Processed,
 } from 'svelte/types/compiler/preprocess'
 import { loadConfig } from 'unconfig'
-import { FileHandler, SetObject } from './utils'
-import fg from 'fast-glob'
-import { readFileSync } from 'fs'
+import { FileHandler } from './utils'
 
 export interface BaseConfig {
   silent?: boolean
