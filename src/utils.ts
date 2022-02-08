@@ -99,15 +99,15 @@ export class Magician {
     if (CLASS_MATCHES.length < 1) return this
     for (const match of CLASS_MATCHES) {
       const cleanMatch = match.groups?.classes
-        .replaceAll(/windi[`].+?[`]/gi, ' ') // windi`XYZ`
-        .replaceAll(/(?<![-])[$](?=[{])/gi, ' ') // if leading char is not -, and next char is {, then remove $
-        .replaceAll(/(?<=([{][\w\s]+[^{]*?))['"]/gi, ' ') // remove quotes in curly braces
-        .replaceAll(/(?<=([{][\w\s]+[^{]*?)\s)[:]/gi, ' ') // remove : in curly braces
-        .replaceAll(/([{][\w\s]+[^{]*?[?])/gi, ' ') // remove ? and condition in curly braces
-        .replaceAll(/[{}]/gi, ' ') // remove curly braces
-        .replaceAll(/\n/gi, ' ') // remove newline
-        .replaceAll(/ {2,}/gi, ' ') // remove multiple spaces
-        .replaceAll(/["'`]/gi, '') // remove quotes
+        .replace(/windi[`].+?[`]/gi, ' ') // windi`XYZ`
+        .replace(/(?<![-])[$](?=[{])/gi, ' ') // if leading char is not -, and next char is {, then remove $
+        .replace(/(?<=([{][\w\s]+[^{]*?))['"]/gi, ' ') // remove quotes in curly braces
+        .replace(/(?<=([{][\w\s]+[^{]*?)\s)[:]/gi, ' ') // remove : in curly braces
+        .replace(/([{][\w\s]+[^{]*?[?])/gi, ' ') // remove ? and condition in curly braces
+        .replace(/[{}]/gi, ' ') // remove curly braces
+        .replace(/\n/gi, ' ') // remove newline
+        .replace(/ {2,}/gi, ' ') // remove multiple spaces
+        .replace(/["'`]/gi, '') // remove quotes
 
       this.classes = this.classes.concat(
         (cleanMatch || '').split(' ').filter(c => {
@@ -126,15 +126,15 @@ export class Magician {
     if (CLASS_MATCHES.length < 1) return this
     for (const match of CLASS_MATCHES) {
       const cleanMatch = match.groups?.classes
-        .replaceAll(/windi[`].+?[`]/gi, ' ') // windi`XYZ`
-        .replaceAll(/(?<![-])[$](?=[{])/gi, ' ') // if leading char is not -, and next char is {, then remove $
-        .replaceAll(/(?<=([{][\w\s]+[^{]*?))['"]/gi, ' ') // remove quotes in curly braces
-        .replaceAll(/(?<=([{][\w\s]+[^{]*?)\s)[:]/gi, ' ') // remove : in curly braces
-        .replaceAll(/([{][\w\s]+[^{]*?[?])/gi, ' ') // remove ? and condition in curly braces
-        .replaceAll(/[{}]/gi, ' ') // remove curly braces
-        .replaceAll(/\n/gi, ' ') // remove newline
-        .replaceAll(/ {2,}/gi, ' ') // remove multiple spaces
-        .replaceAll(/["'`]/gi, '') // remove quotes
+        .replace(/windi[`].+?[`]/gi, ' ') // windi`XYZ`
+        .replace(/(?<![-])[$](?=[{])/gi, ' ') // if leading char is not -, and next char is {, then remove $
+        .replace(/(?<=([{][\w\s]+[^{]*?))['"]/gi, ' ') // remove quotes in curly braces
+        .replace(/(?<=([{][\w\s]+[^{]*?)\s)[:]/gi, ' ') // remove : in curly braces
+        .replace(/([{][\w\s]+[^{]*?[?])/gi, ' ') // remove ? and condition in curly braces
+        .replace(/[{}]/gi, ' ') // remove curly braces
+        .replace(/\n/gi, ' ') // remove newline
+        .replace(/ {2,}/gi, ' ') // remove multiple spaces
+        .replace(/["'`]/gi, '') // remove quotes
 
       this.classes = this.classes.concat(
         (cleanMatch || '').split(' ').filter(c => {
