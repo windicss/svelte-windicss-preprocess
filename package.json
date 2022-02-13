@@ -64,11 +64,11 @@
   },
   "scripts": {
     "build": "tsup ./src/index.ts --dts --format esm --no-splitting",
-    "build:clean": "rimraf dist && nr build",
-    "dev": "nr build --watch",
+    "build:clean": "rimraf dist && npm run build",
+    "dev": "npm run build --watch",
     "lint": "eslint src",
     "lint:tests": "eslint tests --ext .ts",
-    "release": "nr test && nr build:clean && bumpp --tag --commit --push",
+    "release": "npm run test && npm run build:clean && bumpp --tag --commit --push",
     "test": "uvu -r sucrase/register tests",
     "test:generate": "tsm generate.ts"
   },
