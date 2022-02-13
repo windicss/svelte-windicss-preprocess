@@ -7,12 +7,12 @@ export class FileHandler {
   icons: string[] = []
 
   constructor(content: string) {
-    console.log('CONSTRUCT')
+    // console.log('CONSTRUCT')
     this.content = content
   }
 
   public clean(): this {
-    console.log('FILE-STEP: CLEAN')
+    // console.log('FILE-STEP: CLEAN')
     // find a way around this
     this.content = this.content.replace(/<!--[\s\S]*?-->/g, '')
 
@@ -20,7 +20,7 @@ export class FileHandler {
   }
 
   public prepare(): this {
-    console.log('FILE-STEP: PREPARE')
+    // console.log('FILE-STEP: PREPARE')
     this.content = this.content.replace(
       /([!\w][\w:_/-]*?):\(([\w\s/-]*?)\)/gm,
       (_, groupOne: string, groupTwo: string) =>
@@ -59,7 +59,7 @@ export class FileHandler {
   }
 
   public scan(): this {
-    console.log('FILE-STEP: SCAN')
+    // console.log('FILE-STEP: SCAN')
 
     const CLASSATTRIBUTE_MATCHES = [
       ...this.content.matchAll(/class=(['"`])(?<utilities>[^\1]+?)\1/gi),
@@ -93,8 +93,8 @@ export class FileHandler {
       }
     }
 
-    console.log('utility', this.utilities)
-    console.log('icons', this.icons)
+    // console.log('utility', this.utilities)
+    // console.log('icons', this.icons)
 
     // this.processWindiExpression()
     // this.processAttributify()
@@ -166,7 +166,7 @@ export class FileHandler {
   // }
 
   public getStyles() {
-    console.log('FILE-STEP: STYLES')
+    // console.log('FILE-STEP: STYLES')
 
     const styles = {
       data: {
