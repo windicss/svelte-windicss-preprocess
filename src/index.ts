@@ -47,13 +47,11 @@ const styles: {
 }
 
 function splitVariantGroups(content: string) {
-  return content.replace(
-    /([\w!][\w/:-]*?):\(([\s\w/-]*)\)/g,
-    (_, groupOne: string, groupTwo: string) =>
-      groupTwo
-        .split(/\s/g)
-        .map((cssClass) => `${groupOne}:${cssClass}`)
-        .join(' ')
+  return content.replace(/(\w+):\(([\s\w/<:!-]+)\)/g, (_, groupOne: string, groupTwo: string) =>
+    groupTwo
+      .split(/\s/g)
+      .map((cssClass) => `${groupOne}:${cssClass}`)
+      .join(' ')
   )
 }
 
@@ -123,6 +121,7 @@ function extractStyles(): PreprocessorGroup {
   return {
     async markup({ content, filename }): Promise<Processed> {
       if (!filename) return { code: content }
+      content = splitVariantGroups(content)
       if (initialFileName.length === 0) initialFileName = filename
       content = addStyleTag(content)
       content = content.replace(/global:/gi, '')
