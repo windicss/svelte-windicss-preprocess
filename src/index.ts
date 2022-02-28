@@ -1,24 +1,30 @@
-import type { IconifyJSON } from '@iconify/types'
-import type { UnoGenerator } from '@unocss/core'
-import { createGenerator } from '@unocss/core'
-import UnocssIcons from '@unocss/preset-icons'
+/* eslint-disable regexp/strict */
+/* eslint-disable unicorn/better-regex */
+import { type IconifyJSON } from '@iconify/types'
+import { createGenerator, type UnoGenerator } from '@unocss/core'
+import presetIcons from '@unocss/preset-icons'
 import { presetTypography } from '@unocss/preset-typography'
+import presetAttributify from '@unocss/preset-attributify'
 import windicssPreset from '@unocss/preset-wind'
 import { parse as CSSParser, walk as CSSWalker } from 'css-tree'
 import fg from 'fast-glob'
-import { readFileSync } from 'fs'
 import MagicString from 'magic-string'
+import { readFileSync } from 'node:fs'
 import { parse, preprocess } from 'svelte/compiler'
-import type {
-  PreprocessorGroup,
-  Processed,
-} from 'svelte/types/compiler/preprocess'
+import { type PreprocessorGroup, type Processed } from 'svelte/types/compiler/preprocess'
 import { loadConfig } from 'unconfig'
 import { type FullConfig } from 'windicss/types/interfaces'
 
 export interface BaseConfig {
   silent?: boolean
   mode?: 'development' | 'production'
+  attributify?: {
+    strict?: boolean
+    prefix?: string
+    prefixedOnly?: boolean
+    nonValuedAttribute?: boolean
+    ignoreAttributes: string[]
+  }
   icons?: {
     prefix?: string
     collections?: Record<string, IconifyJSON>
@@ -33,7 +39,6 @@ const defaults: DefaultConfig = {}
 let generatorConfiguration: BaseConfig
 let windiConfiguration: any
 let windiGenerator: UnoGenerator
-let iconGenerator: UnoGenerator
 
 const styles: {
   [key: string]: Set<string>
@@ -43,11 +48,11 @@ const styles: {
 
 function splitVariantGroups(content: string) {
   return content.replace(
-    /([!\w][\w:_/-]*?):\(([\w\s/-]*?)\)/gm,
+    /([\w!][\w/:-]*?):\(([\s\w/-]*)\)/g,
     (_, groupOne: string, groupTwo: string) =>
       groupTwo
         .split(/\s/g)
-        .map(cssClass => `${groupOne}:${cssClass}`)
+        .map((cssClass) => `${groupOne}:${cssClass}`)
         .join(' ')
   )
 }
@@ -66,15 +71,15 @@ function addStyleTag(content: string) {
 
 function cleanUtilities(utilities: string) {
   return utilities
-    .replace(/windi[`].+?[`]/gi, ' ') // windi`XYZ`
-    .replace(/(?<![-])[$](?=[{])/gi, ' ') // if leading char is not -, and next char is {, then remove $
-    .replace(/(?<=([{][\w\s]+[^{]*?))['"]/gi, ' ') // remove quotes in curly braces
-    .replace(/(?<=([{][\w\s]+[^{]*?)\s)[:]/gi, ' ') // remove : in curly braces
-    .replace(/([{][\w\s]+[^{]*?[?])/gi, ' ') // remove ? and condition in curly braces
-    .replace(/[{}]/gi, ' ') // remove curly braces
-    .replace(/\n/gi, ' ') // remove newline
-    .replace(/ {2,}/gi, ' ') // remove multiple spaces
-    .replace(/["'`]/gi, '') // remove quotes
+    .replace(/windi`.+?`/gi, ' ') // windi`XYZ`
+    .replace(/(?<!-)\$(?=\{)/g, ' ') // if leading char is not -, and next char is {, then remove $
+    .replace(/(?<=(\{[\s\w][^{]*?))["']/g, ' ') // remove quotes in curly braces
+    .replace(/(?<=(\{[\s\w][^{]*?)\s):/g, ' ') // remove : in curly braces
+    .replace(/(\{[\s\w][^{]*?\?)/g, ' ') // remove ? and condition in curly braces
+    .replace(/[{}]/g, ' ') // remove curly braces
+    .replace(/\n/g, ' ') // remove newline
+    .replace(/ {2,}/g, ' ') // remove multiple spaces
+    .replace(/["'`]/g, '') // remove quotes
     .trim()
     .split(' ')
 }
@@ -82,9 +87,9 @@ function cleanUtilities(utilities: string) {
 function scanFile(content: string, filename: string) {
   //TODO@alexanderniebuhr add attributifies
   const MATCHES = [
-    ...content.matchAll(/class=(['"`])(?<utilities>[^\1]+?)\1/gi),
-    ...content.matchAll(/class=(?<utilities>[{][^}]+?)}/gi),
     ...content.matchAll(/\s(class):(?<utility>[^=]+)(=)/gi),
+    ...content.matchAll(/class=(["'`])(?<utilities>[^\1]+?)\1/gi),
+    ...content.matchAll(/class=(?<utilities>\{[^}]+)\}/gi),
   ]
   styles[filename] = new Set()
 
@@ -95,21 +100,19 @@ function scanFile(content: string, filename: string) {
       styles[filename].add(match.groups.utility)
     }
     if (match.groups?.utilities) {
-      cleanUtilities(match.groups?.utilities).forEach(utility => {
+      for (const utility of cleanUtilities(match.groups?.utilities)) {
         if (utility.startsWith('global:')) {
           styles['__GLOBAL__'].add(utility.replace('global:', ''))
         } else {
           styles[filename].add(utility)
         }
-      })
+      }
     }
   }
-
-  return styles
 }
 
 function extractStyles(): PreprocessorGroup {
-  if (initialFileName.length == 0) {
+  if (initialFileName.length === 0) {
     const filePaths = fg.sync(['src/**/*.svelte'], {})
     for (const filepath of filePaths) {
       const content = splitVariantGroups(readFileSync(filepath).toString())
@@ -120,7 +123,7 @@ function extractStyles(): PreprocessorGroup {
   return {
     async markup({ content, filename }): Promise<Processed> {
       if (!filename) return { code: content }
-      if (initialFileName.length == 0) initialFileName = filename
+      if (initialFileName.length === 0) initialFileName = filename
       content = addStyleTag(content)
       content = content.replace(/global:/gi, '')
       return {
@@ -150,7 +153,8 @@ function generateCSS(): PreprocessorGroup {
           node.prelude.children
         ) {
           const applyUtillities: Set<string> = new Set()
-          node.prelude.children.forEach(identifier => {
+          // eslint-disable-next-line unicorn/no-array-for-each
+          node.prelude.children.forEach((identifier) => {
             if (identifier.type === 'Identifier') {
               applyUtillities.add(identifier.name)
             }
@@ -164,19 +168,13 @@ function generateCSS(): PreprocessorGroup {
             parseValue: false,
           })
 
-          CSSWalker(applyStyleSheet, (node, item, list) => {
-            if (node.type == 'Declaration') {
-              if (node.value.type == 'Raw') {
-                generatedApplyCss += `${node.property}:${node.value.value};`
-              }
+          CSSWalker(applyStyleSheet, (node) => {
+            if (node.type == 'Declaration' && node.value.type == 'Raw') {
+              generatedApplyCss += `${node.property}:${node.value.value};`
             }
           })
 
-          tagStylesCSS.overwrite(
-            node.loc.start.offset,
-            node.loc.end.offset,
-            generatedApplyCss
-          )
+          tagStylesCSS.overwrite(node.loc.start.offset, node.loc.end.offset, generatedApplyCss)
           content = tagStylesCSS.toString()
         }
       })
@@ -415,12 +413,8 @@ function generateCSS(): PreprocessorGroup {
           parseValue: false,
         })
 
-        CSSWalker(globalStyleSheet, (node, item, list) => {
-          if (
-            node.type === 'Rule' &&
-            node.prelude.type === 'SelectorList' &&
-            node.prelude.loc
-          ) {
+        CSSWalker(globalStyleSheet, (node) => {
+          if (node.type === 'Rule' && node.prelude.type === 'SelectorList' && node.prelude.loc) {
             globalStylesCSS
               .appendLeft(node.prelude.loc?.start.offset, ':global(')
               .appendRight(node.prelude.loc?.end.offset, ')')
@@ -433,10 +427,8 @@ function generateCSS(): PreprocessorGroup {
             node.prelude.type === 'AtrulePrelude' &&
             node.prelude.loc
           ) {
-            globalStylesCSS.appendLeft(
-              node.prelude.loc?.start.offset,
-              '-global-'
-            )
+            globalStylesCSS.appendLeft(node.prelude.loc?.start.offset, '-global-')
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             return (CSSWalker as any).skip
           }
         })
@@ -445,11 +437,7 @@ function generateCSS(): PreprocessorGroup {
       const windiStyles = await windiGenerator.generate(styles[filename])
       const windiStylesCSS = new MagicString(windiStyles.css)
       const newContent =
-        (globalContent ? globalContent : '') +
-        '\n' +
-        windiStylesCSS.toString() +
-        '\n' +
-        content
+        (globalContent ? globalContent : '') + '\n' + windiStylesCSS.toString() + '\n' + content
       // console.log(newContent)
       return {
         code: newContent,
@@ -462,10 +450,18 @@ function generateCSS(): PreprocessorGroup {
 export function generate(userConfig: UserConfig = {}): PreprocessorGroup {
   generatorConfiguration = { ...defaults, ...userConfig }
 
-  const presets = [windicssPreset(), presetTypography()]
+  const presets = []
+  if (generatorConfiguration.attributify != undefined) {
+    presets.push(
+      presetAttributify({
+        ...generatorConfiguration.attributify,
+      })
+    )
+  }
+  presets.push(windicssPreset(), presetTypography())
   if (generatorConfiguration.icons != undefined) {
     presets.push(
-      UnocssIcons({
+      presetIcons({
         ...generatorConfiguration.icons,
       })
     )
