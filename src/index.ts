@@ -487,11 +487,10 @@ export function generate(userConfig: UserConfig = {}): PreprocessorGroup {
         })
         // console.log(config)
 
-        // windiGenerator.setConfig({
-        //   theme: config.theme,
-        //   safelist: [''],
-        //   // preprocess: config.preprocess,
-        // })
+        windiGenerator.setConfig({
+          theme: config.theme,
+          // preprocess: config.preprocess,
+        })
         windiConfiguration = config
       }
 
