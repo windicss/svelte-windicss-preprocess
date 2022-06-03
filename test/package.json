@@ -1,15 +1,14 @@
 {
-    "name": "",
-    "version": "0.0.0",
-    "description": "",
-    "scripts": {
-      "test": "sveasy dev"
-    },
-    "devDependencies": {
-      "sveasy": "0.11.5",
-      "svelte":"3.48.0",
-      "svelte-windicss-preprocess": "workspace:*"
-    },
-    "type": "module"
-  }
-  
+  "name": "",
+  "description": "",
+  "version": "0.0.0",
+  "devDependencies": {
+    "sveasy": "0.11.5",
+    "svelte": "3.48.0",
+    "svelte-windicss-preprocess": "workspace:*"
+  },
+  "scripts": {
+    "test": "sveasy dev"
+  },
+  "type": "module"
+}
