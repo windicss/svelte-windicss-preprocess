@@ -1,495 +1,259 @@
-import type { IconifyJSON } from '@iconify/types'
-// import { useConfig, useDebugger } from '@nbhr/utils'
-import type { UnoGenerator } from '@unocss/core'
-import { createGenerator } from '@unocss/core'
-import UnocssIcons from '@unocss/preset-icons'
+import { type IconifyJSON } from '@iconify/types'
+import { createGenerator, type UnoGenerator } from '@unocss/core'
+import presetIcons from '@unocss/preset-icons'
+import { presetTypography } from '@unocss/preset-typography'
+import presetAttributify from '@unocss/preset-attributify'
+import presetWindi from '@unocss/preset-wind'
+import { parse as CSSParser, walk as CSSWalker } from 'css-tree'
 import fg from 'fast-glob'
-import { readFileSync } from 'fs'
+import MagicString from 'magic-string'
+import { readFileSync } from 'node:fs'
 import { parse, preprocess } from 'svelte/compiler'
-import type {
-  PreprocessorGroup,
-  Processed,
-} from 'svelte/types/compiler/preprocess'
-import { Processor } from 'windicss/lib'
-// import type { FullConfig } from 'windicss/types/interfaces'
-import { CSSParser } from 'windicss/utils/parser'
-import { StyleSheet } from 'windicss/utils/style'
-import { globalStyleSheet, Magician, SetObject } from './utils'
+import { type PreprocessorGroup, type Processed } from 'svelte/types/compiler/preprocess'
 import { loadConfig } from 'unconfig'
-import { FullConfig } from 'windicss/types/interfaces'
-
-// const DEV = false
-// let windiConfig: FullConfig
-// let configMTime: number
-// let OPTIONS: BaseConfig
-
-let entryFileName = ''
-
-interface generatorObject {
-  data: SetObject
-  updatedAt: number
-  writtenAt?: number
-}
-
-const raw = new Map<string, generatorObject>([
-  [
-    '__GLOBAL',
-    {
-      data: {
-        inlineClasses: new Set(),
-        inlineDirectives: new Set(),
-        inlineExpressions: new Set(),
-        inlineIcons: new Set(),
-        inlineAttributify: new Map(),
-      },
-      updatedAt: Date.now(),
-    },
-  ],
-])
-
-async function generateCSS(
-  key: string,
-  attributes: Record<string, string | boolean>
-) {
-  const t = raw.get(key)
-
-  // MARK: WINDI DEFAULT
-  //   const FILESHEET = CSS_STYLESHEETS.get(filename || '') || undefined
-  //   if (FILESHEET && attributes['windi:global']) {
-  //     INLINE_STYLE = globalStyleSheet(FILESHEET['code']).build()
-  //   } else if (FILESHEET) {
-  //     INLINE_STYLE = FILESHEET['code'].build()
-  //   }
-  const defaultStyleSheet = generatorWindi.interpret(
-    Array.from(
-      new Set([
-        ...(t?.data.inlineClasses || new Set()),
-        ...(t?.data.inlineDirectives || new Set()),
-        ...(t?.data.inlineExpressions || new Set()),
-      ])
-    ).join(' ')
-  ).styleSheet
-  let defaultStyles = ''
-  if (attributes['windi:global'] || attributes['windi-inline-global']) {
-    defaultStyles = globalStyleSheet(defaultStyleSheet).build()
-  } else {
-    defaultStyles = defaultStyleSheet.build()
-  }
-
-  // MARK: ATTRIBUTIFY
-  const nObj: Record<string, string[]> = {}
-  t?.data.inlineAttributify.forEach((v: Set<string>, k: string) => {
-    nObj[k] = Array.from(v)
-  })
-
-  const attributifyStyleSheet = generatorWindi.attributify(nObj).styleSheet
-  let attributifyStyles = ''
-  if (attributes['windi:global'] || attributes['windi-inline-global']) {
-    attributifyStyles = globalStyleSheet(attributifyStyleSheet).build()
-  } else {
-    attributifyStyles = attributifyStyleSheet.build()
-  }
-
-  // MARK: ICONS (experimental)
-  let iconStyles = ''
-  if (generatorUno && configuration.experimental?.icons != undefined) {
-    iconStyles = await generatorUno
-      .generate(t?.data.inlineIcons || '')
-      .then(resolve => resolve.css)
-  }
-  return { defaultStyles, attributifyStyles, iconStyles }
-}
-
-function agent(): PreprocessorGroup {
-  let result: SetObject
-  return {
-    async markup({ content, filename }): Promise<Processed> {
-      if (!filename) return { code: content }
-      // console.log(filename, 'markup agent')
-      let worker = new Magician(content, filename, configuration)
-      worker = worker.prepare()
-      worker = worker.setInject()
-      worker = worker.extract()
-      result = worker.getSets()
-      raw.set(filename, {
-        data: result,
-        updatedAt: Date.now(),
-      })
-
-      return {
-        code: worker.getContent(),
-      }
-    },
-  }
-}
-
-function main(): PreprocessorGroup {
-  if (configuration.experimental?.scan !== undefined) {
-    const files = fg.sync(['src/**/*.svelte'], {})
-    for (const file of files) {
-      const content = readFileSync(file).toString()
-      const filename = file
-      const ast = parse(content, { filename })
-      const hasGlobalInline = ast.css.attributes.some(
-        el => el.name == 'windi-inline-global'
-      )
-      console.log(filename, hasGlobalInline)
-      let worker = new Magician(content, filename, configuration)
-      worker = worker.prepare()
-      worker = worker.extract()
-      const result = worker.getSets()
-      if (hasGlobalInline) {
-        const global = raw.get('__GLOBAL')!.data
-        raw.set('__GLOBAL', {
-          data: {
-            inlineClasses: new Set([
-              ...global.inlineClasses,
-              ...result.inlineClasses,
-            ]),
-            inlineDirectives: new Set([
-              ...global.inlineDirectives,
-              ...result.inlineDirectives,
-            ]),
-            inlineExpressions: new Set([
-              ...global.inlineExpressions,
-              ...result.inlineExpressions,
-            ]),
-            inlineIcons: new Set([
-              ...global.inlineIcons,
-              ...result.inlineIcons,
-            ]),
-            inlineAttributify: new Map([
-              ...global.inlineAttributify,
-              ...result.inlineAttributify,
-            ]),
-          },
-          updatedAt: Date.now(),
-        })
-        raw.set(filename, {
-          data: {
-            inlineClasses: new Set(),
-            inlineDirectives: new Set(),
-            inlineExpressions: new Set(),
-            inlineIcons: new Set(),
-            inlineAttributify: new Map(),
-          },
-          updatedAt: Date.now(),
-        })
-      } else {
-        raw.set(filename, {
-          data: result,
-          updatedAt: Date.now(),
-        })
-      }
-    }
-  }
-
-  return {
-    async style({ content, attributes, filename }): Promise<Processed> {
-      if (!filename) return { code: content }
-      // console.log(filename, 'style main')
-      //   // MARK: PREFLIGHTS
-      //   if (OPTIONS.preflights === true && attributes['windi:preflights:global']) {
-      //     const PREFLIGHTS = PROCESSOR.preflight()
-      //     PREFLIGHTS_STYLE = globalStyleSheet(PREFLIGHTS).build()
-      //   } else if (OPTIONS.preflights === true && attributes['windi:preflights']) {
-      //     const PREFLIGHTS = PROCESSOR.preflight()
-      //     PREFLIGHTS_STYLE = PREFLIGHTS.build()
-      //   }
-      let preflightStyleSheet = new StyleSheet()
-      if (
-        attributes['windi:preflights:global'] ||
-        attributes['windi-preflights-global']
-      ) {
-        preflightStyleSheet = globalStyleSheet(generatorWindi.preflight())
-      }
-      const preflightStyles = preflightStyleSheet.build()
-
-      //   // MARK: SAFELIST
-      //   if (OPTIONS.safeList && attributes['windi:safelist:global']) {
-      //     const SAFELIST = PROCESSOR.interpret(OPTIONS.safeList).styleSheet
-      //     SAFELIST_STYLE = globalStyleSheet(SAFELIST).build()
-      //     if (OPTIONS.experimental && OPTIONS.experimental.icons != undefined) {
-      //       let UNO_SAFELIST_STYLE = ''
-      //       const { css } = await UNO.generate(OPTIONS.safeList)
-      //       const UNO_SAFELIST_STYLESHEET = new CSSParser(css).parse()
-      //       UNO_SAFELIST_STYLE = globalStyleSheet(UNO_SAFELIST_STYLESHEET).build()
-      //       SAFELIST_STYLE += UNO_SAFELIST_STYLE
-      //     }
-      //   } else if (OPTIONS.safeList && attributes['windi:safelist']) {
-      //     const SAFELIST = PROCESSOR.interpret(OPTIONS.safeList).styleSheet
-      //     SAFELIST_STYLE = SAFELIST.build()
-      //     if (OPTIONS.experimental && OPTIONS.experimental.icons != undefined) {
-      //       let UNO_SAFELIST_STYLE = ''
-      //       const { css } = await UNO.generate(OPTIONS.safeList)
-      //       UNO_SAFELIST_STYLE = css
-      //       SAFELIST_STYLE += UNO_SAFELIST_STYLE
-      //     }
-      //   }
-      let safelistStyleSheet = new StyleSheet()
-      let safelistIconsStyleSheet = new StyleSheet()
-      if (
-        attributes['windi:safelist:global'] ||
-        attributes['windi-safelist-global']
-      ) {
-        safelistStyleSheet = globalStyleSheet(
-          generatorWindi.interpret(configuration.safeList || '').styleSheet
-        )
-        if (generatorUno && configuration.experimental?.icons != undefined) {
-          const { css } = await generatorUno.generate(
-            configuration.safeList || ''
-          )
-          safelistIconsStyleSheet = globalStyleSheet(new CSSParser(css).parse())
-        }
-      }
-      let safelistStyles = safelistStyleSheet.build()
-      safelistStyles += safelistIconsStyleSheet.build()
-
-      let defaultStyles, attributifyStyles, iconStyles
-      if (entryFileName.length > 0) {
-        const result = await generateCSS(filename, attributes)
-        defaultStyles = result.defaultStyles
-        attributifyStyles = result.attributifyStyles
-        iconStyles = result.iconStyles
-      } else {
-        entryFileName = filename
-        const resultGlobal = await generateCSS('__GLOBAL', {
-          'windi-inline-global': true,
-        })
-        defaultStyles = resultGlobal.defaultStyles
-        attributifyStyles = resultGlobal.attributifyStyles
-        iconStyles = resultGlobal.iconStyles
-        const result = await generateCSS(filename, attributes)
-        defaultStyles += result.defaultStyles
-        attributifyStyles += result.attributifyStyles
-        iconStyles += result.iconStyles
-      }
-
-      // MARK: CUSTOM CSS + WINDI @apply
-      //   let CSS: StyleSheet
-      //   CSS_SOURCE = content
-      //   if (CSS_SOURCE && attributes['global']) {
-      //     CSS = new CSSParser(CSS_SOURCE, PROCESSOR).parse()
-      //     CSS_STYLE = globalStyleSheet(CSS).build()
-      //   } else if (CSS_SOURCE) {
-      //     const tmpCSS = CSS_SOURCE
-      //     const rules = [...(tmpCSS.matchAll(/(?<selector>[^}]*){(?<css>[^}]*)}/gim) || [])]
-      //     rules.forEach(rule => {
-      //       if (rule.groups && rule.groups.selector.includes(':global')) {
-      //         const globalCSS = new CSSParser(rule[0], PROCESSOR).parse()
-      //         const buildGlobalCSS = globalStyleSheet(globalCSS).build()
-      //         if (buildGlobalCSS.length > 0) CSS_STYLE += buildGlobalCSS + '\n'
-      //       } else {
-      //         CSS = new CSSParser(rule[0], PROCESSOR).parse()
-      //         const buildLocalCSS = CSS.build()
-      //         if (buildLocalCSS.length > 0) CSS_STYLE += buildLocalCSS + '\n'
-      //       }
-      //     })
-      //   }
-      const cssStyleSheet =
-        new CSSParser(content, generatorWindi).parse() || new StyleSheet()
-
-      let cssStyles = ''
-      if (attributes['global']) {
-        cssStyles = globalStyleSheet(cssStyleSheet).build()
-      } else {
-        cssStyles = cssStyleSheet.build()
-      }
-
-      //   // MARK: COMBINE
-      //   let newStyleCode = '\n'
-      //   if (PREFLIGHTS_STYLE.length > 0) newStyleCode += PREFLIGHTS_STYLE + '\n'
-      //   if (SAFELIST_STYLE.length > 0) newStyleCode += SAFELIST_STYLE + '\n'
-      //   if (CSS_STYLE.length > 0) newStyleCode += CSS_STYLE + '\n'
-      //   if (INLINE_STYLE.length > 0) newStyleCode += INLINE_STYLE + '\n'
-      //   if (UNO_STYLE.length > 0) newStyleCode += UNO_STYLE + '\n'
-      let newCode = ''
-      if (preflightStyles.length > 0) newCode += '\n' + preflightStyles
-      if (safelistStyles.length > 0) newCode += '\n' + safelistStyles
-      if (defaultStyles.length > 0) newCode += '\n' + defaultStyles
-      if (attributifyStyles.length > 0) newCode += '\n' + attributifyStyles
-      if (iconStyles.length > 0) newCode += '\n' + iconStyles
-      if (cssStyles.length > 0) newCode += '\n' + cssStyles
-      newCode += '\n'
-
-      return {
-        code: newCode,
-      }
-    },
-  }
-}
+import { type FullConfig } from 'windicss/types/interfaces'
 
 export interface BaseConfig {
   silent?: boolean
   mode?: 'development' | 'production'
-  configPath?: string
-  disableFormat?: boolean
-  devTools?: {
-    enabled: boolean
-    completions?: boolean
+  attributify?: {
+    strict?: boolean
+    prefix?: string
+    prefixedOnly?: boolean
+    nonValuedAttribute?: boolean
+    ignoreAttributes?: string[]
   }
-  //
-  safeList?: string
-  preflights?: boolean
-  // bundle?: string;
-  // debug?: boolean;
-  // compile?: boolean;
-  // prefix?: string;
-  // verbosity?: number;
-  experimental?: {
-    icons?: {
-      prefix?: string
-      collections?: Record<string, IconifyJSON>
-      extraProperties?: Record<string, string>
-    }
-    scan?: boolean
+  typography?: any
+  icons?: {
+    prefix?: string
+    collections?: Record<string, IconifyJSON>
+    extraProperties?: Record<string, string>,
+    cdn?: string
   }
 }
 export type DefaultConfig = BaseConfig
 export type UserConfig = BaseConfig
+let initialFileName = ''
 
-const defaultConfig: DefaultConfig = {
-  silent: false,
-  // mode
-  // configPath
-  disableFormat: false,
-  devTools: {
-    enabled: false,
-  },
-  safeList: undefined,
-  preflights: true,
-  // bundle: undefined,
-  // compile: false,
-  // prefix: 'windi-',
-  // verbosity: 1,
-  // debug: false,
+const defaults: DefaultConfig = {}
+let generatorConfiguration: BaseConfig
+let windiConfiguration: any
+let windiGenerator: UnoGenerator
+
+const styles: {
+  [key: string]: Set<string>
+} = {
+  __GLOBAL__: new Set(),
 }
 
-let configuration: BaseConfig
-let generatorWindi: Processor
-let generatorUno: UnoGenerator
-let windiConfiguration: FullConfig
+function splitVariantGroups(content: string) {
+  return content.replace(/(\w+):\(([\s\w/<:!-]+)\)/g, (_, groupOne: string, groupTwo: string) =>
+    groupTwo
+      .split(/\s/g)
+      .map((cssClass) => `${groupOne}:${cssClass}`)
+      .join(' ')
+  )
+}
 
-// if (windiConfig != undefined) {
-//   if (OPTIONS.configPath) {
-//     // get modified time of config file
-//     const mTime = statSync(OPTIONS.configPath).mtimeMs
-//     if (mTime > configMTime) {
-//       const tmpConfigPath = `./${Date.now()}windi.config.js`
-//       copyFileSync(OPTIONS.configPath, tmpConfigPath)
-//       loadConfig(tmpConfigPath)
-//         .catch(e => {
-//           useDebugger.createLog('Unknown Error while loading the config')
-//           console.error(e)
-//         })
-//         .finally(() => {
-//           rmSync(tmpConfigPath)
-//           resolve({
-//             code: _preprocess(content, filename),
-//           })
-//         })
-//     } else {
-//       resolve({
-//         code: _preprocess(content, filename),
-//       })
-//     }
-//   }
-// } else {
-//   if (OPTIONS.configPath) {
-//     loadConfig(OPTIONS.configPath)
-//       .catch(e => {
-//         useDebugger.createLog('Unknown Error while loading the config')
-//         console.error(e)
-//       })
-//       .finally(() => {
-//         resolve({
-//           code: _preprocess(content, filename),
-//         })
-//       })
-//   } else {
-//     PROCESSOR.loadConfig()
-//     resolve({
-//       code: _preprocess(content, filename),
-//     })
-//   }
-// }
-
-// function loadConfig(path: string): Promise<void> {
-//   useDebugger.createLog('Trying to load windi configuration from ' + path)
-//   return useConfig.load<FullConfig>(path).then(config => {
-//     // write current unix timestamp to configMTime
-//     configMTime = Date.now()
-//     if (config.preflight === false) OPTIONS.preflights = false
-//     if (config.safelist && typeof config.safelist == 'string') {
-//       OPTIONS.safeList = config.safelist
-//     } else if (config.safelist) {
-//       const tmpSafelist = config.safelist as (string | string[])[]
-//       OPTIONS.safeList = [...new Set(tmpSafelist.flat(Infinity))].join(' ')
-//     }
-//     console.log(config)
-//     console.log(JSON.stringify(config.theme))
-//     PROCESSOR.loadConfig(config)
-//     useDebugger.createLog('Configuration loaded successfully')
-//     windiConfig = config
-//   })
-// }
-export function windi(userConfig: UserConfig = {}): PreprocessorGroup {
-  configuration = { ...defaultConfig, ...userConfig }
-  generatorWindi = new Processor()
-  const steps: PreprocessorGroup[] = []
-  if (configuration.experimental?.icons != undefined) {
-    generatorUno = createGenerator(
-      {
-        presets: [
-          UnocssIcons({
-            ...configuration.experimental.icons,
-          }),
-        ],
-      },
-      {}
-    )
+function addStyleTag(content: string) {
+  const ast = parse(content, {})
+  if (!ast.css) {
+    // no style tag, create a new one
+    content += '\n<style>\n</style>\n'
+  } else if (ast && ast.css.content.start == ast.css.content.end) {
+    // empty style tag, replace with a new one
+    content = content.replace('<style></style>', '<style>\n</style>')
+  } else {
+    // non-empty style tag, add styles to it
   }
 
-  if (configuration.experimental?.scan == undefined) {
-    steps.push(agent())
-  }
-  steps.push(main())
+  return content
+}
 
+function cleanUtilities(utilities: string) {
+  return utilities
+    .replace(/windi`.+?`/gi, ' ') // windi`XYZ`
+    .replace(/(?<!-)\$(?=\{)/g, ' ') // if leading char is not -, and next char is {, then remove $
+    .replace(/(?<=(\{[\s\w][^{]*?))["']/g, ' ') // remove quotes in curly braces
+    .replace(/(?<=(\{[\s\w][^{]*?)\s):/g, ' ') // remove : in curly braces
+    .replace(/(\{[\s\w][^{]*?\?)/g, ' ') // remove ? and condition in curly braces
+    .replace(/[{}]/g, ' ') // remove curly braces
+    .replace(/\n/g, ' ') // remove newline
+    .replace(/ {2,}/g, ' ') // remove multiple spaces
+    .replace(/["'`]/g, '') // remove quotes
+    .trim()
+    .split(' ')
+}
+
+function scanFile(content: string, filename: string) {
+  //TODO@alexanderniebuhr add attributifies
+  const MATCHES = [
+    ...content.matchAll(/\s(class):(?<utility>[^=]+)(=)/gi),
+    ...content.matchAll(/class=(["'`])(?<utilities>[^\1]+?)\1/gi),
+    ...content.matchAll(/class=(?<utilities>\{[^}]+)\}/gi),
+  ]
+  styles[filename] = new Set()
+  for (const match of MATCHES) {
+    if (match.groups?.utility) {
+      styles[filename].add(match.groups.utility)
+    }
+    if (match.groups?.utilities) {
+      for (const utility of cleanUtilities(match.groups?.utilities)) {
+        styles[filename].add(utility)
+      }
+    }
+  }
+}
+
+function extractStyles(): PreprocessorGroup {
   return {
     async markup({ content, filename }): Promise<Processed> {
-      if (!windiConfiguration) {
-        const { config } = await loadConfig<FullConfig>({
-          merge: false,
-          sources: [
-            {
-              files: 'windi.config',
-              // default extensions
-              extensions: ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs', 'json', ''],
-            },
-          ],
-        })
-        windiConfiguration = config
-        if (typeof config?.safelist == 'string') {
-          configuration.safeList = config.safelist
-        } else if (config?.safelist) {
-          configuration.safeList = [
-            ...new Set(config.safelist.flat(Infinity)),
-          ].join(' ')
-        }
-        generatorWindi.loadConfig(config)
-      }
-      let currentContent = content
-
-      for (const step of steps) {
-        const code = (await preprocess(currentContent, step, { filename })).code
-        currentContent = code
-      }
-
+      if (!filename) return { code: content }
+      console.log(filename)
+      content = splitVariantGroups(content)
+      scanFile(content, filename)
+      content = addStyleTag(content)
       return {
-        code: currentContent,
+        code: content,
       }
     },
   }
 }
 
+function generateCSS(): PreprocessorGroup {
+  return {
+    async style({ content, attributes, filename }): Promise<Processed> {
+      if (!filename) return { code: content }
+      // get currentStyles
+      const tagStylesCSS = new MagicString(content)
+      const tagStyleSheet = CSSParser(tagStylesCSS.toString(), {
+        positions: true,
+        parseValue: false,
+      })
+
+      CSSWalker(tagStyleSheet, async (node, item, list) => {
+        if (
+          node.type === 'Atrule' &&
+          node.loc &&
+          node.prelude &&
+          node.prelude.type === 'AtrulePrelude' &&
+          node.prelude.children
+        ) {
+          const applyUtillities: Set<string> = new Set()
+          // eslint-disable-next-line unicorn/no-array-for-each
+          node.prelude.children.forEach((identifier) => {
+            if (identifier.type === 'Identifier') {
+              applyUtillities.add(identifier.name)
+            }
+          })
+
+          let generatedApplyCss = ''
+          const applyStyles = await windiGenerator.generate(applyUtillities)
+          const applyStylesCSS = new MagicString(applyStyles.css)
+          const applyStyleSheet = CSSParser(applyStylesCSS.toString(), {
+            positions: true,
+            parseValue: false,
+          })
+
+          CSSWalker(applyStyleSheet, (node) => {
+            if (node.type == 'Declaration' && node.value.type == 'Raw') {
+              generatedApplyCss += `${node.property}:${node.value.value};`
+            }
+          })
+
+          tagStylesCSS.overwrite(node.loc.start.offset, node.loc.end.offset, generatedApplyCss)
+          content = tagStylesCSS.toString()
+        }
+      })
+
+      const windiStyles = await windiGenerator.generate(styles[filename])
+      console.log(styles[filename])
+      console.log(windiStyles)
+      const windiStylesCSS = new MagicString(windiStyles.css)
+      const newContent =  windiStylesCSS.toString() + '\n' + content
+      // console.log(newContent)
+      return {
+        code: newContent,
+        // code: '',
+      }
+    },
+  }
+}
+
+export function generate(userConfig: UserConfig = {}): PreprocessorGroup {
+  generatorConfiguration = { ...defaults, ...userConfig }
+
+  const presets = []
+  if (generatorConfiguration.attributify != undefined) {
+    presets.push(
+      presetAttributify({
+        ...generatorConfiguration.attributify,
+      })
+    )
+  }
+  presets.push(presetWindi())
+  if (generatorConfiguration.typography != undefined) {
+    presets.push(
+      presetTypography({
+        ...generatorConfiguration.typography,
+      })
+    )
+  }
+  if (generatorConfiguration.icons != undefined) {
+    presets.push(
+      presetIcons({
+        ...generatorConfiguration.icons,
+      })
+    )
+  }
+
+  console.log(
+    'activated presets',
+    presets.map((p) => p.name)
+  )
+  windiGenerator = createGenerator(
+    {},
+    {
+      presets: presets,
+    }
+  )
+
+  return {
+    async markup({ content, filename }): Promise<Processed> {
+      if (filename && initialFileName.length === 0) initialFileName = filename
+      const { config } = await loadConfig<FullConfig>({
+        merge: false,
+        sources: [
+          {
+            files: 'windi.config',
+            extensions: ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs', 'json'],
+          },
+        ],
+      })
+      if (config !== undefined) {
+        windiGenerator.setConfig({
+          theme: config.theme,
+        })
+        windiConfiguration = config
+      }
+
+      let output = content
+      const generatorSteps = [
+        extractStyles(),
+        generateCSS()
+      ]
+
+      for (const generatorStep of generatorSteps) {
+        const { code } = await preprocess(output, generatorStep, { filename })
+        output = code
+      }
+
+      return {
+        code: output,
+      }
+    },
+  }
+}
+
+export const windi = generate
 export default windi

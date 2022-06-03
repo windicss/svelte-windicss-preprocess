@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["App.svelte"],
+  "sourcesContent": ["<script>\n    import Button from \"./Button.svelte\"\n</script>\n\n\n<div class=\"bg-gray-50\">\n    Hello, world\n</div>\n\n<style>\n\n\n:root {\n    --primary-50: rgb(255, 251, 250);\n    --primary-100: rgb(254, 244, 241);\n    --primary-200: rgb(250, 201, 183);\n    --primary-300: rgb(246, 158, 126);\n    --primary-400: rgb(242, 115, 69);\n    --primary-500: rgb(232, 73, 16);\n    --primary-600: rgb(186, 59, 13);\n    --primary-700: rgb(138, 44, 10);\n    --primary-800: rgb(95, 30, 7);\n    --primary-900: rgb(48, 15, 3);\n\n    /* https://github.com/adamwathan/tailwind-css-variable-text-opacity-demo */\n    --primary-dynamic: 232, 73, 16;\n\n    --primary-gradient-from: 220, 38, 38;\n    --primary-gradient-to: 234, 88, 12;\n}\n:global(.button) {\n    background: green;\n}\n</style>\n"],
+  "mappings": ";AAYA;AACI;AACA;AACA;AACA;AACA;AACA;AACA;AACA;AACA;AACA;AAGA;;;AAEA;;;AACA;;;;AAEI;AACJ;;",
+  "names": []
+}
