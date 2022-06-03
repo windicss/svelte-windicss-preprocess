@@ -24,14 +24,14 @@ specifiers:
   typescript: 4.5.2
   unconfig: 0.2.2
   uvu: 0.5.2
-  windicss: 3.2.1
+  windicss: 3.5.4
   windicss-runtime-dom: 3.0.0
 
 dependencies:
   '@iconify/json': 1.1.432
   fast-glob: 3.2.7
   unconfig: 0.2.2
-  windicss: 3.2.1
+  windicss: 3.5.4
   windicss-runtime-dom: 3.0.0
 
 devDependencies:
@@ -1599,8 +1599,8 @@ packages:
     resolution: {integrity: sha512-a12Uhu71yT1U8w0PzJ3amF9xmC8b1rWFLgXEfI/UyuwUi6D1vUACOO6vb0iY4T4OtP/bJAjQMM7lv3hMWSwLuQ==}
     dev: false
 
-  /windicss/3.2.1:
-    resolution: {integrity: sha512-LusrIrryBFHAPQ/OOTbS4EWWuzI6eGeJglI9nQ3kDBr1cqH69NWt8Z8q59f9kTkgptXroejmWfksWwqgHs8EVw==}
+  /windicss/3.5.4:
+    resolution: {integrity: sha512-x2Iu0a69dtNiKHMkR886lx0WKbZI5GqvXyvGBCJ2VA6rcjKYjnzCA/Ljd6hNQBfqlkSum8J+qAVcCfLzQFI4rQ==}
     engines: {node: '>= 12'}
     hasBin: true
     dev: false
