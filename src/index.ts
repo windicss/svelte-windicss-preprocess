@@ -1,11 +1,9 @@
-/* eslint-disable regexp/strict */
-/* eslint-disable unicorn/better-regex */
 import { type IconifyJSON } from '@iconify/types'
 import { createGenerator, type UnoGenerator } from '@unocss/core'
 import presetIcons from '@unocss/preset-icons'
 import { presetTypography } from '@unocss/preset-typography'
 import presetAttributify from '@unocss/preset-attributify'
-import windicssPreset from '@unocss/preset-wind'
+import presetWindi from '@unocss/preset-wind'
 import { parse as CSSParser, walk as CSSWalker } from 'css-tree'
 import fg from 'fast-glob'
 import MagicString from 'magic-string'
@@ -23,12 +21,14 @@ export interface BaseConfig {
     prefix?: string
     prefixedOnly?: boolean
     nonValuedAttribute?: boolean
-    ignoreAttributes: string[]
+    ignoreAttributes?: string[]
   }
+  typography?: any
   icons?: {
     prefix?: string
     collections?: Record<string, IconifyJSON>
-    extraProperties?: Record<string, string>
+    extraProperties?: Record<string, string>,
+    cdn?: string
   }
 }
 export type DefaultConfig = BaseConfig
@@ -63,7 +63,10 @@ function addStyleTag(content: string) {
   } else if (ast && ast.css.content.start == ast.css.content.end) {
     // empty style tag, replace with a new one
     content = content.replace('<style></style>', '<style>\n</style>')
+  } else {
+    // non-empty style tag, add styles to it
   }
+
   return content
 }
 
@@ -90,41 +93,26 @@ function scanFile(content: string, filename: string) {
     ...content.matchAll(/class=(?<utilities>\{[^}]+)\}/gi),
   ]
   styles[filename] = new Set()
-
   for (const match of MATCHES) {
-    if (match.groups?.utility && match.groups.utility.startsWith('global:')) {
-      styles['__GLOBAL__'].add(match.groups.utility.replace('global:', ''))
-    } else if (match.groups?.utility) {
+    if (match.groups?.utility) {
       styles[filename].add(match.groups.utility)
     }
     if (match.groups?.utilities) {
       for (const utility of cleanUtilities(match.groups?.utilities)) {
-        if (utility.startsWith('global:')) {
-          styles['__GLOBAL__'].add(utility.replace('global:', ''))
-        } else {
-          styles[filename].add(utility)
-        }
+        styles[filename].add(utility)
       }
     }
   }
 }
 
 function extractStyles(): PreprocessorGroup {
-  if (initialFileName.length === 0) {
-    const filePaths = fg.sync(['src/**/*.svelte'], {})
-    for (const filepath of filePaths) {
-      const content = splitVariantGroups(readFileSync(filepath).toString())
-      scanFile(content, filepath)
-    }
-  }
-
   return {
     async markup({ content, filename }): Promise<Processed> {
       if (!filename) return { code: content }
+      console.log(filename)
       content = splitVariantGroups(content)
-      if (initialFileName.length === 0) initialFileName = filename
+      scanFile(content, filename)
       content = addStyleTag(content)
-      content = content.replace(/global:/gi, '')
       return {
         code: content,
       }
@@ -178,42 +166,11 @@ function generateCSS(): PreprocessorGroup {
         }
       })
 
-      let globalContent
-      if (initialFileName == filename) {
-        // generate global styles
-        const globalStyles = await windiGenerator.generate(styles['__GLOBAL__'])
-        // TODO: add dynamic preflights
-        const globalStylesCSS = new MagicString(globalStyles.css)
-        const globalStyleSheet = CSSParser(globalStylesCSS.toString(), {
-          positions: true,
-          parseValue: false,
-        })
-
-        CSSWalker(globalStyleSheet, (node) => {
-          if (node.type === 'Rule' && node.prelude.type === 'SelectorList' && node.prelude.loc) {
-            globalStylesCSS
-              .appendLeft(node.prelude.loc?.start.offset, ':global(')
-              .appendRight(node.prelude.loc?.end.offset, ')')
-          }
-
-          if (
-            node.type === 'Atrule' &&
-            node.name === 'keyframes' &&
-            node.prelude &&
-            node.prelude.type === 'AtrulePrelude' &&
-            node.prelude.loc
-          ) {
-            globalStylesCSS.appendLeft(node.prelude.loc?.start.offset, '-global-')
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            return (CSSWalker as any).skip
-          }
-        })
-        globalContent = globalStylesCSS.toString()
-      }
       const windiStyles = await windiGenerator.generate(styles[filename])
+      console.log(styles[filename])
+      console.log(windiStyles)
       const windiStylesCSS = new MagicString(windiStyles.css)
-      const newContent =
-        (globalContent ? globalContent : '') + '\n' + windiStylesCSS.toString() + '\n' + content
+      const newContent =  windiStylesCSS.toString() + '\n' + content
       // console.log(newContent)
       return {
         code: newContent,
@@ -234,7 +191,14 @@ export function generate(userConfig: UserConfig = {}): PreprocessorGroup {
       })
     )
   }
-  presets.push(windicssPreset(), presetTypography())
+  presets.push(presetWindi())
+  if (generatorConfiguration.typography != undefined) {
+    presets.push(
+      presetTypography({
+        ...generatorConfiguration.typography,
+      })
+    )
+  }
   if (generatorConfiguration.icons != undefined) {
     presets.push(
       presetIcons({
@@ -243,36 +207,41 @@ export function generate(userConfig: UserConfig = {}): PreprocessorGroup {
     )
   }
 
+  console.log(
+    'activated presets',
+    presets.map((p) => p.name)
+  )
   windiGenerator = createGenerator(
     {},
     {
-      presets,
+      presets: presets,
     }
   )
 
   return {
     async markup({ content, filename }): Promise<Processed> {
-      if (!windiConfiguration) {
-        const { config } = await loadConfig<FullConfig>({
-          merge: false,
-          sources: [
-            {
-              files: 'windi.config',
-              extensions: ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs', 'json'],
-            },
-          ],
-        })
-        // console.log(config)
-
+      if (filename && initialFileName.length === 0) initialFileName = filename
+      const { config } = await loadConfig<FullConfig>({
+        merge: false,
+        sources: [
+          {
+            files: 'windi.config',
+            extensions: ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs', 'json'],
+          },
+        ],
+      })
+      if (config !== undefined) {
         windiGenerator.setConfig({
           theme: config.theme,
-          // preprocess: config.preprocess,
         })
         windiConfiguration = config
       }
 
       let output = content
-      const generatorSteps = [extractStyles(), generateCSS()]
+      const generatorSteps = [
+        extractStyles(),
+        generateCSS()
+      ]
 
       for (const generatorStep of generatorSteps) {
         const { code } = await preprocess(output, generatorStep, { filename })
