@@ -1,0 +1,19 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:js-lib",
+    ":disableRateLimiting",
+    ":updateNotScheduled",
+    "helpers:pinGitHubActionDigests",
+    "schedule:nonOfficeHours"
+  ],
+  "timezone": "Europe/Berlin",
+  "rebaseWhen": "auto",
+  "automerge": true,
+  "automergeType": "pr",
+  "automergeStrategy": "squash",
+  "platformAutomerge": true,
+  "platformCommit": true,
+  "configMigration": true,
+  "dependencyDashboardTitle": ":package: Dependency Dashboard by `renovate[bot]` :robot:",
+}
