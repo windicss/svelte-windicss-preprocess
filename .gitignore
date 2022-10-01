@@ -1,8 +1,2 @@
-/node_modules/
-/public/build/
-
-/src/**/*.js
-/src/**/*.d.ts
-
-.DS_Store
-/dist/
+node_modules
+old.ts.ts
