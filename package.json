@@ -8,7 +8,7 @@
     "@iconify/json": "1.1.432",
     "fast-glob": "3.2.7",
     "unconfig": "0.2.2",
-    "windicss": "3.5.4",
+    "windicss": "3.5.6",
     "windicss-runtime-dom": "3.0.0"
   },
   "devDependencies": {
