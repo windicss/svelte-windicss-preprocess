@@ -16,7 +16,7 @@
     "@nbhr/utils": "0.0.29",
     "@types/node": "16.11.9",
     "@typescript-eslint/eslint-plugin": "5.4.0",
-    "@typescript-eslint/parser": "5.4.0",
+    "@typescript-eslint/parser": "5.47.1",
     "@unocss/core": "0.12.1",
     "@unocss/preset-icons": "0.12.1",
     "bumpp": "7.1.1",
