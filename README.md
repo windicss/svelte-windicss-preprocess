@@ -1,3 +1,10 @@
+<p align="center" style="background-color: #FFFF99; padding: 15px; border-radius: 5px;">
+  <strong>⚠️ Windi CSS is Sunsetting ⚠️</strong><br>
+  We are sunsetting Windi CSS and we recommend new projects to seek for alternatives. Read the <a href="https://windicss.org/posts/sunsetting.html">full blog post</a>.
+</p>
+
+<hr>
+
 # svelte-windicss-preprocess
 
 A svelte preprocessor for [windicss](https://github.com/windicss/windicss). Windi CSS is a next generation utility-first CSS framework.
